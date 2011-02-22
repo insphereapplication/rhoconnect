@@ -1,3 +1,5 @@
+require 'tasks/server'
+
 begin
   require 'vendor/rhosync/lib/rhosync/tasks'
   require 'vendor/rhosync/lib/rhosync'
