@@ -1,10 +1,12 @@
 require 'yaml'
+require 'ap'
+require 'faker'
 
 $settings_file = 'settings/settings.yml'
 $config = YAML::load_file($settings_file)
 $app_path = File.expand_path(File.dirname(__FILE__))
 $target = :local
-$server = $config[$target] ? $config[$target][:syncserver] : ""
+$server = ($config[$target] ? $config[$target][:syncserver] : "").sub('/application', '')
 
 namespace :server do
   desc "Sets the current environment target. Must be an existing environment in settings/settings.yml ('development', 'test', etc.)"
@@ -27,47 +29,63 @@ namespace :server do
   task :set_token do
     begin 
       puts "reading token file..."
-      @token = File.readlines(tokenfile)
+      @token = File.readlines(tokenfile).strip
       puts "using persisted token..."
     rescue
       puts "no persisted token found, authenticating..."
-      res = RestClient.post("#{$server}/login", { :login => login, :password => password }.to_json, :content_type => :json)
-      @token = RestClient.post("#{$server}/api/get_api_token",'',{ :cookies => res.cookies })
+      res = RestClient.post("#{$server}login", { :login => 'rhoadmin', :password => '' }.to_json, :content_type => :json)
+      @token = RestClient.post("#{$server}api/get_api_token",'',{ :cookies => res.cookies })
       File.open(tokenfile, 'w') {|f| f.write(@token) }
     end
     Rake::Task['server:show'].invoke
   end
   
+  desc "Creates a user with the given password in the system at #{$server}"
+  task :create_user, [:login, :password] => :set_token do |t, args|
+    RestClient.post("#{$server}api/create_user",
+      { 
+        :api_token => @token,
+        :attributes => { 
+          :login => args.login, 
+          :password => args.password 
+        } 
+      }.to_json, 
+      :content_type => :json
+    )
+    puts "Created user #{args.login} with password #{args.password}"
+  end
+  
   desc "Deletes the user defined by <user_id>"
-  task :delete_user, :user_id, :needs => [:set_token] do |t, args|
+  task :delete_user, [:user_id] => [:set_token] do |t, args|
     puts "Do you really want to delete #{args.user_id} from #{$server}?? (y/n)"
     if STDIN.gets.chomp == 'y' then
         puts "very well..."
         RestClient.post(
-          "#{server}/api/delete_user",
-          { :api_token => @@token, 
+          "#{$server}api/delete_user",
+          { :api_token => @token, 
             :user_id => args.user_id }.to_json, 
             :content_type => :json
         )
+        puts "User #{args.user_id} deleted"
     end
   end
   
   desc "Lists all users in the system at #{$server}"
   task :list_users => [:set_token] do
     users = RestClient.post(
-      "#{server}/api/list_users",
-      { :api_token => @@token }.to_json, 
+      "#{$server}api/list_users",
+      { :api_token => @token }.to_json, 
       :content_type => :json
     ).body
      puts "\nUSERS:"
     users.gsub(/[\[\]]/, '').split(",").each { |u| puts u }
   end
 
-  desc "Sends a push and badge number to a user: rake server:ping[*<username>,<message>,<badge>]"
-  task :ping, :name, :message, :badge, :needs => [:set_token] do |t, args|
+  desc "Sends a push and badge number to a user: rake server:ping[*<user_id>,<message>,<badge>]"
+  task :ping, :user_id, :message, :badge, :needs => [:set_token] do |t, args|
     ping_params = {
       :api_token => @token,
-      :user_id => args.name,
+      :user_id => args.user_id,
       :message => 'thusly have you been pinged',
       :vibrate =>  "2000",
       :sound => 'hello.mp3',
@@ -76,25 +94,25 @@ namespace :server do
     
     puts "Pinging #{args.name}..."
     RestClient.post(
-      "#{$server}/api/ping",ping_params.to_json, 
+      "#{$server}api/ping",ping_params.to_json, 
       :content_type => :json
     ) 
-    puts "#{args.name} has been duly pinged."
+    puts "#{args.user_id} has been duly pinged."
   end
   
   desc "Sends a badge number to a user: rake server:ping[*<username>,<badge_number>]"
-  task :badge, :name, :badge_number, :needs => [:set_token] do |t, args|
+  task :badge, [:user_id, :badge_number] => :set_token do |t, args|
     ping_params = {
       :api_token => @token,
-      :user_id => args.name,
+      :user_id => args.user_id,
       :vibrate =>  "2000",
       :sound => 'hello.mp3',
       :badge => args.badge_number
     }
-    
-    puts "Badging #{args.name}..."
+    ap ping_params
+    puts "Badging #{args.user_id}..."
     RestClient.post(
-      "#{server}/api/ping",ping_params.to_json, 
+      "#{$server}api/ping",ping_params.to_json, 
       :content_type => :json
     ) 
     puts "#{args.name} has been duly badged."
@@ -105,8 +123,8 @@ namespace :server do
     puts "do you really want to reset the db?? (y/n)"
     if STDIN.gets.chomp == 'y' then
       puts "very well..."
-      RestClient.post("#{server}/api/reset",
-       { :api_token => @@token }.to_json, 
+      RestClient.post("#{$server}api/reset",
+       { :api_token => @token }.to_json, 
          :content_type => :json
       )
       puts "db has been reset"
@@ -116,7 +134,7 @@ namespace :server do
   desc "Gets the db_doc for the given user and model"
   task :get_db_doc, :user_id, :model, :needs => [:set_token] do |t, args|
     res = RestClient.post(
-      "#{server}/api/get_db_doc", 
+      "#{$server}api/get_db_doc", 
       { 
         :api_token => @token, 
         :doc => "source:application:#{args.user_id}:#{args.model}:md"
@@ -130,7 +148,7 @@ namespace :server do
     desc "Gives the number of contacts for the given user"
     task :count, :user_id, :needs => [:set_token] do |t,args|
       res = RestClient.post(
-        "#{server}/api/get_db_doc", 
+        "#{$server}api/get_db_doc", 
         { 
           :api_token => @token, 
           :doc => "source:application:#{args.user_id}:Contact:md"
@@ -141,7 +159,7 @@ namespace :server do
     end
     
     desc "Creates <num_contacts> contacts for <user_id> with generated attributes in the current target server."
-    task :create, :user_id, :num_contacts, :first_name, :last_name, :sort_ordinal, :needs => [:set_token] do |t, args|
+    task :create, [:user_id, :num_contacts, :first_name, :last_name, :sort_ordinal]  => :set_token do |t, args|
       contacts = (args.num_contacts || 1).to_i.times.reduce({}) do |sum, i|  
         sum[rand(10**20)] = {
           "sort_ordinal" => args.sort_ordinal || -(Time.now.to_i),
@@ -152,20 +170,22 @@ namespace :server do
           "last_name" => args.last_name || Faker::Name.last_name,
           "date_of_birth" => "#{rand(12)}/#{rand(28)}/#{rand(99)}",
           "state" => Faker::Address.us_state
-          }
+          };
+          sum
       end
+      
       res = RestClient.post(
-        "#{server}/api/push_objects", 
+        "#{$server}api/push_objects", 
         { 
           :api_token => @token, 
-          :user_id => args.user_id, 
+          :user_id => args.user_id || 'dave', 
           :source_id => "Contact", 
-          :objects => contact
+          :objects => contacts
         }.to_json, 
         :content_type => :json
       )
-      puts "Created new Contact:"
-      ap contact
+      puts "Created #{(args.num_contacts || 1)} new Contact(s):"
+      ap contacts
       puts "Response:"
       ap res
     end
