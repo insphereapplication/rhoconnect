@@ -5,6 +5,10 @@
   Opportunity: 
     :poll_interval: 300
  
+:local: 
+  :syncserver: http://localhost:9292/application/
+  :redis: localhost:6379
+  :licensefile: settings/license.key
 :test: 
   :syncserver: http://localhost:9292/application/
   :redis: localhost:6379
@@ -14,6 +18,6 @@
   :redis: localhost:6379
   :licensefile: settings/license.key
 :development: 
-  :syncserver: http://localhost:9292/application/
+  :syncserver: http://rhohub-insphere-c58af007.rhosync.com/application
   :redis: localhost:6379
   :licensefile: settings/license.key
