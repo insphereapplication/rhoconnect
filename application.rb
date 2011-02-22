@@ -1,7 +1,18 @@
 class Application < Rhosync::Base
   class << self
     def authenticate(username,password,session)
-      true # do some interesting authentication here...
+      puts "@"*80 + " Authentication requested"
+      response = RestClient.post @@login_url, :username => username, :password => password
+                 
+      puts "*********** AUTHENTICATED: #{username} -- #{password}"
+      puts "*********** AuthToken: #{response}"
+     
+      if response.code == 200
+        Store.put_value("username:#{username}:token", response.body)
+        success = true
+      end
+ 
+      return true
     end
     
     # Add hooks for application startup here
