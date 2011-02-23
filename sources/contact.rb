@@ -8,10 +8,12 @@ class Contact < SourceAdapter
   end
  
   def query(params=nil)
-    @result = { 
-      "1"=>{"first_name"=>"Moe"},
-      "2"=>{"first_name"=>"Larry"}
-    }
+    parsed_values = JSON.parse(RestClient.get(@@contact_url).body)
+    @result = parsed_values.reduce({}){|sum, value| sum[value['id']] = value['contact']; sum }
+    # @result = { 
+    #      "1"=>{"first_name"=>"Moe"},
+    #      "2"=>{"first_name"=>"Larry"}
+    #    }
   end
  
   def sync

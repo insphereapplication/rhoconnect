@@ -1,4 +1,5 @@
 class Application < Rhosync::Base
+  @@login_url = "http://localhost:5000/session/logon"
   class << self
     def authenticate(username,password,session)
       puts "@"*80 + " Authentication requested"
