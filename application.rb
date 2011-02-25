@@ -6,18 +6,16 @@ class Application < Rhosync::Base
       response = RestClient.post @@login_url, :username => username, :password => password
                  
       puts "*********** AUTHENTICATED: #{username} -- #{password}"
-      puts "*********** AuthToken: #{response}"
+      puts "*********** AuthToken: #{response.body.strip.gsub(/"/, '')}"
      
       if response.code == 200
-        Store.put_value("username:#{username}:token", response.body)
+        Store.put_value("username:#{username}:token", response.body.strip.gsub(/"/, ''))
         success = true
       end
  
-      return true
+      return success
     end
     
-    # Add hooks for application startup here
-    # Don't forget to call super at the end!
     def initializer(path)
       super
     end

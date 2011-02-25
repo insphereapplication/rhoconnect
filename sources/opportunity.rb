@@ -8,16 +8,18 @@ class Opportunity < SourceAdapter
   end
  
   def query(params=nil)
+    puts "OPPORTUNITY QUERY"
     # TODO: Query your backend data source and assign the records 
     # to a nested hash structure called @result. For example:
     # @result = { 
     #   "1"=>{"name"=>"Acme", "industry"=>"Electronics"},
     #   "2"=>{"name"=>"Best", "industry"=>"Software"}
     # }
-    raise SourceAdapterException.new("Please provide some code to read records from the backend data source")
+    # raise SourceAdapterException.new("Please provide some code to read records from the backend data source")
   end
  
   def sync
+    puts "OPPORTUNITY SYNC"
     # Manipulate @result before it is saved, or save it 
     # yourself using the Rhosync::Store interface.
     # By default, super is called below which simply saves @result

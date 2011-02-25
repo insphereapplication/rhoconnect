@@ -8,7 +8,8 @@ describe "Contact" do
   end
   
   it "should process Contact query" do
-    pending
+    test_create(@contact)
+    test_query.size.should == 1
   end
   
   it "should process Contact create" do
