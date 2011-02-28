@@ -2,7 +2,7 @@ require 'ap'
 
 class Contact < SourceAdapter
   def initialize(source,credential)
-    @contact_url = "http://localhost:5000/contact"
+    @contact_url = "http://75.31.122.27/contact"
     super(source,credential)
   end
  
