@@ -1,5 +1,3 @@
-require 'ap'
-
 class Contact < SourceAdapter
   def initialize(source,credential)
     @contact_url = "http://75.31.122.27/contact"
@@ -16,7 +14,7 @@ class Contact < SourceAdapter
         :content_type => :json
       )
     )
-    ap parsed_values
+    puts parsed_values
     @result = parsed_values.reduce({}){|sum, value| sum[value['contactid']] = value; sum }
   end
  
@@ -33,7 +31,7 @@ class Contact < SourceAdapter
  
   def update(attributes)
     puts "^"*80
-    ap attributes
+    puts attributes
     result = JSON.parse(RestClient.post("#{@contact_url}/update", 
       :token => @token, 
       :attributes => attributes.to_json
