@@ -6,14 +6,13 @@ class Application < Rhosync::Base
   @@login_url = "http://75.31.122.27/session/logon"
   class << self
     def authenticate(username,password,session)
-      # response = RestClient.post @@login_url, :username => username, :password => password
-      #       if response.code == 200
-      #         Store.put_value("username:#{username}:token", response.body.strip.gsub(/"/, ''))
-      #         return true
-      #       elsif response.code == 401
-      #         return false
-      #       end
-      true
+      response = RestClient.post @@login_url, :username => username, :password => password
+      if response.code == 200
+        Store.put_value("username:#{username}:token", response.body.strip.gsub(/"/, ''))
+        return true
+      elsif response.code == 401
+        return false
+      end   
     end
     
     def initializer(path)
