@@ -80,15 +80,30 @@ namespace :server do
      puts "\nUSERS:"
     users.gsub(/[\[\]]/, '').split(",").each { |u| puts u }
   end
+  
+  desc "pushes objects and invokes the notify method associated with the sources" 
+  task :push_objects_notify => [:set_token] do |t, args|
+    res = RestClient.post(
+      "#{$server}api/push_objects_notify", 
+      { 
+        :api_token => @token, 
+        :user_id => args.user_id || 'dave', 
+        :source_id => "Contact", 
+        :objects => "objects!!!!"
+      }.to_json, 
+      :content_type => :json
+    )
+  end
 
   desc "Sends a push and badge number to a user: rake server:ping[*<user_id>,<message>,<badge>]"
-  task :ping, :user_id, :message, :badge, :needs => [:set_token] do |t, args|
+  task :ping, :user_id, :message, :source, :badge, :needs => [:set_token] do |t, args|
     ping_params = {
       :api_token => @token,
       :user_id => args.user_id,
       :message => 'thusly have you been pinged',
       :vibrate =>  "2000",
       :sound => 'hello.mp3',
+      :sources => ars.source || 'Contact',
       :badge => args.badge || nil
     }
     
@@ -175,7 +190,7 @@ namespace :server do
       end
       
       res = RestClient.post(
-        "#{$server}api/push_objects", 
+        "#{$server}api/push_objects_notify", 
         { 
           :api_token => @token, 
           :user_id => args.user_id || 'dave', 

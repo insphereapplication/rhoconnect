@@ -1,20 +1,19 @@
+require 'api/push_objects_notify'
+require 'initializers/server_extensions'
+
 class Application < Rhosync::Base
   # @@login_url = "http://localhost:5000/session/logon"
   @@login_url = "http://75.31.122.27/session/logon"
   class << self
     def authenticate(username,password,session)
-      puts "@"*80 + " Authentication requested"
-      response = RestClient.post @@login_url, :username => username, :password => password
-                 
-      puts "*********** AUTHENTICATED: #{username} -- #{password}"
-      puts "*********** AuthToken: #{response.body.strip.gsub(/"/, '')}"
-     
-      if response.code == 200
-        Store.put_value("username:#{username}:token", response.body.strip.gsub(/"/, ''))
-        success = true
-      end
- 
-      return success
+      # response = RestClient.post @@login_url, :username => username, :password => password
+      #       if response.code == 200
+      #         Store.put_value("username:#{username}:token", response.body.strip.gsub(/"/, ''))
+      #         return true
+      #       elsif response.code == 401
+      #         return false
+      #       end
+      true
     end
     
     def initializer(path)

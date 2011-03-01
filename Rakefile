@@ -6,6 +6,7 @@ begin
 rescue LoadError
   require 'rhosync/tasks'
   require 'rhosync'
+  require 'rhosync/server'
 end
 
 ROOT_PATH = File.expand_path(File.dirname(__FILE__))
