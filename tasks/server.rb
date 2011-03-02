@@ -6,7 +6,7 @@ gem 'rest-client', '=1.4.2'
 $settings_file = 'settings/settings.yml'
 $config = YAML::load_file($settings_file)
 $app_path = File.expand_path(File.dirname(__FILE__))
-$target = :test
+$target = :production
 $server = ($config[$target] ? $config[$target][:syncserver] : "").sub('/application', '')
 
 namespace :server do
@@ -28,17 +28,21 @@ namespace :server do
   tokenfile = '.rhosync_token'
   
   task :set_token do
-    begin 
-      puts "reading token file..."
-      @token = File.readlines(tokenfile).strip
-      puts "using persisted token..."
-    rescue
-      puts "no persisted token found, authenticating at #{$server}..."
-      res = RestClient.post("#{$server}login", { :login => 'rhoadmin', :password => "" }.to_json, :content_type => :json)
-      @token = RestClient.post("#{$server}api/get_api_token",'',{ :cookies => res.cookies })
-      File.open(tokenfile, 'w') {|f| f.write(@token) }
+    begin
+      if File.exists?(tokenfile) 
+        puts "reading token file..."
+        @token = File.readlines(tokenfile).first.strip
+        puts "using persisted token..."
+      else
+        puts "no persisted token found, authenticating at #{$server}..."
+        res = RestClient.post("#{$server}login", { :login => 'rhoadmin', :password => "" }.to_json, :content_type => :json)
+        @token = RestClient.post("#{$server}api/get_api_token",'',{ :cookies => res.cookies })
+        File.open(tokenfile, 'w') {|f| f.write(@token) }
+      end
+      Rake::Task['server:show'].invoke
+    rescue Exception => e
+      puts "!!!! Exception thrown: #{e.inspect}"
     end
-    Rake::Task['server:show'].invoke
   end
   
   desc "Creates a user with the given password in the system at #{$server}"
@@ -104,14 +108,14 @@ namespace :server do
       :message => 'thusly have you been pinged',
       :vibrate =>  "2000",
       :sound => 'hello.mp3',
-      # :sources => ars.source || 'Contact',
+      :sources => args.source || 'Contact',
       :badge => args.badge || nil
     }
-    puts "HEY" * 5
-    puts $server
+
     puts "Pinging #{args.name} at #{$server}api/ping..."
     RestClient.post(
-      "#{$server}api/ping",ping_params.to_json, 
+      "#{$server}api/ping",
+      ping_params.to_json, 
       :content_type => :json
     ) 
     puts "#{args.user_id} has been duly pinged."
