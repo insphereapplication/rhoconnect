@@ -1,7 +1,7 @@
 require 'yaml'
 require 'ap'
 require 'faker'
-gem 'rest-client', '=1.4.2'
+# gem 'rest-client', '=1.4.2'
 
 $settings_file = 'settings/settings.yml'
 $config = YAML::load_file($settings_file)
@@ -101,7 +101,7 @@ namespace :server do
   end
 
   desc "Sends a push and badge number to a user: rake server:ping[*<user_id>,<message>,<badge>]"
-  task :ping, :user_id, :message, :source, :badge, :needs => [:set_token] do |t, args|
+  task :ping, [:user_id, :message, :source, :badge] => [:set_token] do |t, args|
     ping_params = {
       :api_token => @token,
       :user_id => args.user_id,
