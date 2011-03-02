@@ -4,7 +4,7 @@ class Contact < SourceAdapter
     puts "Pinging #{user_id} from SourceAdapter callback..."
     PingJob.perform(
       'user_id' => user_id,
-      'sources' => ['Contact'],
+      # 'sources' => ['Contact'],
       'message' => 'Pinged, thusly',
       'vibrate' => 2000,
       'sound' => 'hello.mp3'
