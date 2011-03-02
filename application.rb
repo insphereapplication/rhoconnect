@@ -1,16 +1,16 @@
-require 'api/push_objects_notify'
-require 'initializers/server_extensions'
+['api', 'initializers'].each { |dir| Dir[File.join(File.dirname(__FILE__),dir,'**','*.rb')].each { |file| load file }}
+
+require 'ap'
 
 class Application < Rhosync::Base
-  # @@login_url = "http://localhost:5000/session/logon"
-  @@login_url = "http://75.31.122.27/session/logon"
   class << self
     def authenticate(username,password,session)
-      response = RestClient.post @@login_url, :username => username, :password => password
+      response = RestClient.post "#{CONFIG[:crm_path]}session/logon", :username => username, :password => password
       if response.code == 200
         Store.put_value("username:#{username}:token", response.body.strip.gsub(/"/, ''))
         return true
       elsif response.code == 401
+        puts "Not authenticated"
         return false
       end   
     end

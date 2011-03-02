@@ -20,3 +20,4 @@ rescue LoadError
   puts "Resque not available. Install it with: "
   puts "gem install resque\n\n"
 end
+
