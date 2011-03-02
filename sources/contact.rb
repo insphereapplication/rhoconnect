@@ -14,7 +14,7 @@ class Contact < SourceAdapter
        )
       puts "Got through on_api_push"
     rescue Exception => e
-      puts "EXCEPTION" + "!" *80
+      puts "EXCEPTION: #{e.inspect}" + "!" *80
       ap e.backtrace
       puts "&"*80
     end
