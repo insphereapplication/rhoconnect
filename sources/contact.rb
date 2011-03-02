@@ -1,15 +1,19 @@
+require 'ap'
+
 class Contact < SourceAdapter
   
   on_api_push do |user_id|
     puts "Pinging #{user_id} from SourceAdapter callback..."
     PingJob.perform(
        'user_id' => user_id
-       # 'sources' => ['Contact'],
-       #  'message' => 'Pinged, thusly',
-       #  'vibrate' => 2000,
-       #  'sound' => 'hello.mp3'
+       'sources' => ['Contact'],
+       'message' => 'Pinged, thusly',
+       'vibrate' => 2000,
+       'sound' => 'hello.mp3'
      )
     puts "Got through on_api_push"
+  rescue Exception => 
+    ap e.backtrace
   end
   
   def initialize(source,credential)
