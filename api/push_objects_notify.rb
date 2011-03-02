@@ -12,7 +12,7 @@ Rhosync::Server.api :push_objects_notify do |params,user|
     else
       puts "Unable to create class object for #{params[:source_id]}"
     end
-  rescue
-    puts "No class found for #{params[:source_id]}"
+  rescue Exception => e
+    puts "Exception thrown attempting to notify #{params[:source_id]}: #{e.inspect}"
   end
 end

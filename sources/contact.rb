@@ -1,6 +1,7 @@
 class Contact < SourceAdapter
   
   on_api_push do |user_id|
+    puts "Pinging #{user_id} from SourceAdapter callback..."
     PingJob.perform(
       'user_id' => user_id,
       'sources' => ['Contact'],

@@ -1,6 +1,7 @@
 require 'yaml'
 require 'ap'
 require 'faker'
+gem 'rest-client', '=1.4.2'
 
 $settings_file = 'settings/settings.yml'
 $config = YAML::load_file($settings_file)
@@ -32,8 +33,8 @@ namespace :server do
       @token = File.readlines(tokenfile).strip
       puts "using persisted token..."
     rescue
-      puts "no persisted token found, authenticating..."
-      res = RestClient.post("#{$server}login", { :login => 'rhoadmin', :password => '' }.to_json, :content_type => :json)
+      puts "no persisted token found, authenticating at #{$server}..."
+      res = RestClient.post("#{$server}login", { :login => 'rhoadmin', :password => "" }.to_json, :content_type => :json)
       @token = RestClient.post("#{$server}api/get_api_token",'',{ :cookies => res.cookies })
       File.open(tokenfile, 'w') {|f| f.write(@token) }
     end
@@ -103,11 +104,12 @@ namespace :server do
       :message => 'thusly have you been pinged',
       :vibrate =>  "2000",
       :sound => 'hello.mp3',
-      :sources => ars.source || 'Contact',
+      # :sources => ars.source || 'Contact',
       :badge => args.badge || nil
     }
-    
-    puts "Pinging #{args.name}..."
+    puts "HEY" * 5
+    puts $server
+    puts "Pinging #{args.name} at #{$server}api/ping..."
     RestClient.post(
       "#{$server}api/ping",ping_params.to_json, 
       :content_type => :json
