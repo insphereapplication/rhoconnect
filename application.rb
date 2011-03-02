@@ -1,7 +1,5 @@
 ['api', 'initializers'].each { |dir| Dir[File.join(File.dirname(__FILE__),dir,'**','*.rb')].each { |file| load file }}
 
-require 'ap'
-
 class Application < Rhosync::Base
   class << self
     def authenticate(username,password,session)
