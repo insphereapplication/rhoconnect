@@ -1,15 +1,15 @@
 class Contact < SourceAdapter
   
-  on_api_push do |user_id|
-    puts "Pinging #{user_id} from SourceAdapter callback..."
-    PingJob.perform(
-      'user_id' => user_id,
-      'sources' => ['Contact'],
-      'message' => 'Pinged, thusly',
-      'vibrate' => 2000,
-      'sound' => 'hello.mp3'
-    )
-  end
+  # on_api_push do |user_id|
+  #   puts "Pinging #{user_id} from SourceAdapter callback..."
+  #   PingJob.perform(
+  #     'user_id' => user_id,
+  #     'sources' => ['Contact'],
+  #     'message' => 'Pinged, thusly',
+  #     'vibrate' => 2000,
+  #     'sound' => 'hello.mp3'
+  #   )
+  # end
   
   def initialize(source,credential)
     @contact_url = "http://75.31.122.27/contact"
