@@ -8,6 +8,8 @@
     :poll_interval: 300
   Note: 
     :poll_interval: 300
+  Activity: 
+    :poll_interval: 300 
  
 :test: 
   :syncserver: http://localhost:9292/application/

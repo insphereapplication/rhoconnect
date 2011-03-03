@@ -1,25 +1,36 @@
 class Opportunity < SourceAdapter
+  
+  on_api_push do |user_id|
+      PingJob.perform(
+         'user_id' => user_id,
+         'sources' => ['Opportunity'],
+         'message' => 'You have new Opportunities',
+         'vibrate' => 2000,
+         'sound' => 'hello.mp3'
+       )
+  end
+  
   def initialize(source,credential)
+    @opportunity_url = "#{CONFIG[:crm_path]}opportunity"
     super(source,credential)
   end
  
   def login
-    # TODO: Login to your data source here if necessary
+    @token = Store.get_value("username:#{current_user.login}:token")
   end
  
   def query(params=nil)
-    puts "OPPORTUNITY QUERY"
-    # TODO: Query your backend data source and assign the records 
-    # to a nested hash structure called @result. For example:
-    # @result = { 
-    #   "1"=>{"name"=>"Acme", "industry"=>"Electronics"},
-    #   "2"=>{"name"=>"Best", "industry"=>"Software"}
-    # }
-    # raise SourceAdapterException.new("Please provide some code to read records from the backend data source")
+    parsed_values = JSON.parse(RestClient.post(@opportunity_url,
+        {:token => @token}, 
+        :content_type => :json
+      )
+    )
+    ap parsed_values
+    @result = parsed_values.reduce({}){|sum, value| sum[value['opportunityid']] = value['opportunity']; sum }
   end
  
   def sync
-    puts "OPPORTUNITY SYNC"
+    puts "NOTE SYNC"
     # Manipulate @result before it is saved, or save it 
     # yourself using the Rhosync::Store interface.
     # By default, super is called below which simply saves @result
@@ -34,8 +45,10 @@ class Opportunity < SourceAdapter
   end
  
   def update(update_hash)
-    # TODO: Update an existing record in your backend data source
-    raise "Please provide some code to update a single record in the backend data source using the update_hash"
+    result = JSON.parse(RestClient.post("#{@opportunity_url}/update", 
+        :token => @token, 
+        :attributes => attributes.to_json
+      ).body)
   end
  
   def delete(object_id)

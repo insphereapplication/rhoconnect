@@ -1,4 +1,4 @@
-require 'tasks/server'
+Dir[File.join(File.dirname(__FILE__),'tasks','**','*.rb')].each { |file| load file }
 
 begin
   require 'vendor/rhosync/lib/rhosync/tasks'

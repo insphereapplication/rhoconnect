@@ -1,7 +1,7 @@
 require 'yaml'
 require 'ap'
 require 'faker'
-# gem 'rest-client', '=1.4.2'
+gem 'rest-client', '=1.4.2'
 
 $settings_file = 'settings/settings.yml'
 $config = YAML::load_file($settings_file)
@@ -16,6 +16,7 @@ namespace :server do
     rake = File.readlines(__FILE__)
     rake.map!{|l| l =~ /^\$target/ ? "$target = :#{args.env}\n"  : l }
     File.open(__FILE__, 'w+') {|f| f.write(rake) }
+    Rake::Task['server:clear_token'].invoke
   end
   
   desc 'Shows the current target server and url'
@@ -38,11 +39,16 @@ namespace :server do
         res = RestClient.post("#{$server}login", { :login => 'rhoadmin', :password => "" }.to_json, :content_type => :json)
         @token = RestClient.post("#{$server}api/get_api_token",'',{ :cookies => res.cookies })
         File.open(tokenfile, 'w') {|f| f.write(@token) }
+        puts "new token: #{@token}"
       end
       Rake::Task['server:show'].invoke
     rescue Exception => e
       puts "!!!! Exception thrown: #{e.inspect}"
     end
+  end
+  
+  task :clear_token do
+    `rm #{tokenfile}`
   end
   
   desc "Creates a user with the given password in the system at #{$server}"
@@ -102,6 +108,7 @@ namespace :server do
 
   desc "Sends a push and badge number to a user: rake server:ping[*<user_id>,<message>,<badge>]"
   task :ping, [:user_id, :message, :source, :badge] => [:set_token] do |t, args|
+    puts "token is #{@token}"
     ping_params = {
       :api_token => @token,
       :user_id => args.user_id,
@@ -113,12 +120,18 @@ namespace :server do
     }
 
     puts "Pinging #{args.name} at #{$server}api/ping..."
-    RestClient.post(
-      "#{$server}api/ping",
-      ping_params.to_json, 
-      :content_type => :json
-    ) 
-    puts "#{args.user_id} has been duly pinged."
+    
+    ap ping_params
+    begin
+      RestClient.post(
+        "#{$server}api/ping",
+        ping_params.to_json, 
+        :content_type => :json
+      ) 
+      puts "#{args.user_id} has been duly pinged."
+    rescue Exception => e
+      puts "Unable to ping user #{args.user_id} at #{$server}\n#{e.inspect}"
+    end
   end
   
   desc "Sends a badge number to a user: rake server:ping[*<username>,<badge_number>]"
@@ -164,6 +177,40 @@ namespace :server do
     ).body
     ap JSON.parse(res)
   end
+  
+  # namespace :opportunity do
+  #   desc "Creates <num_contacts> contacts for <user_id> with generated attributes in the current target server."
+  #   task :create, [:user_id, :num_opportunities, :first_name, :last_name, :sort_ordinal]  => :set_token do |t, args|
+  #     contacts = (args.num_contacts || 1).to_i.times.reduce({}) do |sum, i|  
+  #       sum[rand(10**20)] = {
+  #         "city" => Faker::Address.city,
+  #         "created_on" => Time.now.to_s,
+  #         "updated_on" => Time.now.to_s,
+  #         "first_name" => args.first_name || Faker::Name.first_name,
+  #         "last_name" => args.last_name || Faker::Name.last_name,
+  #         "date_of_birth" => "#{rand(12)}/#{rand(28)}/#{rand(99)}",
+  #         "state" => Faker::Address.us_state
+  #         };
+  #         sum
+  #     end
+  #     
+  #     res = RestClient.post(
+  #       "#{$server}api/push_objects_notify", 
+  #       { 
+  #         :api_token => @token, 
+  #         :user_id => args.user_id || 'dave', 
+  #         :source_id => "Contact", 
+  #         :objects => contacts
+  #       }.to_json, 
+  #       :content_type => :json
+  #     )
+  #     puts "Created #{(args.num_contacts || 1)} new Contact(s):"
+  #     ap contacts
+  #     puts "Response:"
+  #     ap res
+  #   end
+  #   
+  # end
 
   namespace :contact do 
     desc "Gives the number of contacts for the given user"

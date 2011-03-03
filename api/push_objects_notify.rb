@@ -5,13 +5,9 @@ Rhosync::Server.api :push_objects_notify do |params,user|
   
   begin
     puts "push_objects_notify called, notifying observer for #{params[:source_id]}"
-    klass = Object.const_get(params[:source_id])
-    if klass
-      klass.api_pushed(params[:user_id]) if klass.respond_to?(:api_pushed)
-    else
-      puts "Unable to create class object for #{params[:source_id]}"
-    end
+    klass = Object.const_get(params[:source_id].capitalize)
+    klass.notify_api_pushed(params[:user_id]) if klass.respond_to?(:notify_api_pushed)
   rescue Exception => e
-    puts e.inspect
+    log e.inspect
   end
 end

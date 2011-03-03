@@ -1,24 +1,4 @@
-require 'ap'
-
 class Contact < SourceAdapter
-
-  on_api_push do |user_id|
-    begin
-      puts "Pinging #{user_id} from SourceAdapter callback..."
-      PingJob.perform(
-         'user_id' => user_id,
-         'sources' => ['Contact'],
-         'message' => 'Pinged, thusly',
-         'vibrate' => 2000,
-         'sound' => 'hello.mp3'
-       )
-      puts "Got through on_api_push"
-    rescue Exception => e
-      puts "EXCEPTION: #{e.inspect}" + "!" *80
-      ap e.backtrace
-      puts "&"*80
-    end
-  end
   
   def initialize(source,credential)
     @contact_url = "#{CONFIG[:crm_path]}contact"
@@ -51,13 +31,10 @@ class Contact < SourceAdapter
   end
  
   def update(attributes)
-    puts "^"*80
-    puts attributes
-    result = JSON.parse(RestClient.post("#{@contact_url}/update", 
+   result = JSON.parse(RestClient.post("#{@contact_url}/update", 
       :token => @token, 
       :attributes => attributes.to_json
     ).body)
-    puts result
   end
  
   def delete(object_id)

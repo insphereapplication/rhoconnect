@@ -1,5 +1,6 @@
 class Note < SourceAdapter
   def initialize(source,credential)
+    @note_url = "#{CONFIG[:crm_path]}note"
     super(source,credential)
   end
  
@@ -8,14 +9,13 @@ class Note < SourceAdapter
   end
  
   def query(params=nil)
-    puts "NOTE QUERY"
-    parsed_values = JSON.parse(RestClient.post(@contact_url,
+    parsed_values = JSON.parse(RestClient.post(@note_url,
         {:token => @token}, 
         :content_type => :json
       )
     )
     ap parsed_values
-    @result = parsed_values.reduce({}){|sum, value| sum[value['id']] = value['note']; sum }
+    @result = parsed_values.reduce({}){|sum, value| sum[value['noteid']] = value['note']; sum }
   end
  
   def sync
@@ -34,8 +34,10 @@ class Note < SourceAdapter
   end
  
   def update(update_hash)
-    # TODO: Update an existing record in your backend data source
-    raise "Please provide some code to update a single record in the backend data source using the update_hash"
+    result = JSON.parse(RestClient.post("#{@note_url}/update", 
+        :token => @token, 
+        :attributes => attributes.to_json
+      ).body)
   end
  
   def delete(object_id)
