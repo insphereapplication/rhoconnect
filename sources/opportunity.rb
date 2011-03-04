@@ -1,3 +1,4 @@
+
 class Opportunity < SourceAdapter
   
   on_api_push do |user_id|
@@ -25,8 +26,7 @@ class Opportunity < SourceAdapter
         :content_type => :json
       )
     )
-    ap parsed_values
-    @result = parsed_values.reduce({}){|sum, value| sum[value['opportunityid']] = value['opportunity']; sum }
+    @result = parsed_values.reduce({}){|sum, value| sum[value['opportunityid']] = value; sum }
   end
  
   def sync
