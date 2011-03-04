@@ -9,13 +9,12 @@ class Activity < SourceAdapter
   end
  
   def query(params=nil)
-    parsed_values = JSON.parse(RestClient.post(@activity_url,
+    res = RestClient.post(@activity_url,
         {:token => @token}, 
         :content_type => :json
       )
-    )
-    ap parsed_values
-    @result = parsed_values.reduce({}){|sum, value| sum[value['activityid']] = value['activity']; sum }
+  
+    @result = ActivityMapper.map_json(res)
   end
  
   def sync

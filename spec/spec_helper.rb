@@ -9,11 +9,14 @@ begin
   require 'vendor/rhosync/lib/rhosync'
 rescue LoadError
   require 'rhosync'
+  require 'rhosync/server'
+  require 'mappers/mapper'
 end
 
 # Load our rhosync application
-require 'application'
 include Rhosync
+require 'application'
+
 
 require 'rhosync/test_methods'
 

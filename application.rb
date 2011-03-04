@@ -1,4 +1,4 @@
-['api', 'initializers'].each { |dir| Dir[File.join(File.dirname(__FILE__),dir,'**','*.rb')].each { |file| load file }}
+['api', 'initializers', 'mappers'].each { |dir| Dir[File.join(File.dirname(__FILE__),dir,'**','*.rb')].each { |file| load file }} 
 
 class Application < Rhosync::Base
   class << self
