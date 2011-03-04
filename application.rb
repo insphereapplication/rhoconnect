@@ -1,3 +1,4 @@
+require 'mappers/mapper'
 ['api', 'initializers', 'mappers'].each { |dir| Dir[File.join(File.dirname(__FILE__),dir,'**','*.rb')].each { |file| load file }} 
 
 class Application < Rhosync::Base
