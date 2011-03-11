@@ -37,7 +37,7 @@ class Activity < SourceAdapter
     ap mapped_hash.to_json
     result = RestClient.post("#{@activity_url}/create", 
         :token => @token, 
-        :attributes => create_hash.to_json
+        :attributes => mapped_hash.to_json
       ).body
     ap result
     result
@@ -50,7 +50,7 @@ class Activity < SourceAdapter
     ap mapped_hash
     result = JSON.parse(RestClient.post("#{@activity_url}/update", 
         :token => @token, 
-        :attributes => update_hash.to_json
+        :attributes => mapped_hash.to_json
       ).body)
     ap result
   end

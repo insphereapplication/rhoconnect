@@ -48,10 +48,13 @@ class Opportunity < SourceAdapter
   end
  
   def update(update_hash)
-    result = JSON.parse(RestClient.post("#{@opportunity_url}/update", 
+    puts "UPDATE OPPORTUNITY"
+    ap update_hash
+    result = RestClient.post("#{@opportunity_url}/update", 
         :token => @token, 
-        :attributes => attributes.to_json
-      ).body)
+        :attributes => update_hash.to_json
+      ).body
+    ap result
   end
  
   def delete(object_id)
