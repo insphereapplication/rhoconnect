@@ -29,7 +29,7 @@ class Opportunity < SourceAdapter
     )
     @result = parsed_values.reduce({}){|sum, value| sum[value['opportunityid']] = value; sum }
     puts "OPPORTUNITIES"
-    ap @result
+    # ap @result
   end
  
   def sync

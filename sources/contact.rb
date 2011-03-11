@@ -20,7 +20,7 @@ class Contact < SourceAdapter
     
     @result = parsed_values.reduce({}){|sum, value| sum[value['contactid']] = value; sum }
     
-    ap @result
+    # ap @result
   end
  
   def sync

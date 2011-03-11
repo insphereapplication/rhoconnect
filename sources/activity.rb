@@ -17,7 +17,7 @@ class Activity < SourceAdapter
       )
     
     @result = ActivityMapper.map_json(res)
-    ap @result
+    # ap @result
   end
  
   def sync
