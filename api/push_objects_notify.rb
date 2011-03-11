@@ -1,4 +1,5 @@
-Server.api :push_objects_notify do |params,user|
+Rhosync::Server.api :push_objects_notify do |params,user|
+  puts "PUSH OBJECTS NOTIFY"
   source = Source.load(params[:source_id],{:app_id=>APP_NAME,:user_id=>params[:user_id]})
   source_sync = SourceSync.new(source)
   source_sync.push_objects(params[:objects])
