@@ -8,7 +8,7 @@ class Application < Rhosync::Base
       puts "Logging to #{CONFIG[:crm_path]}session/logon"
       response = RestClient.post "#{CONFIG[:crm_path]}session/logon", :username => username, :password => password
       if response.code == 200
-        Store.put_value("username:#{username}:token", response.body.strip.gsub(/"/, ''))
+        Store.put_value("username:#{username.downcase}:token", response.body.strip.gsub(/"/, ''))
         return true
       elsif response.code == 401
         return false
