@@ -1,3 +1,5 @@
+require 'ap'
+
 class Activity < SourceAdapter
   def initialize(source,credential)
     @activity_url = "#{CONFIG[:crm_path]}activity"
@@ -13,12 +15,13 @@ class Activity < SourceAdapter
         {:token => @token}, 
         :content_type => :json
       )
-  
+    
     @result = ActivityMapper.map_json(res)
+    ap @result
   end
  
   def sync
-    puts "NOTE SYNC"
+    puts "ACTIVITY SYNC"
     # Manipulate @result before it is saved, or save it 
     # yourself using the Rhosync::Store interface.
     # By default, super is called below which simply saves @result
@@ -26,17 +29,30 @@ class Activity < SourceAdapter
   end
  
   def create(create_hash,blob=nil)
-    # TODO: Create a new record in your backend data source
-    # If your rhodes rhom object contains image/binary data 
-    # (has the image_uri attribute), then a blob will be provided
-    raise "Please provide some code to create a single record in the backend data source using the create_hash"
+    puts "CREATE ACTIVITY"
+    ap create_hash
+    ap "#{@activity_url}/create"
+    ap @token
+    mapped_hash = ActivityMapper.map_data_from_client(create_hash)
+    ap mapped_hash.to_json
+    result = RestClient.post("#{@activity_url}/create", 
+        :token => @token, 
+        :attributes => create_hash.to_json
+      ).body
+    ap result
+    result
   end
  
   def update(update_hash)
+    puts "UPDATE ACTIVITY"
+    ap update_hash
+    mapped_hash = ActivityMapper.map_data_from_client(update_hash)
+    ap mapped_hash
     result = JSON.parse(RestClient.post("#{@activity_url}/update", 
         :token => @token, 
-        :attributes => attributes.to_json
+        :attributes => update_hash.to_json
       ).body)
+    ap result
   end
  
   def delete(object_id)

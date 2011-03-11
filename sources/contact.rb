@@ -1,3 +1,5 @@
+require 'ap'
+
 class Contact < SourceAdapter
   
   def initialize(source,credential)
@@ -15,8 +17,10 @@ class Contact < SourceAdapter
         :content_type => :json
       )
     )
-    puts parsed_values
+    
     @result = parsed_values.reduce({}){|sum, value| sum[value['contactid']] = value; sum }
+    
+    ap @result
   end
  
   def sync
@@ -31,10 +35,13 @@ class Contact < SourceAdapter
   end
  
   def update(attributes)
+    puts "UPDATE!!!!!!!!!!!" + "*"*80
    result = JSON.parse(RestClient.post("#{@contact_url}/update", 
       :token => @token, 
       :attributes => attributes.to_json
     ).body)
+    ap result
+    result
   end
  
   def delete(object_id)
