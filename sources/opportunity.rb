@@ -7,7 +7,7 @@ class Opportunity < SourceAdapter
          'user_id' => user_id,
          'sources' => ['Opportunity'],
          'message' => 'You have new Opportunities',
-         'vibrate' => 2000,
+         'vibrate' => '2000',
          'sound' => 'hello.mp3'
        )
   end
