@@ -3,6 +3,7 @@ require 'ap'
 class Opportunity < SourceAdapter
   
   on_api_push do |user_id|
+    Resque.enqueue(
       PingJob.perform(
          'user_id' => user_id,
          'sources' => ['Opportunity'],
@@ -10,6 +11,7 @@ class Opportunity < SourceAdapter
          'vibrate' => '2000',
          'sound' => 'hello.mp3'
        )
+     )
   end
   
   def initialize(source,credential)
@@ -19,25 +21,25 @@ class Opportunity < SourceAdapter
  
   def login
     @token = Store.get_value("username:#{current_user.login}:token")
+    @initialized_key = "username:#{current_user.login}:opportunity:initialized"
   end
  
   def query(params=nil)
-    parsed_values = JSON.parse(RestClient.post(@opportunity_url,
-        {:token => @token}, 
-        :content_type => :json
+    unless Store.get_value(@initialized_key) == 'true'   
+      parsed_values = JSON.parse(RestClient.post(@opportunity_url,
+          {:token => @token}, 
+          :content_type => :json
+        )
       )
-    )
-    @result = parsed_values.reduce({}){|sum, value| sum[value['opportunityid']] = value; sum }
-    puts "OPPORTUNITIES"
-    # ap @result
+      @result = parsed_values.reduce({}){|sum, value| sum[value['opportunityid']] = value; sum }
+    end 
   end
  
   def sync
-    puts "NOTE SYNC"
-    # Manipulate @result before it is saved, or save it 
-    # yourself using the Rhosync::Store interface.
-    # By default, super is called below which simply saves @result
-    super
+    unless Store.get_value(@initialized_key) == 'true'  
+      super
+      Store.put_value(@initialized_key, 'true')
+    end
   end
  
   def create(create_hash,blob=nil)

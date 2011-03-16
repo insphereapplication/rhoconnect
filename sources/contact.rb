@@ -1,5 +1,3 @@
-require 'ap'
-
 class Contact < SourceAdapter
   
   def initialize(source,credential)
@@ -9,34 +7,36 @@ class Contact < SourceAdapter
  
   def login
     @token = Store.get_value("username:#{current_user.login}:token")
+    @initialized_key = "username:#{current_user.login}:contact:initialized"
   end
  
   def query(params=nil)
-    parsed_values = JSON.parse(RestClient.post(@contact_url,
-        {:token => @token}, 
-        :content_type => :json
+    unless Store.get_value(@initialized_key) == 'true'
+      puts "INITIALIZING USER CONTACTS"
+      parsed_values = JSON.parse(RestClient.post(@contact_url,
+          {:token => @token}, 
+          :content_type => :json
+        )
       )
-    )
     
-    @result = parsed_values.reduce({}){|sum, value| sum[value['contactid']] = value; sum }
-    
-    # ap @result
+      @result = parsed_values.reduce({}){|sum, value| sum[value['contactid']] = value; sum }
+    end
   end
  
   def sync
-    super
+    unless Store.get_value(@initialized_key) == 'true'
+      super
+      Store.put_value(@initialized_key, 'true')
+    end
   end
  
   def create(create_hash,blob=nil)
-    # TODO: Create a new record in your backend data source
-    # If your rhodes rhom object contains image/binary data 
-    # (has the image_uri attribute), then a blob will be provided
-    raise "Please provide some code to create a single record in the backend data source using the create_hash"
+    
   end
  
   def update(attributes)
-    puts "UPDATE!!!!!!!!!!!" + "*"*80
-   result = JSON.parse(RestClient.post("#{@contact_url}/update", 
+    puts "UPDATE CONTACT"
+    result = JSON.parse(RestClient.post("#{@contact_url}/update", 
       :token => @token, 
       :attributes => attributes.to_json
     ).body)
@@ -45,13 +45,9 @@ class Contact < SourceAdapter
   end
  
   def delete(object_id)
-    # TODO: write some code here if applicable
-    # be sure to have a hash key and value for "object"
-    # for now, we'll say that its OK to not have a delete operation
-    # raise "Please provide some code to delete a single object in the backend application using the object_id"
+   
   end
  
   def logoff
-    # TODO: Logout from the data source if necessary
   end
 end

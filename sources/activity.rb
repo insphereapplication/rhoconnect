@@ -8,24 +8,24 @@ class Activity < SourceAdapter
  
   def login
     @token = Store.get_value("username:#{current_user.login}:token")
+    @initialized_key = "username:#{current_user.login}:activity:initialized"
   end
  
   def query(params=nil)
-    res = RestClient.post(@activity_url,
-        {:token => @token}, 
-        :content_type => :json
-      )
-    
-    @result = ActivityMapper.map_json(res)
-    # ap @result
+    unless Store.get_value(@initialized_key) == 'true'
+      res = RestClient.post(@activity_url,
+          {:token => @token}, 
+          :content_type => :json
+        )
+      @result = ActivityMapper.map_json(res)
+    end
   end
  
   def sync
-    puts "ACTIVITY SYNC"
-    # Manipulate @result before it is saved, or save it 
-    # yourself using the Rhosync::Store interface.
-    # By default, super is called below which simply saves @result
-    super
+    unless Store.get_value(@initialized_key) == 'true'  
+      super
+      Store.put_value(@initialized_key, 'true')
+    end
   end
  
   def create(create_hash,blob=nil)
@@ -56,13 +56,10 @@ class Activity < SourceAdapter
   end
  
   def delete(object_id)
-    # TODO: write some code here if applicable
-    # be sure to have a hash key and value for "object"
-    # for now, we'll say that its OK to not have a delete operation
-    # raise "Please provide some code to delete a single object in the backend application using the object_id"
+    
   end
  
   def logoff
-    # TODO: Logout from the data source if necessary
+    
   end
 end
