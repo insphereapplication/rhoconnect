@@ -13,3 +13,4 @@ PLATFORMS
 DEPENDENCIES
   awesome_print
   faker
+  resque-scheduler
