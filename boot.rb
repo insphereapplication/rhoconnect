@@ -1,4 +1,4 @@
-require 'resque_scheduler'
+
 require 'mappers/mapper'
 require 'ap'
 
