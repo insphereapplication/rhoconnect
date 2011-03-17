@@ -1,6 +1,7 @@
 require 'rhosync'
 
 class CleanOldOpportunityData
+  
   @queue = :clean_old_opportunity_data
   @redis = Redis.new
   
