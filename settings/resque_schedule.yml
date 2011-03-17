@@ -1,5 +1,6 @@
 clean_old_opportunity_data:
-  cron: "01 04 * * *"
+  queue: clean_old_opportunity_data  
+  cron: "01 2 * * *"
   class: CleanOldOpportunityData
   args:
   description: "This job clears out all old opportunities"
