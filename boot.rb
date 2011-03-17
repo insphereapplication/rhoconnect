@@ -14,9 +14,7 @@ require 'ap'
    
 CONFIG = YAML::load_file('settings/config.yml')
 
-# uri = URI.parse(ENV['REDIS'])
 Resque.redis = Redis.connect(:url => ENV['REDIS'])
-
 Resque.schedule = YAML.load_file(File.join(File.dirname(__FILE__), 'settings/resque_schedule.yml'))
 Resque::Scheduler.run if fork.nil?
 Resque::Worker.new('clean_old_opportunity_data').work(1) if fork.nil?

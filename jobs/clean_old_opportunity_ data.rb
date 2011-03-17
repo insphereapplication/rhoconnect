@@ -3,12 +3,12 @@ require 'rhosync'
 class CleanOldOpportunityData
   
   @queue = :clean_old_opportunity_data
-  @redis = Redis.new
+  @redis = Redis.connect(:url => ENV['REDIS'])
   
   def self.perform
     Rhosync::Store.db # need to call this to initialize the @db member of Store
     userkeys = @redis.keys('user:*:rho__id')
-    users = userkeys.map{|u| @redis.get(u)}.reject{|u| u == 'rhoadmin'}
+    users = userkeys.map{|u| @redis.get(u)}
     opportunity_master_docs = users.map { |user| [user, Rhosync::Store.get_data("source:application:#{user}:Opportunity:md")]}
   
     opportunity_master_docs.each do |user, opportunities|
