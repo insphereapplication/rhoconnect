@@ -1,14 +1,14 @@
 require 'rhosync'
 
 class CleanOldOpportunityData
-  MAX_OPPORTUNITY_AGE = 3
+  MAX_OPPORTUNITY_AGE_IN_DAYS = 3
   
   @queue = :clean_old_opportunity_data
-  # @redis = Redis.connect(:url => ENV['REDIS'])
-  @redis = Redis.new
+  @redis = Redis.connect(:url => ENV['REDIS'])
+  # @redis = Redis.new
   
   Rhosync::Store.db # need to call this to initialize the @db member of Store
-  Rhosync::Store.extend(Rhosync)
+  # Rhosync::Store.extend(Rhosync)
   
   class << self
     def users
@@ -41,7 +41,7 @@ class CleanOldOpportunityData
       opportunities.select do |key, opp| 
         begin
           check_date = opp['cssi_lastactivitydate'] || opp['createdon']
-          (Time.now - Time.parse(check_date)).to_days > MAX_OPPORTUNITY_AGE 
+          (Time.now - Time.parse(check_date)).to_days > MAX_OPPORTUNITY_AGE_IN_DAYS 
         rescue 
           true
         end
