@@ -4,8 +4,9 @@ class Application < Rhosync::Base
   class << self
     def authenticate(username,password,session)
       puts "Authentication requested #{username}:#{password}"
-      puts "Logging onto #{CONFIG[:crm_path]}session/logon"
+      ap "Logging onto #{CONFIG[:crm_path]}session/logon"
       response = RestClient.post "#{CONFIG[:crm_path]}session/logon", :username => username, :password => password
+      ap response.to_s
       if response.code == 200
         Store.put_value("username:#{username.downcase}:token", response.body.strip.gsub(/"/, ''))
         return true

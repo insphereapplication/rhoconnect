@@ -3,14 +3,12 @@ require 'ap'
 class Opportunity < SourceAdapter
   
   on_api_push do |user_id|
-    Resque.enqueue(
-      PingJob.perform(
-         'user_id' => user_id,
-         'sources' => ['Opportunity'],
-         'message' => 'You have new Opportunities',
-         'vibrate' => '2000',
-         'sound' => 'hello.mp3'
-       )
+     PingJob.perform(
+       'user_id' => user_id,
+       'sources' => ['Opportunity'],
+       'message' => 'You have new Opportunities',
+       'vibrate' => '2000',
+       'sound' => 'hello.mp3'
      )
   end
   
@@ -26,12 +24,14 @@ class Opportunity < SourceAdapter
  
   def query(params=nil)
     unless Store.get_value(@initialized_key) == 'true'   
+      ap "QUERY FOR OPPORTUNITIES"
       parsed_values = JSON.parse(RestClient.post(@opportunity_url,
           {:token => @token}, 
           :content_type => :json
         )
       )
       @result = parsed_values.reduce({}){|sum, value| sum[value['opportunityid']] = value; sum }
+      ap @result
     end 
   end
  

@@ -13,11 +13,13 @@ class Activity < SourceAdapter
  
   def query(params=nil)
     unless Store.get_value(@initialized_key) == 'true'
+      ap "ACTIVITY QUERY"
       res = RestClient.post(@activity_url,
           {:token => @token}, 
           :content_type => :json
         )
       @result = ActivityMapper.map_json(res)
+      ap @result
     end
   end
  

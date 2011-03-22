@@ -1,14 +1,12 @@
 require 'rhosync'
 
 class CleanOldOpportunityData
-  MAX_OPPORTUNITY_AGE_IN_DAYS = 3
+  MAX_OPPORTUNITY_AGE_IN_DAYS = 60
   
   @queue = :clean_old_opportunity_data
   @redis = Redis.connect(:url => ENV['REDIS'])
-  # @redis = Redis.new
   
   Rhosync::Store.db # need to call this to initialize the @db member of Store
-  # Rhosync::Store.extend(Rhosync)
   
   class << self
     def users
@@ -20,7 +18,7 @@ class CleanOldOpportunityData
       get_master_docs(users).each do |user, opportunities, activities|
         # find the expired Opportunities
         old_opportunities = get_expired_opportunities(opportunities)  
-        old_opp_keys = old_opportunities.map{|k,v| k}
+        old_opp_keys = old_opportunities.map{|k,v| k }
       
         # now find the activities that are owned by the expired Opportunties
         old_activities = get_expired_activities(old_opp_keys, activities)

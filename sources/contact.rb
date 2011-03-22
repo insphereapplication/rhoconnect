@@ -18,8 +18,8 @@ class Contact < SourceAdapter
           :content_type => :json
         )
       )
-    
       @result = parsed_values.reduce({}){|sum, value| sum[value['contactid']] = value; sum }
+      ap @result
     end
   end
  
