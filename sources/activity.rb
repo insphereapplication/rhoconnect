@@ -1,4 +1,5 @@
 require 'ap'
+require 'util/redis_util'
 
 class Activity < SourceAdapter
   def initialize(source,credential)
@@ -48,12 +49,14 @@ class Activity < SourceAdapter
   def update(update_hash)
     puts "UPDATE ACTIVITY"
     ap update_hash
-    mapped_hash = ActivityMapper.map_data_from_client(update_hash)
-    ap mapped_hash
-    result = JSON.parse(RestClient.post("#{@activity_url}/update", 
+    activity = ActivityModel.get_model(current_user.login, update_hash['id'])
+    ap activity
+    update_hash['type'] = activity['type']
+    ap update_hash
+    result = RestClient.post("#{@activity_url}/update", 
         :token => @token, 
-        :attributes => mapped_hash.to_json
-      ).body)
+        :attributes => update_hash.to_json
+      ).body
     ap result
   end
  
