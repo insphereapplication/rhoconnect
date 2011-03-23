@@ -1,6 +1,6 @@
 class Note < SourceAdapter
   def initialize(source,credential)
-    @note_url = "#{CONFIG[:crm_path]}note"
+    @note_url = "#{CONFIG[:crm_path]}annotation"
     super(source,credential)
   end
  
@@ -11,12 +11,12 @@ class Note < SourceAdapter
  
   def query(params=nil)
     unless Store.get_value(@initialized_key) == 'true'
-      parsed_values = JSON.parse(RestClient.post(@note_url,
+      ap "NOTE QUERY"
+      res = RestClient.post(@note_url,
           {:token => @token}, 
           :content_type => :json
         )
-      )
-      @result = parsed_values.reduce({}){|sum, value| sum[value['noteid']] = value['note']; sum }
+      @result = NoteMapper.map_json(res)
       ap @result
     end
   end

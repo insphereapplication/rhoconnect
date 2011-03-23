@@ -1,5 +1,3 @@
-require 'ap'
-require 'util/redis_util'
 
 class Activity < SourceAdapter
   def initialize(source,credential)

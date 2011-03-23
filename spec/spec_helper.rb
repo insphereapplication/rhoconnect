@@ -10,12 +10,11 @@ begin
 rescue LoadError
   require 'rhosync'
   require 'rhosync/server'
-  require 'mappers/mapper'
 end
 
 # Load our rhosync application
 include Rhosync
-require 'application'
+require "#{ROOT_PATH}/application"
 
 
 require 'rhosync/test_methods'

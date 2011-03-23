@@ -9,6 +9,10 @@ Rhosync::Server.api :push_objects_notify do |params,user|
     ap "PROCESSING ACTIVITIES..."
     objects = ActivityMapper.map_json(params[:objects])
     ap objects
+  elsif params[:source_id] == 'Note'
+    ap "PROCESSING NOTES..."
+    objects = NoteMapper.map_json(params[:objects])
+    ap objects
   else
     objects = params[:objects]
   end
