@@ -4,7 +4,7 @@ Rhosync::Server.api :push_objects_notify do |params,user|
   
   source = Source.load(params[:source_id],{:app_id=>APP_NAME,:user_id=>params[:user_id]})
   source_sync = SourceSync.new(source)
-  
+  objects = {}
   if params[:source_id] == 'Activity'
     ap "PROCESSING ACTIVITIES..."
     objects = ActivityMapper.map_json(params[:objects])
@@ -13,7 +13,7 @@ Rhosync::Server.api :push_objects_notify do |params,user|
     objects = params[:objects]
   end
   
-  source_sync.push_objects(mapped_hash)
+  source_sync.push_objects(objects)
   
   begin
     ap "push_objects_notify called, notifying observer for #{params[:source_id]}"
