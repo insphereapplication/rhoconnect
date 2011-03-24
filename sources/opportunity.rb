@@ -18,7 +18,7 @@ class Opportunity < SourceAdapter
   end
  
   def login
-    @token = Store.get_value("username:#{current_user.login}:token")
+    @token = Store.get_value("username:#{current_user.login.downcase}:token")
     @initialized_key = "username:#{current_user.login}:opportunity:initialized"
   end
  
