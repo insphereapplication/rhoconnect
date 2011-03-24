@@ -15,6 +15,26 @@ describe Mapper do
     Mapper.map_source_data([{"test"=>"stuff"}], 'Activity')
   end
   
+  it "should properly fetch the id attribute from a given contact hash" do
+    mapper = Mapper.new('Contact')
+    Mapper.should_receive(:new).and_return(mapper)
+    mapped_result = Mapper.map_source_data([{"contactid"=>"1234", "firstname" => "BobFirst"}], "Contact")
+    
+    ap mapped_result
+    
+    mapped_result.keys[0].should == '1234'
+  end
+  
+  it "should properly fetch the id attribute from a given opportunity hash" do
+    mapper = Mapper.new('Opportunity')
+    Mapper.should_receive(:new).and_return(mapper)
+    mapped_result = Mapper.map_source_data([{"opportunityid"=>"4321", "firstname" => "BobFirst"}], "Opportunity")
+    
+    ap mapped_result
+    
+    mapped_result.keys[0].should == '4321'
+  end
+  
   
 end
 

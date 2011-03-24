@@ -22,6 +22,6 @@ class Mapper
   end
   
   def map_from_source_hash(data_hash)
-    data_hash.reduce({}){|sum, value| sum[value["#{@source_name}id"]] = value; sum }
+    data_hash.reduce({}){|sum, value| sum[value["#{@source_name.downcase}id"]] = value; sum }
   end
 end
