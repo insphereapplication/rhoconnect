@@ -26,13 +26,13 @@ class NoteMapper < Mapper
   end 
   
   def self.map_data_from_client(data)
-    # data.merge!({
-    #     'subject' => 'test', 
-    #     'regardingobjectid' => {
-    #         'type' => data['parent_type'],
-    #         'id' => data['parent_id']
-    #       }
-    #     })
-    #   data.reject!{|k,v| ['parent_id', 'parent_type'].include?(k)}
+    data.merge!({
+      'subject' => 'test', 
+      'objecttypecode' => data['parent_type'].downcase,
+      'objectid' => {
+          'id' => data['parent_id']
+        }
+      })
+    data.reject!{|k,v| ['parent_id', 'parent_type'].include?(k)}
   end
 end

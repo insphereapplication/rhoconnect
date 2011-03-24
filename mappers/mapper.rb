@@ -17,7 +17,7 @@ class Mapper
   end
   
   def map_source_data(data)
-    data_hash = data.kind_of?(Hash) || data.kind_of?(Array) ? data : JSON.parse(data)
+    data_hash = data.kind_of?(Array) ? data : JSON.parse(data)
     map_from_source_hash(data_hash)
   end
   

@@ -17,7 +17,7 @@ class Activity < SourceAdapter
           {:token => @token}, 
           :content_type => :json
         )
-      @result = ActivityMapper.map_json(res)
+      @result = Mapper.map_source_data(res, 'Activity')
       ap @result
     end
   end
@@ -41,6 +41,7 @@ class Activity < SourceAdapter
         :attributes => mapped_hash.to_json
       ).body
     ap result
+    
     result
   end
  

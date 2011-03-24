@@ -16,7 +16,7 @@ class Note < SourceAdapter
           {:token => @token}, 
           :content_type => :json
         )
-      @result = NoteMapper.map_json(res)
+      @result = Mapper.map_source_data(res, 'Note')
       ap @result
     end
   end
@@ -29,7 +29,20 @@ class Note < SourceAdapter
   end
  
   def create(create_hash,blob=nil)
-
+    puts "CREATE NOTE"
+    ap create_hash
+    ap "#{@note_url}/create"
+    ap @token
+    mapped_hash = NoteMapper.map_data_from_client(create_hash)
+    ap mapped_hash
+    
+    result = RestClient.post("#{@note_url}/create", 
+        :token => @token, 
+        :attributes => mapped_hash.to_json
+      ).body
+    ap result
+    
+    result
   end
  
   def update(update_hash)
