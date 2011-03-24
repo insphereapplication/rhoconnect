@@ -4,18 +4,11 @@ Rhosync::Server.api :push_objects_notify do |params,user|
   
   source = Source.load(params[:source_id],{:app_id=>APP_NAME,:user_id=>params[:user_id]})
   source_sync = SourceSync.new(source)
-  objects = {}
-  if params[:source_id] == 'Activity'
-    ap "PROCESSING ACTIVITIES..."
-    objects = ActivityMapper.map_json(params[:objects])
-    ap objects
-  elsif params[:source_id] == 'Note'
-    ap "PROCESSING NOTES..."
-    objects = NoteMapper.map_json(params[:objects])
-    ap objects
-  else
-    objects = params[:objects]
-  end
+  
+  objects = Mapper.map_source_data(params[:objects], params[:source_id])
+  
+  ap "PARSED OBJECTS:"
+  ap objects
   
   source_sync.push_objects(objects)
   

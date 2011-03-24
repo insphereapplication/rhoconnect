@@ -14,16 +14,15 @@ class NoteMapper < Mapper
   #      "objecttypecode":"opportunity"
   #    }]
   
-  def self.map_json(data)
-    notes_array = JSON.parse(data)
+  def map_from_source_hash(notes_array)
     notes_array.map! do |note| 
       object_props = note['objectid'] 
-      note.merge!({'parent_id' => object_props['id'], 'parent_type' => note['objecttypecode']})
+      note.merge!({'parent_id' => object_props['id'], 'parent_type' => note['objecttypecode']}) unless object_props.blank?
       note.reject!{|k,v| k == 'objectid' || k == 'objecttypecode'}
       note
     end
 
-    notes_array.reduce({}) { |sum, note| sum[note["annotationid"]] = note; sum }
+    notes_array.reduce({}) { |sum, note| sum[note["annotationid"]] = note if note; sum }
   end 
   
   def self.map_data_from_client(data)

@@ -1,8 +1,9 @@
 
-require 'resque_scheduler'
 require "#{File.expand_path(File.join(File.dirname(__FILE__)))}/mappers/mapper"
 require "#{File.expand_path(File.join(File.dirname(__FILE__)))}/util/redis_util"
+require 'resque_scheduler'
 require 'ap'
+require 'rhosync'
 
 [
   'lib', 

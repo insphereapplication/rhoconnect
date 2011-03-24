@@ -1,6 +1,23 @@
 
 require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
+describe Mapper do
+  
+  it "should use the default mapper when no mapper exists for the given source name" do
+    mapper = Mapper.new('Fu')
+    Mapper.should_receive(:new).and_return(mapper)
+    Mapper.map_source_data({}, 'Fu')
+  end
+  
+  it "should use a specific mapper if one is available in the ObjectSpace" do
+    mapper = ActivityMapper.new
+    ActivityMapper.should_receive(:new).and_return(mapper)
+    Mapper.map_source_data([{"test"=>"stuff"}], 'Activity')
+  end
+  
+  
+end
+
 describe ActivityMapper do
    before(:each) do 
      @json = %Q{   
@@ -20,9 +37,13 @@ describe ActivityMapper do
         }]
       }
   end
+  
+  it "should return an ActivityMapper" do
+    Mapper.load('Activity').should be_kind_of(ActivityMapper)
+  end
     
   it "should parse json into a redis-ready hash" do
-    result = ActivityMapper.map_json(@json).first[1]
+    result = Mapper.map_source_data(@json, "Activity").first[1]
     
     result["statecode"].should == "Scheduled"
     result["scheduledstart"].should == "3/4/2011 3:30:00 PM"
@@ -51,7 +72,7 @@ describe NoteMapper do
   end
   
   it "should parse json into a redis-ready hash" do
-    result = NoteMapper.map_json(@json).first[1]
+    result = Mapper.map_source_data(@json, 'Note').first[1]
     # ap result
     
     result["modifiedon"].should == "03/22/2011 07:26:38 PM"

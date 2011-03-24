@@ -36,10 +36,10 @@ class Contact < SourceAdapter
  
   def update(attributes)
     puts "UPDATE CONTACT"
-    result = JSON.parse(RestClient.post("#{@contact_url}/update", 
+    result = RestClient.post("#{@contact_url}/update", 
       :token => @token, 
       :attributes => attributes.to_json
-    ).body)
+    ).body
     ap result
     result
   end
