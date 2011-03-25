@@ -4,8 +4,6 @@
     :poll_interval: 300
   Opportunity: 
     :poll_interval: 300
-  Task: 
-    :poll_interval: 300
   Note: 
     :poll_interval: 300
   Activity: 
