@@ -11,7 +11,6 @@ class ActivityMapper < Mapper
   
   def self.map_data_from_client(data)
     data.merge!({
-      'subject' => 'test', 
       'regardingobjectid' => {
           'type' => data['parent_type'],
           'id' => data['parent_id']
