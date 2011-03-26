@@ -51,6 +51,7 @@ class Opportunity < SourceAdapter
  
   def update(update_hash)
     puts "UPDATE OPPORTUNITY"
+    update_hash['cssi_fromrhosync'] = 'true'
     ap update_hash
     result = RestClient.post("#{@opportunity_url}/update", 
         :token => @token, 

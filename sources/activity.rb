@@ -35,6 +35,7 @@ class Activity < SourceAdapter
     ap "#{@activity_url}/create"
     ap @token
     mapped_hash = ActivityMapper.map_data_from_client(create_hash)
+    mapped_hash['cssi_fromrhosync'] = 'true'
     ap mapped_hash.to_json
     result = RestClient.post("#{@activity_url}/create", 
         :token => @token, 
@@ -44,13 +45,14 @@ class Activity < SourceAdapter
     
     result
   end
- 
+  
   def update(update_hash)
     puts "UPDATE ACTIVITY"
     ap update_hash
     activity = ActivityModel.get_model(current_user.login, update_hash['id'])
     ap activity
     update_hash['type'] = activity['type']
+    update_hash['cssi_fromrhosync'] = 'true'
     ap update_hash
     result = RestClient.post("#{@activity_url}/update", 
         :token => @token, 
