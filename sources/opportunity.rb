@@ -5,7 +5,7 @@ class Opportunity < SourceAdapter
   on_api_push do |user_id|
      PingJob.perform(
        'user_id' => user_id,
-       'sources' => ['Opportunity', 'Activity', 'Contact', 'Note'],
+       'sources' => ['Contact', 'Activity', 'Note', 'Opportunity'],
        'message' => 'You have new Opportunities',
        'vibrate' => '2000',
        'sound' => 'hello.mp3'
