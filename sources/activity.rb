@@ -7,7 +7,7 @@ class Activity < SourceAdapter
  
   def login
     @token = Store.get_value("username:#{current_user.login.downcase}:token")
-    @initialized_key = "username:#{current_user.login}:activity:initialized"
+    @initialized_key = "username:#{current_user.login.downcase}:activity:initialized"
   end
  
   def query(params=nil)

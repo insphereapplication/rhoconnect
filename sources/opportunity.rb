@@ -18,7 +18,7 @@ class Opportunity < SourceAdapter
  
   def login
     @token = Store.get_value("username:#{current_user.login.downcase}:token")
-    @initialized_key = "username:#{current_user.login}:opportunity:initialized"
+    @initialized_key = "username:#{current_user.login.downcase}:opportunity:initialized"
   end
  
   def query(params=nil)

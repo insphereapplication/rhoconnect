@@ -6,7 +6,7 @@ class Note < SourceAdapter
  
   def login
     @token = Store.get_value("username:#{current_user.login.downcase}:token")
-    @initialized_key = "username:#{current_user.login}:note:initialized"
+    @initialized_key = "username:#{current_user.login.downcase}:note:initialized"
   end
  
   def query(params=nil)

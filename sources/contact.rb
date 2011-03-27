@@ -7,12 +7,12 @@ class Contact < SourceAdapter
  
   def login
     @token = Store.get_value("username:#{current_user.login.downcase}:token")
-    @initialized_key = "username:#{current_user.login}:contact:initialized"
+    @initialized_key = "username:#{current_user.login.downcase}:contact:initialized"
   end
  
   def query(params=nil)
     unless Store.get_value(@initialized_key) == 'true'
-      puts "INITIALIZING USER CONTACTS"
+      puts "INITIALIZING USER CONTACTS for #{current_user.login.downcase}"
       parsed_values = JSON.parse(RestClient.post(@contact_url,
           {:token => @token}, 
           :content_type => :json
