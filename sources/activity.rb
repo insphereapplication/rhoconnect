@@ -34,7 +34,8 @@ class Activity < SourceAdapter
     ap create_hash
     ap "#{@activity_url}/create"
     ap @token
-    mapped_hash = ActivityMapper.map_data_from_client(create_hash)
+    #calling clone on the following line is EXTREMELY important - create_hash is passed by reference and is what is going to be committed to the DB
+    mapped_hash = ActivityMapper.map_data_from_client(create_hash.clone)
     mapped_hash['cssi_fromrhosync'] = 'true'
     ap mapped_hash.to_json
     result = RestClient.post("#{@activity_url}/create", 
