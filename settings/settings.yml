@@ -1,13 +1,13 @@
 #Sources 
 :sources: 
   Contact: 
-    :poll_interval: 300
+    :poll_interval: 1
   Opportunity: 
-    :poll_interval: 300
+    :poll_interval: 1
   Note: 
-    :poll_interval: 300
+    :poll_interval: 1
   Activity: 
-    :poll_interval: 300 
+    :poll_interval: 1
  
 :test: 
   :syncserver: http://localhost:9292/application/

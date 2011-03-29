@@ -6,7 +6,7 @@ require 'faker'
 $settings_file = 'settings/settings.yml'
 $config = YAML::load_file($settings_file)
 $app_path = File.expand_path(File.dirname(__FILE__))
-$target = :production
+$target = :test
 $server = ($config[$target] ? $config[$target][:syncserver] : "").sub('/application', '')
 
 namespace :server do
@@ -90,6 +90,32 @@ namespace :server do
     ).body
      puts "\nUSERS:"
     users.gsub(/[\[\]]/, '').split(",").each { |u| puts u }
+  end
+  
+  task :reset_sync_status, [:user_pattern] => [:set_token] do |t, args|
+    abort "User pattern must be specified" unless args[:user_pattern]
+    res = JSON.parse(RestClient.post(
+      "#{$server}api/reset_sync_status", 
+      { 
+        :api_token => @token, 
+        :user_pattern => args[:user_pattern]
+      }.to_json, 
+      :content_type => :json
+    ))
+    ap res
+  end
+  
+  task :get_sync_status, [:user_pattern] => [:set_token] do |t, args|
+    abort "User pattern must be specified" unless args[:user_pattern]
+    res = JSON.parse(RestClient.post(
+      "#{$server}api/get_sync_status", 
+      { 
+        :api_token => @token, 
+        :user_pattern => args[:user_pattern]
+      }.to_json, 
+      :content_type => :json
+    ))
+    ap res
   end
   
   desc "pushes objects and invokes the notify method associated with the sources" 
