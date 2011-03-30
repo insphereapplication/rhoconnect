@@ -1,11 +1,10 @@
-require 'ap'
 
 class NoteMapper < Mapper
   
   def map_from_source_hash(notes_array)
     notes_array.map! do |note| 
       object_props = note['objectid'] 
-      note.merge!({'parent_id' => object_props['id'], 'parent_type' => note['objecttypecode']}) unless object_props.blank?
+      note.merge!({'parent_id' => object_props['id'], 'parent_type' => Mapper.convert_type_name(note['objecttypecode'])}) unless object_props.blank?
       note.reject!{|k,v| k == 'objectid' || k == 'objecttypecode'}
       note
     end
@@ -20,6 +19,6 @@ class NoteMapper < Mapper
           'id' => data['parent_id']
         }
       })
-    data.reject!{|k,v| ['parent_id', 'parent_type'].include?(k)}
+    data.reject!{|k,v| ['modifiedon', 'createdon','parent_id', 'parent_type'].include?(k)}
   end
 end

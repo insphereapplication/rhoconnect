@@ -16,6 +16,10 @@ class Mapper
     end
   end
   
+  def self.convert_type_name(type)
+    type.downcase == 'phonecall' ? 'PhoneCall' : type.capitalize
+  end
+  
   def map_source_data(data)
     data_hash = data.kind_of?(Array) ? data : JSON.parse(data)
     map_from_source_hash(data_hash)
@@ -24,4 +28,5 @@ class Mapper
   def map_from_source_hash(data_hash)
     data_hash.reduce({}){|sum, value| sum[value["#{@source_name.downcase}id"]] = value; sum }
   end
+  
 end

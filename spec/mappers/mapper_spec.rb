@@ -6,7 +6,7 @@ describe Mapper do
   it "should use the default mapper when no mapper exists for the given source name" do
     mapper = Mapper.new('Fu')
     Mapper.should_receive(:new).and_return(mapper)
-    Mapper.map_source_data({}, 'Fu')
+    Mapper.map_source_data([], 'Fu')
   end
   
   it "should use a specific mapper if one is available in the ObjectSpace" do
@@ -33,6 +33,11 @@ describe Mapper do
     ap mapped_result
     
     mapped_result.keys[0].should == '4321'
+  end
+  
+  it 'should convert type names' do
+    Mapper.convert_type_name('blah').should == 'Blah'
+    Mapper.convert_type_name('phoneCall').should == 'PhoneCall'
   end
   
   

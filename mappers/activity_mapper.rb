@@ -5,7 +5,7 @@ class ActivityMapper < Mapper
       parentprops = value['regardingobjectid'] 
       unless parentprops.blank?
         value.reject!{|k,v| k == 'regardingobjectid'}
-        value.merge!({'parent_id' => parentprops['id'], 'parent_type' => parentprops['type']})
+        value.merge!({'parent_id' => parentprops['id'], 'parent_type' => Mapper.convert_type_name(parentprops['type'])})
       end
       value
     end
