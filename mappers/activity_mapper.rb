@@ -3,8 +3,10 @@ class ActivityMapper < Mapper
   def map_from_source_hash(activity_array)
     activity_array.map! do |value| 
       parentprops = value['regardingobjectid'] 
-      value.reject!{|k,v| k == 'regardingobjectid'}
-      value.merge({'parent_id' => parentprops['id'], 'parent_type' => parentprops['type']}) unless parentprops.blank?
+      unless parentprops.blank?
+        value.reject!{|k,v| k == 'regardingobjectid'}
+        value.merge!({'parent_id' => parentprops['id'], 'parent_type' => parentprops['type']})
+      end
     end
     activity_array.reduce({}){|sum, value| sum[value["activityid"]] = value if value; sum }
   end 
