@@ -9,6 +9,7 @@ class ActivityMapper < Mapper
         value.reject!{|k,v| k == 'regardingobjectid'}
         value.merge!({'parent_id' => parentprops['id'], 'parent_type' => parentprops['type']})
       end
+      value
     end
     puts "Activity array after"
     ap activity_array
