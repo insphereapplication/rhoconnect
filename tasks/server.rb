@@ -1,12 +1,12 @@
 require 'yaml'
 require 'ap'
 require 'faker'
-# gem 'rest-client', '=1.4.2'
+gem 'rest-client', '=1.4.2'
 
 $settings_file = 'settings/settings.yml'
 $config = YAML::load_file($settings_file)
 $app_path = File.expand_path(File.dirname(__FILE__))
-$target = :test
+$target = :production
 $server = ($config[$target] ? $config[$target][:syncserver] : "").sub('/application', '')
 
 namespace :server do
