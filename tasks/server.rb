@@ -101,12 +101,13 @@ namespace :server do
         :user_pattern => args[:user_pattern]
       }.to_json, 
       :content_type => :json
-    ))
+    ).body)
     ap res
   end
   
   task :get_sync_status, [:user_pattern] => [:set_token] do |t, args|
     abort "User pattern must be specified" unless args[:user_pattern]
+    
     res = JSON.parse(RestClient.post(
       "#{$server}api/get_sync_status", 
       { 
@@ -114,7 +115,7 @@ namespace :server do
         :user_pattern => args[:user_pattern]
       }.to_json, 
       :content_type => :json
-    ))
+    ).body)
     ap res
   end
   
