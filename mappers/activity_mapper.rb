@@ -1,8 +1,6 @@
 
 class ActivityMapper < Mapper
   def map_from_source_hash(activity_array)
-    puts "Activity array before"
-    ap activity_array
     activity_array.map! do |value| 
       parentprops = value['regardingobjectid'] 
       unless parentprops.blank?
@@ -11,8 +9,6 @@ class ActivityMapper < Mapper
       end
       value
     end
-    puts "Activity array after"
-    ap activity_array
     activity_array.reduce({}){|sum, value| sum[value["activityid"]] = value if value; sum }
   end 
   
