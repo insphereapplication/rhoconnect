@@ -1,6 +1,4 @@
 require 'ap'
-require 'populate_crm_data'
-require 'crm_proxy_lib'
 
 $tokenfile = '.proxy_token'
 $environmentfile = '.environment'

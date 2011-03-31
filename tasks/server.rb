@@ -1,7 +1,7 @@
 require 'yaml'
 require 'ap'
 require 'faker'
-gem 'rest-client', '=1.4.2'
+# gem 'rest-client', '=1.4.2'
 
 $settings_file = 'settings/settings.yml'
 $config = YAML::load_file($settings_file)
