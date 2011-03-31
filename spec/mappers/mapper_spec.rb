@@ -58,7 +58,8 @@ describe ActivityMapper do
           },
         "statuscode":"Busy",
         "subject":"Appointment with Frankliny, Benjamin - 2/9/2011",
-        "scheduledstart":"3/4/2011 3:30:00 PM"
+        "scheduledstart":"3/4/2011 3:30:00 PM",
+        "cssi_skipdispositionworkflow":"true"
         }]
       }
   end
@@ -75,6 +76,57 @@ describe ActivityMapper do
     result["parent_type"].should == "opportunity"
     result["subject"].should == "Appointment with Frankliny, Benjamin - 2/9/2011"
     result["parent_id"].should == "10b8f740-6e34-e011-a625-0050569c157c"
+    result["cssi_skipdispositionworkflow"].should == nil
+  end
+  
+  it "should inject cssi_skipdispositionworkflow when cssi_disposition is provided from the client" do
+    result = ActivityMapper.map_data_from_client({
+      'unchanged' => '1234',
+      'cssi_disposition' => 'blah'
+    })
+    
+    result['unchanged'].should == '1234'
+    result['cssi_disposition'].should == 'blah'
+    result['cssi_skipdispositionworkflow'].should == 'true'
+  end
+  
+  
+  
+  it "should not inject cssi_skipdispositionworkflow when cssi_disposition is not provided from the client" do
+    result = ActivityMapper.map_data_from_client({
+      'unchanged' => '1234',
+      'cssi_leadsourceid' => 'Newspaper'
+    })
+    
+    result['unchanged'].should == '1234'
+    result['cssi_leadsourceid'].should == 'Newspaper'
+    result['cssi_skipdispositionworkflow'].should == nil
+  end
+  
+  it "should construct regardingobjectid whenever a parent_type or parent_id is provided and reject the client-side referential keys" do
+    result = ActivityMapper.map_data_from_client({
+      'shouldnotbetouched' => '1234',
+      'parent_type' => 'opportunity',
+      'parent_id' => '5678'
+    })
+    
+    result['shouldnotbetouched'].should == '1234'
+    result['parent_type'].should == nil
+    result['parent_id'].should == nil
+    result['regardingobjectid'].should include('id','type')
+    result['regardingobjectid']['id'].should == '5678'
+    result['regardingobjectid']['type'].should == 'opportunity'
+  end
+
+  it "should not construct regardingobjectid whenever parent_type and parent_id are not provided" do
+    result = ActivityMapper.map_data_from_client({
+      'shouldnotbetouched' => '1234',
+      'shouldnotbetouched2' => '5678'
+    })
+
+    result['shouldnotbetouched'].should == '1234'
+    result['shouldnotbetouched2'].should == '5678'
+    result.should_not include('regardingobjectid','parent_id','parent_type')
   end
 end
 
