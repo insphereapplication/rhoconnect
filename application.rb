@@ -1,5 +1,4 @@
 require File.expand_path(File.dirname(__FILE__) + '/boot.rb')
-require 'ap'
 
 class Application < Rhosync::Base
   class << self
