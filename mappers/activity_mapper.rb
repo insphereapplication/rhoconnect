@@ -7,18 +7,27 @@ class ActivityMapper < Mapper
         value.reject!{|k,v| k == 'regardingobjectid'}
         value.merge!({'parent_id' => parentprops['id'], 'parent_type' => parentprops['type']})
       end
+      #always filter out skip disposition workflow
+      #never should be modified from rhodes and should only be injected in map_data_from_client as needed
+      value.reject!{|k,v| k == 'cssi_skipdispositionworkflow'}
       value
     end
     activity_array.reduce({}){|sum, value| sum[value["activityid"]] = value if value; sum }
   end 
   
   def self.map_data_from_client(data)
+    if data['parent_type'] || data['parent_id']
+      data.merge!({
+        'regardingobjectid' => {
+            'type' => data['parent_type'],
+            'id' => data['parent_id']
+          }
+        })
+      data.reject!{|k,v| ['parent_id', 'parent_type'].include?(k)}
+    end
     data.merge!({
-      'regardingobjectid' => {
-          'type' => data['parent_type'],
-          'id' => data['parent_id']
-        }
-      })
-    data.reject!{|k,v| ['parent_id', 'parent_type'].include?(k)}
+      'cssi_skipdispositionworkflow' => 'true'
+    }) unless data['cssi_disposition'].nil?
+    data
   end
 end
