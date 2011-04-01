@@ -52,12 +52,14 @@ class Activity < SourceAdapter
     ap update_hash
     activity = ActivityModel.get_model(current_user.login, update_hash['id'])
     ap activity
-    update_hash['type'] = activity['type']
-    update_hash['cssi_fromrhosync'] = 'true'
-    ap update_hash
+    #calling clone on the following line is EXTREMELY important - update_hash is passed by reference and is what is going to be committed to the DB
+    mapped_hash = ActivityMapper.map_data_from_client(update_hash.clone)
+    mapped_hash['type'] = activity['type']
+    mapped_hash['cssi_fromrhosync'] = 'true'
+    ap mapped_hash
     result = RestClient.post("#{@activity_url}/update", 
         :token => @token, 
-        :attributes => update_hash.to_json
+        :attributes => mapped_hash.to_json
       ).body
     ap result
   end
