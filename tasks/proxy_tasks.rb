@@ -6,7 +6,11 @@ $identityfile = '.overridden_identity'
 
 $create_notes = false
 
-$environments = {'local' => 'http://localhost:52904', 'dev-internal' => 'http://nrhwwwd401.insp.dom:5000', 'dev-external' => 'http://75.31.122.27', 'model-internal' => 'http://nrhwwwm201.insp.dom:5000', 'model-external' => 'https://mobileproxy.model.insphereis.net'}
+$environments = {'local' => 'http://localhost:52904', 
+  'dev-internal' => 'http://nrhwwwd401.insp.dom:5000', 
+  'dev-external' => 'http://75.31.122.27', 
+  'model-internal' => 'http://nrhwwwm201.insp.dom:5000', 
+  'model-external' => 'https://mobileproxy.model.insphereis.net'}
 
 namespace :proxy do
     desc "Generates [lead_count] new leads, [age] days old"
