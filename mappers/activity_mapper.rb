@@ -10,6 +10,7 @@ class ActivityMapper < Mapper
       #always filter out skip disposition workflow
       #never should be modified from rhodes and should only be injected in map_data_from_client as needed
       value.reject!{|k,v| k == 'cssi_skipdispositionworkflow'}
+      value.reject!{|k,v| k == 'organizer'}
       value
     end
     activity_array.reduce({}){|sum, value| sum[value["activityid"]] = value if value; sum }
