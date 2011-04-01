@@ -23,6 +23,16 @@ class Application < Rhosync::Base
           ap "Error while removing old token"
         end
         
+        #get user's CRM ID, cache it for later use
+        whoami_response = JSON.parse(RestClient.post("#{CONFIG[:crm_path]}user/whoami", 
+          {:token => new_token},
+          :content_type => :json
+        ))
+        
+        ap "User #{username} has identity #{whoami_response['id']}"
+        
+        Store.put_value("username:#{username.downcase}:crm_user_id", whoami_response['id'])
+        
         Store.put_value("username:#{username.downcase}:token", new_token)
         success = true
       end

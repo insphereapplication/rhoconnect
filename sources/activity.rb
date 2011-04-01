@@ -8,6 +8,7 @@ class Activity < SourceAdapter
   def login
     @token = Store.get_value("username:#{current_user.login.downcase}:token")
     @initialized_key = "username:#{current_user.login.downcase}:activity:initialized"
+    @user_id_key = "username:#{current_user.login.downcase}:crm_user_id"
   end
  
   def query(params=nil)
@@ -36,6 +37,7 @@ class Activity < SourceAdapter
     ap @token
     #calling clone on the following line is EXTREMELY important - create_hash is passed by reference and is what is going to be committed to the DB
     mapped_hash = ActivityMapper.map_data_from_client(create_hash.clone)
+    mapped_hash['organizer'] = [{:type => 'systemuser', :id => Store.get_value(@user_id_key)}]
     mapped_hash['cssi_fromrhosync'] = 'true'
     ap mapped_hash.to_json
     result = RestClient.post("#{@activity_url}/create", 
@@ -52,12 +54,14 @@ class Activity < SourceAdapter
     ap update_hash
     activity = ActivityModel.get_model(current_user.login, update_hash['id'])
     ap activity
-    update_hash['type'] = activity['type']
-    update_hash['cssi_fromrhosync'] = 'true'
-    ap update_hash
+    #calling clone on the following line is EXTREMELY important - update_hash is passed by reference and is what is going to be committed to the DB
+    mapped_hash = ActivityMapper.map_data_from_client(update_hash.clone)
+    mapped_hash['type'] = activity['type']
+    mapped_hash['cssi_fromrhosync'] = 'true'
+    ap mapped_hash
     result = RestClient.post("#{@activity_url}/update", 
         :token => @token, 
-        :attributes => update_hash.to_json
+        :attributes => mapped_hash.to_json
       ).body
     ap result
   end
