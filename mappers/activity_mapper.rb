@@ -43,7 +43,7 @@ class ActivityMapper < Mapper
             'type' => 'contact',
             'id' => data['parent_contact_id']
           }]
-        })
+        }) unless data['parent_contact_id'].blank?
       data.reject!{|k,v| k == 'parent_contact_id'}
     end
     data
