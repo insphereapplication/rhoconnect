@@ -32,3 +32,4 @@ run Rack::URLMap.new \
 	"/"         => Rhosync::Server.new,
 	"/resque"   => Resque::Server.new, # If you don't want resque frontend, disable it here
 	"/console"  => RhosyncConsole::Server.new # If you don't want rhosync frontend, disable it here
+	
