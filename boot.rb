@@ -1,12 +1,13 @@
-
+require 'bundler'
 require "#{File.expand_path(File.join(File.dirname(__FILE__)))}/mappers/mapper"
 require "#{File.expand_path(File.join(File.dirname(__FILE__)))}/util/redis_util"
-require 'bundler'
 require 'resque_scheduler'
 require 'ap'
 require 'rhosync'
 require 'exceptional'
 require 'sinatra'
+
+Bundler.require
 
 [
   'lib', 
