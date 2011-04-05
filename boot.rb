@@ -5,6 +5,7 @@ require 'resque_scheduler'
 require 'ap'
 require 'rhosync'
 require 'exceptional'
+require 'sinatra'
 
 [
   'lib', 
@@ -27,7 +28,6 @@ Resque::Worker.new('clean_old_opportunity_data').work(1) if fork.nil?
 
 use Rack::Exceptional, CONFIG[:exceptional_api_key]
 set :raise_errors, true
-
 
 
 
