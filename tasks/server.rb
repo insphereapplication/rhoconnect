@@ -1,7 +1,10 @@
 require 'yaml'
 require 'ap'
 require 'faker'
+gem 'larsburgess-rest-client', '=1.6.1'
+
 # gem 'rest-client', '=1.4.2'
+# require 'rest-client'
 
 $settings_file = 'settings/settings.yml'
 $config = YAML::load_file($settings_file)
@@ -34,10 +37,12 @@ namespace :server do
       if File.exists?(tokenfile) 
         puts "reading token file..."
         @token = File.readlines(tokenfile).first.strip
-        puts "using persisted token..."
+        puts "using persisted token: #{@token}..."
       else
         puts "no persisted token found, authenticating at #{$server}..."
+        puts "Posting to: #{$server}login -- #{{ :login => 'rhoadmin', :password => "" }.to_json}"
         res = RestClient.post("#{$server}login", { :login => 'rhoadmin', :password => "" }.to_json, :content_type => :json)
+        puts "Response #{res.inspect}"
         @token = RestClient.post("#{$server}api/get_api_token",'',{ :cookies => res.cookies })
         File.open(tokenfile, 'w') {|f| f.write(@token) }
         puts "new token: #{@token}"
@@ -136,6 +141,9 @@ namespace :server do
   
   desc "manually raise a test exception (should send a notification to Exceptional)" 
   task :test_exception, [:message] => [:set_token] do |t, args|
+    puts "posting to #{$server}api/test_exception"
+    puts({:api_token => @token, :message => args.message }.to_json)
+    
     res = RestClient.post(
       "#{$server}api/test_exception", 
       { 

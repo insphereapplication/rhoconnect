@@ -26,8 +26,7 @@ Resque.schedule = YAML.load_file(File.join(File.dirname(__FILE__), 'settings/res
 Resque::Scheduler.run if fork.nil?
 Resque::Worker.new('clean_old_opportunity_data').work(1) if fork.nil?
 
-use Rack::Exceptional, CONFIG[:exceptional_api_key]
-set :raise_errors, true
+
 
 
 
