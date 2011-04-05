@@ -12,6 +12,10 @@ end
 # By default, turn on the resque web console
 require 'resque/server'
 
+
+set :raise_errors, true
+use Rack::Exceptional, 'b8788d7b2ae404c9661f40215f5d9258aede9c83' #CONFIG[:exceptional_api_key]
+
 ROOT_PATH = File.expand_path(File.dirname(__FILE__))
 
 # Rhosync server flags
