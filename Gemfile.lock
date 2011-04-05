@@ -2,6 +2,8 @@ GEM
   remote: http://rubygems.org/
   specs:
     awesome_print (0.3.2)
+    exceptional (2.0.32)
+      rack
     faker (0.9.5)
       i18n (~> 0.4)
     i18n (0.5.0)
@@ -34,5 +36,6 @@ PLATFORMS
 
 DEPENDENCIES
   awesome_print
+  exceptional
   faker
   resque-scheduler
