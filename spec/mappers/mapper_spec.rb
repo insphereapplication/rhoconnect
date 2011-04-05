@@ -12,7 +12,7 @@ describe Mapper do
   it "should use a specific mapper if one is available in the ObjectSpace" do
     mapper = ActivityMapper.new
     ActivityMapper.should_receive(:new).and_return(mapper)
-    Mapper.map_source_data([{"test"=>"stuff"}], 'Activity')
+    Mapper.map_source_data([{"foo"=>"stuff"}], 'Activity')
   end
   
   it "should properly fetch the id attribute from a given contact hash" do
@@ -45,16 +45,23 @@ end
 
 describe ActivityMapper do
    before(:each) do 
-     @json = %Q{   
+     @appointment_json = %Q{   
        [{
        "statecode":"Scheduled",
         "cssi_disposition":"Select a Disposition",
         "scheduledend":"3/4/2011 4:00:00 PM",
+        "type":"Appointment",
         "regardingobjectid":
           { 
             "type":"opportunity",
             "name":"Frankliny, Benjamin - 2/9/2011",
             "id":"10b8f740-6e34-e011-a625-0050569c157c"
+          },
+        "requiredattendees":[{"type":"contact","id":"123456"}],
+        "organizer":
+          {
+            "type":"systemuser",
+            "id":"1234567890"
           },
         "statuscode":"Busy",
         "subject":"Appointment with Frankliny, Benjamin - 2/9/2011",
@@ -62,25 +69,59 @@ describe ActivityMapper do
         "cssi_skipdispositionworkflow":"true"
         }]
       }
+      
+      @phonecall_json = %Q{
+        [{
+         "statecode":"Open",
+          "cssi_disposition":null,
+          "scheduledend":"3/4/2011 4:00:00 PM",
+          "type":"PhoneCall",
+          "regardingobjectid":
+            { 
+              "type":"opportunity",
+              "name":"Frankliny, Benjamin - 2/9/2011",
+              "id":"10b8f740-6e34-e011-a625-0050569c157c"
+            },
+          "to":[{"type":"contact","id":"123456"}],
+          "from":[{"type":"systemuser","id":"123456543"}],
+          "statuscode":"Open",
+          "subject":"PhoneCall with Frankliny, Benjamin - 2/9/2011",
+          "cssi_skipdispositionworkflow":"true"
+          }]
+      }
   end
   
   it "should return an ActivityMapper" do
     Mapper.load('Activity').should be_kind_of(ActivityMapper)
   end
     
-  it "should parse json into a redis-ready hash" do
-    result = Mapper.map_source_data(@json, "Activity").first[1]
+  it "should parse phone call json into a redis-ready hash" do
+    result = Mapper.map_source_data(@phonecall_json, "Activity").first[1]
+    
+    result["statecode"].should == "Open"
+    result["scheduledend"].should == "3/4/2011 4:00:00 PM"
+    result["parent_type"].should == "Opportunity"
+    result["subject"].should == "PhoneCall with Frankliny, Benjamin - 2/9/2011"
+    result["parent_id"].should == "10b8f740-6e34-e011-a625-0050569c157c"
+    result["parent_contact_id"].should == "123456"
+    result.should_not include('requiredattendees', 'organizer', 'to', 'from', 'cssi_skipdispositionworkflow')
+  end
+  
+  it "should parse appointment json into a redis-ready hash" do
+    result = Mapper.map_source_data(@appointment_json, "Activity").first[1]
     
     result["statecode"].should == "Scheduled"
     result["scheduledstart"].should == "3/4/2011 3:30:00 PM"
-    result["parent_type"].should == "opportunity"
+    result["parent_type"].should == "Opportunity"
     result["subject"].should == "Appointment with Frankliny, Benjamin - 2/9/2011"
     result["parent_id"].should == "10b8f740-6e34-e011-a625-0050569c157c"
-    result["cssi_skipdispositionworkflow"].should == nil
+    result["parent_contact_id"].should == "123456"
+    result.should_not include('requiredattendees', 'organizer', 'to', 'from', 'cssi_skipdispositionworkflow')
   end
   
   it "should inject cssi_skipdispositionworkflow when cssi_disposition is provided from the client" do
     result = ActivityMapper.map_data_from_client({
+      'type' => 'PhoneCall',
       'unchanged' => '1234',
       'cssi_disposition' => 'blah'
     })
