@@ -10,6 +10,7 @@ $target = :test
 $server = ($config[$target] ? $config[$target][:syncserver] : "").sub('/application', '')
 
 namespace :server do
+  
   desc "Sets the current environment target. Must be an existing environment in settings/settings.yml ('development', 'test', etc.)"
   task :set, :env do |t, args|
     raise "No configuration found for '#{args.env}'" unless $config["#{args.env}".to_sym]
@@ -128,6 +129,18 @@ namespace :server do
         :user_id => args.user_id || 'dave', 
         :source_id => "Contact", 
         :objects => "objects!!!!"
+      }.to_json, 
+      :content_type => :json
+    )
+  end
+  
+  desc "manually raise a test exception (should send a notification to Exceptional)" 
+  task :test_exception, [:message] => [:set_token] do |t, args|
+    res = RestClient.post(
+      "#{$server}api/test_exception", 
+      { 
+        :api_token => @token, 
+        :message => args.message 
       }.to_json, 
       :content_type => :json
     )

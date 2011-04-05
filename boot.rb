@@ -4,6 +4,7 @@ require "#{File.expand_path(File.join(File.dirname(__FILE__)))}/util/redis_util"
 require 'resque_scheduler'
 require 'ap'
 require 'rhosync'
+require 'exceptional'
 
 [
   'lib', 
@@ -23,6 +24,9 @@ Resque.redis = Redis.connect(:url => ENV['REDIS'])
 Resque.schedule = YAML.load_file(File.join(File.dirname(__FILE__), 'settings/resque_schedule.yml'))
 Resque::Scheduler.run if fork.nil?
 Resque::Worker.new('clean_old_opportunity_data').work(1) if fork.nil?
+
+use Rack::Exceptional, CONFIG[:exceptional_api_key]
+set :raise_errors, true
 
 
 
