@@ -7,10 +7,9 @@ class ActivityMapper < Mapper
         value.reject!{|k,v| k == 'regardingobjectid'}
         value.merge!({'parent_id' => parentprops['id'], 'parent_type' => Mapper.convert_type_name(parentprops['type'])})
       end
-      #always filter out skip disposition workflow
+      #always filter out attributes that are only set in RhoSync (avoids problems with fixed schema)
       #never should be modified from rhodes and should only be injected in map_data_from_client as needed
-      value.reject!{|k,v| k == 'cssi_skipdispositionworkflow'}
-      value.reject!{|k,v| k == 'organizer'}
+      value.reject!{|k,v|  ['cssi_skipdispositionworkflow','organizer','from'].include?(k) }
       value
     end
     activity_array.reduce({}){|sum, value| sum[value["activityid"]] = value if value; sum }
