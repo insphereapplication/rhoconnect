@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+require 'bundler'
 Bundler.require
 
 # Try to load vendor-ed rhosync, otherwise load the gem
