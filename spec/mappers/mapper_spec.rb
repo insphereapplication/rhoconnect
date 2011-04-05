@@ -118,6 +118,32 @@ describe ActivityMapper do
     result["parent_contact_id"].should == "123456"
     result.should_not include('requiredattendees', 'organizer', 'to', 'from', 'cssi_skipdispositionworkflow')
   end
+
+  it "should reject empty 'to' field from proxy for phone calls" do
+    parsed_json = JSON.parse(@phonecall_json)
+    parsed_json[0].merge!({'to' => []})
+    result = Mapper.map_source_data(parsed_json, "Activity").first[1]
+
+    result["statecode"].should == "Open"
+    result["scheduledend"].should == "3/4/2011 4:00:00 PM"
+    result["parent_type"].should == "Opportunity"
+    result["subject"].should == "PhoneCall with Frankliny, Benjamin - 2/9/2011"
+    result["parent_id"].should == "10b8f740-6e34-e011-a625-0050569c157c"
+    result.should_not include('requiredattendees', 'organizer', 'to', 'from', 'cssi_skipdispositionworkflow', 'parent_contact_id')
+  end
+
+  it "should reject empty 'requiredattendees' field from proxy for appointments" do
+    parsed_json = JSON.parse(@appointment_json)
+    parsed_json[0].merge!({'requiredattendees' => []})
+    result = Mapper.map_source_data(parsed_json, "Activity").first[1]
+
+    result["statecode"].should == "Scheduled"
+    result["scheduledstart"].should == "3/4/2011 3:30:00 PM"
+    result["parent_type"].should == "Opportunity"
+    result["subject"].should == "Appointment with Frankliny, Benjamin - 2/9/2011"
+    result["parent_id"].should == "10b8f740-6e34-e011-a625-0050569c157c"
+    result.should_not include('requiredattendees', 'organizer', 'to', 'from', 'cssi_skipdispositionworkflow', 'parent_contact_id')
+  end
   
   it "should inject cssi_skipdispositionworkflow when cssi_disposition is provided from the client" do
     result = ActivityMapper.map_data_from_client({
@@ -194,7 +220,7 @@ describe NoteMapper do
     # ap result
     
     result["modifiedon"].should == "03/22/2011 07:26:38 PM"
-    result["parent_type"].should == "opportunity"
+    result["parent_type"].should == "Opportunity"
     result["subject"].should == "Note created on 3/22/2011 7:25 PM by James Burkett"
     result["parent_id"].should == "07526ecc-1f54-e011-93bf-0050569c7cfe"
     result["notetext"].should == "Test note #1"

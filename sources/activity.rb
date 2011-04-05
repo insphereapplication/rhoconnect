@@ -35,11 +35,18 @@ class Activity < SourceAdapter
     ap create_hash
     ap "#{@activity_url}/create"
     ap @token
+    
     #calling clone on the following line is EXTREMELY important - create_hash is passed by reference and is what is going to be committed to the DB
     mapped_hash = ActivityMapper.map_data_from_client(create_hash.clone)
-    mapped_hash['organizer'] = [{:type => 'systemuser', :id => Store.get_value(@user_id_key)}]
-    mapped_hash['from'] = [{:type => 'systemuser', :id => Store.get_value(@user_id_key)}]
+    
+    if mapped_hash['type'].downcase == 'appointment'
+      mapped_hash['organizer'] = [{:type => 'systemuser', :id => Store.get_value(@user_id_key)}]
+    else #phone call
+      mapped_hash['from'] = [{:type => 'systemuser', :id => Store.get_value(@user_id_key)}]
+    end
+    
     mapped_hash['cssi_fromrhosync'] = 'true'
+    
     ap mapped_hash.to_json
     result = RestClient.post("#{@activity_url}/create", 
         :token => @token, 
@@ -55,11 +62,15 @@ class Activity < SourceAdapter
     ap update_hash
     activity = ActivityModel.get_model(current_user.login, update_hash['id'])
     ap activity
+    
     #calling clone on the following line is EXTREMELY important - update_hash is passed by reference and is what is going to be committed to the DB
     mapped_hash = ActivityMapper.map_data_from_client(update_hash.clone)
+    
     mapped_hash['type'] = activity['type']
     mapped_hash['cssi_fromrhosync'] = 'true'
+    
     ap mapped_hash
+    
     result = RestClient.post("#{@activity_url}/update", 
         :token => @token, 
         :attributes => mapped_hash.to_json
