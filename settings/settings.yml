@@ -4,28 +4,30 @@
     :poll_interval: 1
   Opportunity: 
     :poll_interval: 1
-  Note: 
-    :poll_interval: 1
+  ClientException: 
+    :poll_interval: 300
   Activity: 
+    :poll_interval: 1
+  Note: 
     :poll_interval: 1
  
 :test: 
+  :redis: localhost:6379
+  :licensefile: settings/license.key
   :syncserver: http://localhost:9292/application/
-  :redis: localhost:6379
-  :licensefile: settings/license.key
 :production: 
+  :iphonecertfile: settings/apple_push_cert.pem
+  :redis: localhost:6379
+  :iphonepassphrase: Pariveda1
+  :licensefile: settings/license.key
+  :iphoneserver: gateway.sandbox.push.apple.com
+  :iphoneport: 2195
   :syncserver: http://rhohub-insphere-c58af007.rhosync.com/application/
-  :redis: localhost:6379
-  :licensefile: settings/license.key
-  :iphonecertfile: settings/apple_push_cert.pem
-  :iphonepassphrase: Pariveda1
-  :iphoneserver: gateway.sandbox.push.apple.com
-  :iphoneport: 2195
 :development: 
-  :syncserver: http://rhohub-insphere-a06075d6.rhosync.com/application/
-  :redis: localhost:6379
-  :licensefile: settings/license.key
   :iphonecertfile: settings/apple_push_cert.pem
+  :redis: localhost:6379
   :iphonepassphrase: Pariveda1
+  :licensefile: settings/license.key
   :iphoneserver: gateway.sandbox.push.apple.com
   :iphoneport: 2195
+  :syncserver: http://rhohub-insphere-a06075d6.rhosync.com/application/
