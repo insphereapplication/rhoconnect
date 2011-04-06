@@ -15,17 +15,19 @@ class CleanOldOpportunityData
     end
     
     def perform
-      get_master_docs(users).each do |user, opportunities, activities|
-        # find the expired Opportunities
-        old_opportunities = get_expired_opportunities(opportunities)  
-        old_opp_keys = old_opportunities.map{|k,v| k }
+      Exceptional.rescue do
+        get_master_docs(users).each do |user, opportunities, activities|
+          # find the expired Opportunities
+          old_opportunities = get_expired_opportunities(opportunities)  
+          old_opp_keys = old_opportunities.map{|k,v| k }
       
-        # now find the activities that are owned by the expired Opportunties
-        old_activities = get_expired_activities(old_opp_keys, activities)
+          # now find the activities that are owned by the expired Opportunties
+          old_activities = get_expired_activities(old_opp_keys, activities)
       
-        # delete expired records for both models
-        Rhosync::Store.delete_data("source:application:#{user}:Activity:md", old_activities)
-        Rhosync::Store.delete_data("source:application:#{user}:Opportunity:md", old_opportunities)
+          # delete expired records for both models
+          Rhosync::Store.delete_data("source:application:#{user}:Activity:md", old_activities)
+          Rhosync::Store.delete_data("source:application:#{user}:Opportunity:md", old_opportunities)
+        end
       end
     end 
     

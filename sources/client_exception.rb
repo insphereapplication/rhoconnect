@@ -13,12 +13,14 @@ class ClientException < SourceAdapter
   end
  
   def create(exception,blob=nil)
-    puts "CREATE EXCEPTION"
-    ap exception
-    e = Exception.new(exception['message'])
-    Exceptional.handle(e, "Client raised error: #{exception['backtrace']}")
+    Exceptional.rescue do
+      puts "CREATE EXCEPTION"
+      ap exception
+      e = Exception.new(exception['message'])
+      Exceptional.handle(e, "Client raised error: #{exception['backtrace']}")
 
-    exception['exception_id']
+      exception['exception_id']
+    end
   end
  
   def update(update_hash)
