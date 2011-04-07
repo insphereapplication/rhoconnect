@@ -15,7 +15,7 @@ class CleanOldOpportunityData
     end
     
     def perform
-      Exceptional.rescue do
+      Exceptional.rescue_and_reraise do
         get_master_docs(users).each do |user, opportunities, activities|
           # find the expired Opportunities
           old_opportunities = get_expired_opportunities(opportunities)  

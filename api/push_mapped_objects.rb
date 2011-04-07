@@ -1,5 +1,5 @@
 Rhosync::Server.api :push_mapped_objects do |params,user|
-  Exceptional.rescue do
+  Exceptional.rescue_and_reraise do
     ap "PUSH MAPPED #{params[:source_id]} OBJECTS FOR #{user}"
     ap params
   

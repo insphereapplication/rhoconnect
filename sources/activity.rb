@@ -12,7 +12,7 @@ class Activity < SourceAdapter
   end
  
   def query(params=nil)
-    Exceptional.rescue do
+    Exceptional.rescue_and_reraise do
       unless Store.get_value(@initialized_key) == 'true'
         ap "ACTIVITY QUERY"
         res = RestClient.post(@activity_url,
@@ -26,7 +26,7 @@ class Activity < SourceAdapter
   end
  
   def sync
-    Exceptional.rescue do
+    Exceptional.rescue_and_reraise do
       unless Store.get_value(@initialized_key) == 'true'  
         super
         Store.put_value(@initialized_key, 'true')
@@ -35,7 +35,7 @@ class Activity < SourceAdapter
   end
  
   def create(create_hash,blob=nil)
-    Exceptional.rescue do
+    Exceptional.rescue_and_reraise do
       puts "CREATE ACTIVITY"
       ap create_hash
       ap "#{@activity_url}/create"
@@ -64,7 +64,7 @@ class Activity < SourceAdapter
   end
   
   def update(update_hash)
-    Exceptional.rescue do
+    Exceptional.rescue_and_reraise do
       puts "UPDATE ACTIVITY"
       ap update_hash
       activity = ActivityModel.get_model(current_user.login, update_hash['id'])

@@ -1,5 +1,5 @@
 Rhosync::Server.api :push_objects_notify do |params,user|
-  Exceptional.rescue do
+  Exceptional.rescue_and_reraise do
     source = Source.load(params[:source_id],{:app_id=>APP_NAME,:user_id=>params[:user_id]})
     source_sync = SourceSync.new(source)
   

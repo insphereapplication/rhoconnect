@@ -3,7 +3,7 @@ require 'ap'
 class Opportunity < SourceAdapter
   
   on_api_push do |user_id|
-    Exceptional.rescue do
+    Exceptional.rescue_and_reraise do
        PingJob.perform(
          'user_id' => user_id,
          'message' => 'You have new Opportunities',
@@ -14,21 +14,21 @@ class Opportunity < SourceAdapter
   end
   
   def initialize(source,credential)
-    Exceptional.rescue do
+    Exceptional.rescue_and_reraise do
       @opportunity_url = "#{CONFIG[:crm_path]}opportunity"
       super(source,credential)
     end
   end
  
   def login
-    Exceptional.rescue do
+    Exceptional.rescue_and_reraise do
       @token = Store.get_value("username:#{current_user.login.downcase}:token")
       @initialized_key = "username:#{current_user.login.downcase}:opportunity:initialized"
     end
   end
  
   def query(params=nil)
-    Exceptional.rescue do
+    Exceptional.rescue_and_reraise do
       unless Store.get_value(@initialized_key) == 'true'   
         ap "QUERY FOR OPPORTUNITIES"
         parsed_values = JSON.parse(RestClient.post(@opportunity_url,
@@ -43,7 +43,7 @@ class Opportunity < SourceAdapter
   end
  
   def sync
-    Exceptional.rescue do
+    Exceptional.rescue_and_reraise do
       unless Store.get_value(@initialized_key) == 'true'  
         super
         Store.put_value(@initialized_key, 'true')
@@ -59,7 +59,7 @@ class Opportunity < SourceAdapter
   end
  
   def update(update_hash)
-    Exceptional.rescue do
+    Exceptional.rescue_and_reraise do
       puts "UPDATE OPPORTUNITY"
       update_hash['cssi_fromrhosync'] = 'true'
       ap update_hash

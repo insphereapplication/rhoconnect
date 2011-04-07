@@ -13,7 +13,7 @@ class ClientException < SourceAdapter
   end
  
   def create(exception,blob=nil)
-    Exceptional.rescue do
+    Exceptional.rescue_and_reraise do
       puts "CREATE EXCEPTION"
       ap exception
       e = Exception.new(exception['message'])
