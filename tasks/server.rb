@@ -1,9 +1,9 @@
 require 'yaml'
 require 'ap'
 require 'faker'
-gem 'larsburgess-rest-client', '=1.6.1'
+# gem 'larsburgess-rest-client', '=1.6.1'
 
-# gem 'rest-client', '=1.4.2'
+gem 'rest-client', '=1.4.2'
 # require 'rest-client'
 
 $settings_file = 'settings/settings.yml'

@@ -141,8 +141,10 @@ namespace :proxy do
 		puts "Logged in, new token: #{@token}"
 	end
 	
-	task :logout => [:clear_persisted_token] do
-		puts "Logged out"
+	task :logout, [:token] => [:setup] do |t,args|
+	  token = args[:token].nil? ? @token : args[:token]
+	  logout(@proxy_url, token)
+		puts "Logged out #{token}"
 	end
 	
 	task :setup => [:get_proxy_url, :get_persisted_token]
