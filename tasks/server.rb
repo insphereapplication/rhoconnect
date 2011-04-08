@@ -1,16 +1,46 @@
 require 'yaml'
 require 'ap'
 require 'faker'
-gem 'larsburgess-rest-client', '=1.6.1'
+puts File.expand_path('.')
 
-# gem 'rest-client', '=1.4.2'
+# require 'tasks/gzipper'
+
+# gem 'larsburgess-rest-client', '=1.6.1'
+
+gem 'rest-client', '=1.4.2'
 # require 'rest-client'
+API_KEY = 'b8788d7b2ae404c9661f40215f5d9258aede9c83'
 
 $settings_file = 'settings/settings.yml'
 $config = YAML::load_file($settings_file)
 $app_path = File.expand_path(File.dirname(__FILE__))
 $target = :test
 $server = ($config[$target] ? $config[$target][:syncserver] : "").sub('/application', '')
+# EXCEPTIONAL_URL = "http://api.getexceptional.com/api/errors?api_key=#{API_KEY}&protocol_version=6"
+# 
+# args = {
+#   'application_environment' => {
+#     'env' => {
+#       "MANPATH" => "/usr/local/git/man:/opt/local/share/man",
+#       "SHELL" => "/bin/bash",
+#       "DISPLAY" => "/tmp/launch-SYxDj8/:0",
+#       "CVSEDITOR" => "mate -w",
+#       "LANG" => "en_IE.UTF-8",
+#       "PWD" => "/var/www/myapp",
+#       "PATH" => "/opt/local/bin:/usr/local/git/bin:/opt/local/bin" 
+#     }
+#   },
+#   'exception' => {
+#     'occurred_at' => '2010-10-29T10:48:54+01:00',
+#     'exception_class' => 'RuntimeError',
+#     'message' => "HEY This is a test exception for testing of the API. So Boom.",
+#     'backtrace' => "/Users/wal/work/myapp/app/controllers/spike_controller.rb:16:in `gonuts'"
+#   }
+# }
+# 
+# task :test_exceptional_api do 
+#   ap RestClient.post( EXCEPTIONAL_URL, GZipper.zip(args.to_json)) #GZipper.zip(test_json))
+# end
 
 namespace :server do
   
