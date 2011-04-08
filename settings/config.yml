@@ -1,3 +1,6 @@
+#external URL for prod proxy
+#:crm_path: https://mobileproxy.insphereis.net/
+
 #external URL for model proxy
 #:crm_path: https://mobileproxy.model.insphereis.net/
 
