@@ -42,7 +42,7 @@ class Note < SourceAdapter
       ap create_hash
       ap "#{@note_url}/create"
       ap @token
-      mapped_hash = NoteMapper.map_data_from_client(create_hash)
+      mapped_hash = NoteMapper.map_data_from_client(create_hash.clone)
       ap mapped_hash
     
       result = RestClient.post("#{@note_url}/create", 
