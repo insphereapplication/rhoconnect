@@ -41,7 +41,7 @@ class Application < Rhosync::Base
     end
     
     def initializer(path)
-      admin = User.is_exist?('rhoadmin') ? load('rhoadmin') : User.create({:login => 'rhoadmin', :admin => 1})
+      admin = User.is_exist?('rhoadmin') ? User.load('rhoadmin') : User.create({:login => 'rhoadmin', :admin => 1})
       admin.password = '88a93d3FRTBEBE4'
       admin.create_token
       super
