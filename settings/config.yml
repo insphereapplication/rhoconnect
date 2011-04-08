@@ -1,12 +1,12 @@
 #PROD
-# :crm_path: https://mobileproxy.insphereis.net/
-# :rhoadmin_password: 88a93d3FRTBEBE4
+:crm_path: https://mobileproxy.insphereis.net/
+:rhoadmin_password: 88a93d3FRTBEBE4
 
 #MODEL
 #:crm_path: https://mobileproxy.model.insphereis.net/
 #:rhoadmin_password: ""
 
 #DEV
-:crm_path: http://75.31.122.27/
-:rhoadmin_passwod: ""
+# :crm_path: http://75.31.122.27/
+# :rhoadmin_passwod: ""
 
