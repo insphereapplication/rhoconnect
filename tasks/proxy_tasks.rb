@@ -145,7 +145,7 @@ namespace :proxy do
 	task :logout, [:token] => [:get_proxy_url] do |t,args|
 	  abort "Please specify a token" if args[:token].nil?
 	  logout(@proxy_url, args[:token])
-		puts "Logged out #{token}"
+		puts "Logged out #{args[:token]}"
 	end
 	
 	task :setup => [:get_proxy_url, :get_persisted_token]
