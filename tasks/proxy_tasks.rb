@@ -10,7 +10,8 @@ $environments = {'local' => 'http://localhost:52904',
   'dev-internal' => 'http://nrhwwwd401.insp.dom:5000', 
   'dev-external' => 'http://75.31.122.27', 
   'model-internal' => 'http://nrhwwwm201.insp.dom:5000', 
-  'model-external' => 'https://mobileproxy.model.insphereis.net'}
+  'model-external' => 'https://mobileproxy.model.insphereis.net',
+  'production-external' => 'https://mobileproxy.insphereis.net'}
 
 namespace :proxy do
     desc "Generates [lead_count] new leads, [age] days old"
@@ -141,8 +142,10 @@ namespace :proxy do
 		puts "Logged in, new token: #{@token}"
 	end
 	
-	task :logout => [:clear_persisted_token] do
-		puts "Logged out"
+	task :logout, [:token] => [:get_proxy_url] do |t,args|
+	  abort "Please specify a token" if args[:token].nil?
+	  logout(@proxy_url, args[:token])
+		puts "Logged out #{token}"
 	end
 	
 	task :setup => [:get_proxy_url, :get_persisted_token]

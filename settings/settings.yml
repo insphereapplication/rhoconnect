@@ -16,6 +16,14 @@
   :licensefile: settings/license.key
   :syncserver: http://localhost:9292/application/
 :production: 
+    :iphonecertfile: settings/apple_push_cert.pem
+    :redis: localhost:6379
+    :iphonepassphrase: Pariveda1
+    :licensefile: settings/license.key
+    :iphoneserver: gateway.sandbox.push.apple.com
+    :iphoneport: 2195
+    :syncserver: http://rhohub-insphere-b3789b06.rhosync.com/application/
+:model: 
   :iphonecertfile: settings/apple_push_cert.pem
   :redis: localhost:6379
   :iphonepassphrase: Pariveda1
