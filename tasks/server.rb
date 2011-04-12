@@ -8,7 +8,7 @@ puts File.expand_path('.')
 # gem 'larsburgess-rest-client', '=1.6.1'
 
 
-gem 'rest-client', '=1.4.2'
+# gem 'rest-client', '=1.4.2'
 # require 'rest-client'
 API_KEY = 'b8788d7b2ae404c9661f40215f5d9258aede9c83'
 
