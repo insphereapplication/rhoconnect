@@ -4,6 +4,7 @@ class Opportunity < SourceAdapter
   
   on_api_push do |user_id|
     Exceptional.rescue_and_reraise do
+       Exceptional.context(:user_id => user_id )
        PingJob.perform(
          'user_id' => user_id,
          'message' => 'You have new Opportunities',
@@ -29,6 +30,7 @@ class Opportunity < SourceAdapter
  
   def query(params=nil)
     Exceptional.rescue_and_reraise do
+      Exceptional.context(:current_user => current_user.login )
       unless Store.get_value(@initialized_key) == 'true'   
         ap "QUERY FOR OPPORTUNITIES"
         parsed_values = JSON.parse(RestClient.post(@opportunity_url,
@@ -37,6 +39,7 @@ class Opportunity < SourceAdapter
           )
         )
         @result = parsed_values.reduce({}){|sum, value| sum[value['opportunityid']] = value; sum }
+        Exceptional.context(:parsed_values => parsed_values, :result => @result)
         ap @result
       end 
     end
@@ -62,11 +65,13 @@ class Opportunity < SourceAdapter
     Exceptional.rescue_and_reraise do
       puts "UPDATE OPPORTUNITY"
       update_hash['cssi_fromrhosync'] = 'true'
+      Exceptional.context(:current_user => current_user.inspect, :update_hash => update_hash)
       ap update_hash
       result = RestClient.post("#{@opportunity_url}/update", 
           :token => @token, 
           :attributes => update_hash.to_json
         ).body
+      Exceptional.context(:result => result)
       ap result
     end
   end

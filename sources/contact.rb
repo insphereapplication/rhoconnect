@@ -18,12 +18,14 @@ class Contact < SourceAdapter
     Exceptional.rescue_and_reraise do
       unless Store.get_value(@initialized_key) == 'true'
         puts "INITIALIZING USER CONTACTS for #{current_user.login.downcase}"
+        Exceptional.context(:current_user => current_user.login )
         parsed_values = JSON.parse(RestClient.post(@contact_url,
             {:token => @token}, 
             :content_type => :json
           )
         )
         @result = parsed_values.reduce({}){|sum, value| sum[value['contactid']] = value; sum }
+        Exceptional.context(:parsed_values => parse_values, :result => @result )
         ap @result
       end
     end
@@ -45,11 +47,13 @@ class Contact < SourceAdapter
   def update(attributes)
     Exceptional.rescue_and_reraise do
       puts "UPDATE CONTACT"
+      Exceptional.context(:current_user => current_user.login )
       result = RestClient.post("#{@contact_url}/update", 
         :token => @token, 
         :attributes => attributes.to_json
       ).body
       ap result
+      Exceptional.context(:result => result )
       result
     end
   end

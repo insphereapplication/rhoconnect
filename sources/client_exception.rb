@@ -17,6 +17,7 @@ class ClientException < SourceAdapter
       puts "CREATE EXCEPTION"
       ap exception
       e = Exception.new(exception['message'])
+      Exceptional.context(:client_exception_data => e.inspect)
       Exceptional.handle(e, "Client raised error: #{exception['backtrace']}")
 
       exception['exception_id']

@@ -15,11 +15,15 @@ class Activity < SourceAdapter
     Exceptional.rescue_and_reraise do
       unless Store.get_value(@initialized_key) == 'true'
         ap "ACTIVITY QUERY"
+        
+        Exceptional.context(:current_user => current_user.login )
         res = RestClient.post(@activity_url,
             {:token => @token}, 
             :content_type => :json
           )
         @result = Mapper.map_source_data(res, 'Activity')
+        
+        Exceptional.context(:result => res, :mapped_result => @result )
         ap @result
       end
     end
@@ -40,10 +44,12 @@ class Activity < SourceAdapter
       ap create_hash
       ap "#{@activity_url}/create"
       ap @token
-    
+      
       #calling clone on the following line is EXTREMELY important - create_hash is passed by reference and is what is going to be committed to the DB
       mapped_hash = ActivityMapper.map_data_from_client(create_hash.clone)
     
+      Exceptional.context(:current_user => current_user.login, :mapped_activity_hash => mapped_hash )
+      
       if mapped_hash['type'].downcase == 'appointment'
         mapped_hash['organizer'] = [{:type => 'systemuser', :id => Store.get_value(@user_id_key)}]
       else #phone call
@@ -51,8 +57,9 @@ class Activity < SourceAdapter
       end
     
       mapped_hash['cssi_fromrhosync'] = 'true'
-    
-      ap mapped_hash.to_json
+      Exceptional.context(:current_user => current_user.login, :mapped_activity_hash => mapped_hash )
+      
+      ap mapped_hash
       result = RestClient.post("#{@activity_url}/create", 
           :token => @token, 
           :attributes => mapped_hash.to_json
@@ -77,7 +84,8 @@ class Activity < SourceAdapter
       mapped_hash['cssi_fromrhosync'] = 'true'
     
       ap mapped_hash
-    
+      Exceptional.context(:current_user => current_user.login, :mapped_activity_hash => mapped_hash )
+      
       result = RestClient.post("#{@activity_url}/update", 
           :token => @token, 
           :attributes => mapped_hash.to_json
