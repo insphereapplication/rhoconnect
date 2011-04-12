@@ -25,7 +25,7 @@ class Contact < SourceAdapter
           )
         )
         @result = parsed_values.reduce({}){|sum, value| sum[value['contactid']] = value; sum }
-        Exceptional.context(:parsed_values => parse_values, :result => @result )
+        Exceptional.context(:parsed_values => parsed_values, :result => @result )
         ap @result
       end
     end
