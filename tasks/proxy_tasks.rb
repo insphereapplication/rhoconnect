@@ -1,4 +1,3 @@
-require 'ap'
 
 $tokenfile = '.proxy_token'
 $environmentfile = '.environment'

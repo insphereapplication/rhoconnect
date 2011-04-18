@@ -1,4 +1,3 @@
-Dir[File.join(File.dirname(__FILE__),'tasks','**','*.rb')].each { |file| load file }
 
 begin
   require 'vendor/rhosync/lib/rhosync/tasks'
@@ -9,7 +8,7 @@ rescue LoadError
   require 'rhosync/server'
 end
 
-ROOT_PATH = File.expand_path(File.dirname(__FILE__))
+# ROOT_PATH = File.expand_path(File.dirname(__FILE__))
 
 begin
   require 'resque/tasks'
@@ -21,3 +20,5 @@ rescue LoadError
   puts "gem install resque\n\n"
 end
 
+
+Dir[File.join(File.dirname(__FILE__),'tasks','**','*.rb')].each { |file| load file }
