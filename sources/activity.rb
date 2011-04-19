@@ -6,9 +6,12 @@ class Activity < SourceAdapter
   end
  
   def login
-    @token = Store.get_value("username:#{current_user.login.downcase}:token")
-    @initialized_key = "username:#{current_user.login.downcase}:activity:initialized"
-    @user_id_key = "username:#{current_user.login.downcase}:crm_user_id"
+    Exceptional.rescue_and_reraise do
+      @username = Store.get_value("username:#{current_user.login.downcase}:username")
+      @password = Store.get_value("username:#{current_user.login.downcase}:password")
+      @initialized_key = "username:#{current_user.login.downcase}:activity:initialized"
+      @user_id_key = "username:#{current_user.login.downcase}:crm_user_id"
+    end
   end
  
   def query(params=nil)
@@ -18,7 +21,8 @@ class Activity < SourceAdapter
         
         Exceptional.context(:current_user => current_user.login )
         res = RestClient.post(@activity_url,
-            {:token => @token}, 
+            {:username => @username, 
+             :password => @password}, 
             :content_type => :json
           )
         @result = Mapper.map_source_data(res, 'Activity')
@@ -61,8 +65,9 @@ class Activity < SourceAdapter
       
       ap mapped_hash
       result = RestClient.post("#{@activity_url}/create", 
-          :token => @token, 
-          :attributes => mapped_hash.to_json
+          {:username => @username, 
+          :password => @password,
+          :attributes => mapped_hash.to_json}
         ).body
       ap result
     
@@ -87,8 +92,9 @@ class Activity < SourceAdapter
       Exceptional.context(:current_user => current_user.login, :mapped_activity_hash => mapped_hash )
       
       result = RestClient.post("#{@activity_url}/update", 
-          :token => @token, 
-          :attributes => mapped_hash.to_json
+        {:username => @username, 
+        :password => @password,
+        :attributes => mapped_hash.to_json}
         ).body
       ap result
     end

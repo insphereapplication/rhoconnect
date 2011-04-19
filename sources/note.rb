@@ -8,7 +8,8 @@ class Note < SourceAdapter
  
   def login
     Exceptional.rescue_and_reraise do
-      @token = Store.get_value("username:#{current_user.login.downcase}:token")
+      @username = Store.get_value("username:#{current_user.login.downcase}:username")
+      @password = Store.get_value("username:#{current_user.login.downcase}:password")     
       @initialized_key = "username:#{current_user.login.downcase}:note:initialized"
     end
   end
@@ -18,7 +19,8 @@ class Note < SourceAdapter
       unless Store.get_value(@initialized_key) == 'true'
         ap "NOTE QUERY"
         res = RestClient.post(@note_url,
-            {:token => @token}, 
+            {:username => @username, 
+            :password => @password},
             :content_type => :json
           )
         @result = Mapper.map_source_data(res, 'Note')
@@ -45,8 +47,9 @@ class Note < SourceAdapter
       ap mapped_hash
     
       result = RestClient.post("#{@note_url}/create", 
-          :token => @token, 
-          :attributes => mapped_hash.to_json
+          {:username => @username, 
+          :password => @password,
+          :attributes => mapped_hash.to_json}
         ).body
       ap result
     
@@ -57,8 +60,9 @@ class Note < SourceAdapter
   def update(update_hash)
     Exceptional.rescue_and_reraise do
       result = JSON.parse(RestClient.post("#{@note_url}/update", 
-          :token => @token, 
-          :attributes => attributes.to_json
+          {:username => @username, 
+          :password => @password,
+          :attributes => attributes.to_json}
         ).body)
     end
   end

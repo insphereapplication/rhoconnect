@@ -23,7 +23,8 @@ class Opportunity < SourceAdapter
  
   def login
     Exceptional.rescue_and_reraise do
-      @token = Store.get_value("username:#{current_user.login.downcase}:token")
+      @username = Store.get_value("username:#{current_user.login.downcase}:username")
+      @password = Store.get_value("username:#{current_user.login.downcase}:password")     
       @initialized_key = "username:#{current_user.login.downcase}:opportunity:initialized"
     end
   end
@@ -34,7 +35,8 @@ class Opportunity < SourceAdapter
       unless Store.get_value(@initialized_key) == 'true'   
         ap "QUERY FOR OPPORTUNITIES"
         parsed_values = JSON.parse(RestClient.post(@opportunity_url,
-            {:token => @token}, 
+            {:username => @username, 
+            :password => @password},
             :content_type => :json
           )
         )
@@ -68,14 +70,15 @@ class Opportunity < SourceAdapter
       Exceptional.context(:current_user => current_user.inspect, :update_hash => update_hash)
       ap update_hash
       result = RestClient.post("#{@opportunity_url}/update", 
-          :token => @token, 
-          :attributes => update_hash.to_json
+          {:username => @username, 
+          :password => @password,
+          :attributes => update_hash.to_json}
         ).body
       Exceptional.context(:result => result)
       ap result
     end
   end
- 
+  
   def delete(object_id)
     
   end

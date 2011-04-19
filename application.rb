@@ -9,31 +9,15 @@ class Application < Rhosync::Base
       ap response.to_s
       success = false
       if response.code == 200
-        new_token = response.body.strip.gsub(/"/, '')
-        
-        begin
-          #get old token, logout from proxy if it exists
-          old_token = Store.get_value("username:#{username.downcase}:token")
-          if old_token
-            ap "Found old token #{old_token}, logging it out from proxy"
-            logout_response = RestClient.post "#{CONFIG[:crm_path]}session/logout", {:token => old_token}
-            ap "Logout response code #{logout_response.code}"
-          end
-        rescue
-          ap "Error while removing old token"
-        end
-        
         #get user's CRM ID, cache it for later use
-        whoami_response = JSON.parse(RestClient.post("#{CONFIG[:crm_path]}user/whoami", 
-          {:token => new_token},
-          :content_type => :json
-        ))
+        crm_user_id = response.body.strip.gsub(/"/, '')
         
-        ap "User #{username} has identity #{whoami_response['id']}"
+        ap "User #{username} has identity #{crm_user_id}"
         
-        Store.put_value("username:#{username.downcase}:crm_user_id", whoami_response['id'])
-        
-        Store.put_value("username:#{username.downcase}:token", new_token)
+        Store.put_value("username:#{username.downcase}:username", username)
+        Store.put_value("username:#{username.downcase}:password", password)
+        Store.put_value("username:#{username.downcase}:crm_user_id", crm_user_id)
+    
         success = true
       end
       

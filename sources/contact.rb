@@ -9,8 +9,10 @@ class Contact < SourceAdapter
  
   def login
     Exceptional.rescue_and_reraise do
-      @token = Store.get_value("username:#{current_user.login.downcase}:token")
+      @username = Store.get_value("username:#{current_user.login.downcase}:username")
+      @password = Store.get_value("username:#{current_user.login.downcase}:password")
       @initialized_key = "username:#{current_user.login.downcase}:contact:initialized"
+
     end
   end
  
@@ -20,7 +22,8 @@ class Contact < SourceAdapter
         puts "INITIALIZING USER CONTACTS for #{current_user.login.downcase}"
         Exceptional.context(:current_user => current_user.login )
         parsed_values = JSON.parse(RestClient.post(@contact_url,
-            {:token => @token}, 
+          {:username => @username, 
+            :password => @password},
             :content_type => :json
           )
         )
@@ -49,8 +52,9 @@ class Contact < SourceAdapter
       puts "UPDATE CONTACT"
       Exceptional.context(:current_user => current_user.login )
       result = RestClient.post("#{@contact_url}/update", 
-        :token => @token, 
-        :attributes => attributes.to_json
+          {:username => @username, 
+          :password => @password,
+          :attributes => attributes.to_json}
       ).body
       ap result
       Exceptional.context(:result => result )
