@@ -15,6 +15,7 @@
   :redis: localhost:6379
   :licensefile: settings/license.key
   :syncserver: http://localhost:9292/application/
+  :authtoken: 'DQAAALEAAACGrfH6ZfOMVxZXyYlonWDB-eJvjfya3zcT_6p71LomPfxI10401l7o5Sd5Z30abSeSNAMNAWJpCcRUBEL99vpxTGny1YxAvUop5tLUdWJyhtnlCxkq0qksleXmYv8LXkymjJr7t8oIC2Cm78UfySxqIytNvJt5DFM-nEU-uHeJLje1oIxKw14EAJoQOPql9boX2x8SZaAq4P9DDeYRzEaSJbkipVYz8TXW92qmBbNwhsqc8CWzgstqB9ztYP5_N3k'
 :production: 
     :iphonecertfile: settings/apple_push_cert.pem
     :redis: localhost:6379
@@ -23,6 +24,7 @@
     :iphoneserver: gateway.sandbox.push.apple.com
     :iphoneport: 2195
     :syncserver: http://rhohub-insphere-b3789b06.rhosync.com/application/
+    :authtoken: 'DQAAALEAAACGrfH6ZfOMVxZXyYlonWDB-eJvjfya3zcT_6p71LomPfxI10401l7o5Sd5Z30abSeSNAMNAWJpCcRUBEL99vpxTGny1YxAvUop5tLUdWJyhtnlCxkq0qksleXmYv8LXkymjJr7t8oIC2Cm78UfySxqIytNvJt5DFM-nEU-uHeJLje1oIxKw14EAJoQOPql9boX2x8SZaAq4P9DDeYRzEaSJbkipVYz8TXW92qmBbNwhsqc8CWzgstqB9ztYP5_N3k'
 :model: 
   :iphonecertfile: settings/apple_push_cert.pem
   :redis: localhost:6379
@@ -31,6 +33,7 @@
   :iphoneserver: gateway.sandbox.push.apple.com
   :iphoneport: 2195
   :syncserver: http://rhohub-insphere-c58af007.rhosync.com/application/
+  :authtoken: 'DQAAALEAAACGrfH6ZfOMVxZXyYlonWDB-eJvjfya3zcT_6p71LomPfxI10401l7o5Sd5Z30abSeSNAMNAWJpCcRUBEL99vpxTGny1YxAvUop5tLUdWJyhtnlCxkq0qksleXmYv8LXkymjJr7t8oIC2Cm78UfySxqIytNvJt5DFM-nEU-uHeJLje1oIxKw14EAJoQOPql9boX2x8SZaAq4P9DDeYRzEaSJbkipVYz8TXW92qmBbNwhsqc8CWzgstqB9ztYP5_N3k'
 :development: 
   :iphonecertfile: settings/apple_push_cert.pem
   :redis: localhost:6379
@@ -39,3 +42,4 @@
   :iphoneserver: gateway.sandbox.push.apple.com
   :iphoneport: 2195
   :syncserver: http://rhohub-insphere-a06075d6.rhosync.com/application/
+  :authtoken: 'DQAAALEAAACGrfH6ZfOMVxZXyYlonWDB-eJvjfya3zcT_6p71LomPfxI10401l7o5Sd5Z30abSeSNAMNAWJpCcRUBEL99vpxTGny1YxAvUop5tLUdWJyhtnlCxkq0qksleXmYv8LXkymjJr7t8oIC2Cm78UfySxqIytNvJt5DFM-nEU-uHeJLje1oIxKw14EAJoQOPql9boX2x8SZaAq4P9DDeYRzEaSJbkipVYz8TXW92qmBbNwhsqc8CWzgstqB9ztYP5_N3k'
