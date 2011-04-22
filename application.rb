@@ -6,9 +6,9 @@ class Application < Rhosync::Base
       puts "Authentication requested #{username}:#{password}"
       ap "Logging onto #{CONFIG[:crm_path]}session/logon"
       response = RestClient.post "#{CONFIG[:crm_path]}session/logon", :username => username, :password => password
-      ap response.to_s
+      ap "Response.code = #{response.inspect}"
       success = false
-      if response.code == 200
+      if response && response.code == 200
         #get user's CRM ID, cache it for later use
         crm_user_id = response.body.strip.gsub(/"/, '')
         
