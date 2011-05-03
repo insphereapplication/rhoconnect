@@ -1,18 +1,14 @@
 #PROD
 #:crm_path: https://mobileproxy.insphereis.net/
-#:rhoadmin_password: 88a93d3FRTBEBE4
+#:rhoadmin_password: aW9wVhyU84Sj
 
 #MODEL
 # :crm_path: https://mobileproxy.model.insphereis.net/
-# :rhoadmin_password: ""
+# :rhoadmin_password: U5PgMPngu27j
 
 #DEV
-:crm_path: http://nrhwwwd401.insp.dom:5000/
-:rhoadmin_password: ""
-
-#LOCAL
-# :crm_path: http://192.168.51.128/
-# :rhoadmin_password: ""
+:crm_path: http://75.31.122.27/
+:rhoadmin_password: iGyz5rk6JVYA
 
 # Randomly generated from http://www.grc.com/passwords.htm
 :crypt_key: "61AA71C0AB689FAEE09CD9310CB59A809D688652C78AA1CAB65B961D2FFAF7D1"
