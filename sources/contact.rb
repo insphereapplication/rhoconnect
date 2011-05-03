@@ -1,5 +1,3 @@
-require 'helpers/crypto'
-
 class Contact < SourceAdapter
   
   def initialize(source,credential)
@@ -12,10 +10,7 @@ class Contact < SourceAdapter
   def login
     Exceptional.rescue_and_reraise do
       @username = Store.get_value("username:#{current_user.login.downcase}:username")
-      
-      encryptedPassword = Store.get_value("username:#{current_user.login.downcase}:password")
-      @password = Crypto.decrypt( encryptedPassword )
-      
+      @password = Store.get_value("username:#{current_user.login.downcase}:password")
       @initialized_key = "username:#{current_user.login.downcase}:contact:initialized"
 
     end

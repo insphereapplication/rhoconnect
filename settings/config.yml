@@ -4,11 +4,9 @@
 
 #MODEL
 # :crm_path: https://mobileproxy.model.insphereis.net/
-# :rhoadmin_password: U5PgMPngu27j
+# :rhoadmin_password: ""
 
 #DEV
-:crm_path: http://75.31.122.27/
-:rhoadmin_password: iGyz5rk6JVYA
+ :crm_path: http://75.31.122.27/
+ :rhoadmin_passwod: ""
 
-# Randomly generated from http://www.grc.com/passwords.htm
-:crypt_key: "61AA71C0AB689FAEE09CD9310CB59A809D688652C78AA1CAB65B961D2FFAF7D1"

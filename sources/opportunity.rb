@@ -1,5 +1,4 @@
 require 'ap'
-require 'helpers/crypto'
 
 class Opportunity < SourceAdapter
   
@@ -22,13 +21,10 @@ class Opportunity < SourceAdapter
     end
   end
  
-  def login    
+  def login
     Exceptional.rescue_and_reraise do
       @username = Store.get_value("username:#{current_user.login.downcase}:username")
-      
-      encryptedPassword = Store.get_value("username:#{current_user.login.downcase}:password")
-      @password = Crypto.decrypt( encryptedPassword )
-      
+      @password = Store.get_value("username:#{current_user.login.downcase}:password")     
       @initialized_key = "username:#{current_user.login.downcase}:opportunity:initialized"
     end
   end
