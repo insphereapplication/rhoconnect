@@ -13,6 +13,10 @@
   Note: 
     :poll_interval: 1
  
+:app_info:
+  :min_required_version: 1.0
+  :force_upgrade_url: http://www.apple.com/
+  
 :test: 
   :authtoken: DQAAALEAAACGrfH6ZfOMVxZXyYlonWDB-eJvjfya3zcT_6p71LomPfxI10401l7o5Sd5Z30abSeSNAMNAWJpCcRUBEL99vpxTGny1YxAvUop5tLUdWJyhtnlCxkq0qksleXmYv8LXkymjJr7t8oIC2Cm78UfySxqIytNvJt5DFM-nEU-uHeJLje1oIxKw14EAJoQOPql9boX2x8SZaAq4P9DDeYRzEaSJbkipVYz8TXW92qmBbNwhsqc8CWzgstqB9ztYP5_N3k
   :redis: localhost:6379

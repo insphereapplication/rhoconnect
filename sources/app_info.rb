@@ -1,6 +1,3 @@
-$settings_file = 'settings/settings.yml'
-$config = YAML::load_file($settings_file)
-
 class AppInfo < SourceAdapter
   def initialize(source,credential)
     ap "AppInfo.initialize"
@@ -13,11 +10,14 @@ class AppInfo < SourceAdapter
  
   def query(params=nil)
     ap "AppInfo.query"
-    mrv = CONFIG[:minimum_required_version]
+    settings = YAML::load_file('settings/settings.yml')
+    ap "*** Settings file = #{settings.inspect}"
+    mrv = settings[:app_info][:minimum_required_version]
+    url = settings[:app_info][:upgrade_url]
     ap "*** Client should be using at least version #{mrv} ***"
-    @result = { "1" => { :min_required_version => mrv } }
+    ap "*** Upgrade URL is #{url} ***"
+    @result = { "1" => { :min_required_version => mrv, :upgrade_url => url } }
     
-    # YAML::load_file("")
     # TODO: Query your backend data source and assign the records 
     # to a nested hash structure called @result. For example:
     # @result = { 
