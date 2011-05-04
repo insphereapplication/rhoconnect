@@ -8,7 +8,7 @@ $lead_sources = ['Internet','Direct Mail','E-Mail','Newspaper','Other','PDL','Ra
 
 $lead_vendors = ['AllWeb','Humana','Insphere','InsureMe','iPipeline','Most Choice']
 
-$lead_types = ['Agent Website','Banner','Classified','Mobile Website','Other','Preferred','Search','Shared']
+$lead_types = ['Agent Website','Banner','Classified','Mobile Website','Other','Search']
 
 def rand_array_item(array)
 	array[rand(array.count)]
@@ -129,34 +129,34 @@ def get_crm_appointment_time_hash(startTime, endTime)
 	}
 end
 
-def create_contact(server,token,identity,additional_attributes=nil)
+def create_contact(server,credential,identity,additional_attributes=nil)
 	contact_data = get_fake_contact_data(identity)
 	contact_data.merge!(additional_attributes) unless additional_attributes.nil?
 	ap contact_data
-	id = RestClient.post("#{server}/contact/create", { :token => token, :attributes => contact_data.to_json }).body
+	id = RestClient.post("#{server}/contact/create", credential.to_hash.merge(:attributes => contact_data.to_json)).body
 	ap id
 	id
 end
 
-def create_opportunity(server,token,contact_id,identity,additional_attributes=nil)
+def create_opportunity(server,credential,contact_id,identity,additional_attributes=nil)
 	opportunity_data = get_fake_opportunity_data(contact_id, identity)
 	opportunity_data.merge!(additional_attributes) unless additional_attributes.nil?
 	ap opportunity_data
-	id = RestClient.post("#{server}/opportunity/create", { :token => token, :attributes => opportunity_data.to_json }).body
+	id = RestClient.post("#{server}/opportunity/create", credential.to_hash.merge(:attributes => opportunity_data.to_json)).body
 	ap id
 	id
 end
 
-def create_phonecall(server,token,opportunity_id,additional_attributes=nil)
+def create_phonecall(server,credential,opportunity_id,additional_attributes=nil)
 	phonecall_data = get_fake_phonecall_data(opportunity_id)
 	phonecall_data.merge!(additional_attributes) unless additional_attributes.nil?
 	ap phonecall_data
-	id = RestClient.post("#{server}/activity/create", { :token => token, :attributes => phonecall_data.to_json }).body
+	id = RestClient.post("#{server}/activity/create", credential.to_hash.merge(:attributes => phonecall_data.to_json)).body
 	ap id
 	id
 end
 
-def update_phonecall(server,token,phonecall_id,attributes)
+def update_phonecall(server,credential,phonecall_id,attributes)
 	if attributes.nil? then
 		throw :attributes_must_be_specified
 	end
@@ -166,28 +166,28 @@ def update_phonecall(server,token,phonecall_id,attributes)
 		'activityid' => phonecall_id
 	})
 	
-	RestClient.post("#{server}/activity/udate", { :token => token, :attributes => attributes.to_json }).body
+	RestClient.post("#{server}/activity/udate", credential.to_hash.merge(:attributes => attributes.to_json)).body
 end
 
-def create_appointment(server,token,opportunity_id,additional_attributes=nil)
+def create_appointment(server,credential,opportunity_id,additional_attributes=nil)
 	appointment_data = get_fake_appointment_data(opportunity_id)
 	appointment_data.merge!(additional_attributes) unless additional_attributes.nil?
 	ap appointment_data
-	id = RestClient.post("#{server}/activity/create", { :token => token, :attributes => appointment_data.to_json }).body
+	id = RestClient.post("#{server}/activity/create", credential.to_hash.merge(:attributes => appointment_data.to_json )).body
 	ap id
 	id
 end
 
-def create_note(server,token,object_id, object_type,additional_attributes=nil)
+def create_note(server,credential,object_id, object_type,additional_attributes=nil)
 	note_data = get_fake_note_data(object_id, object_type)
 	note_data.merge!(additional_attributes) unless additional_attributes.nil?
 	ap note_data
-	id = RestClient.post("#{server}/annotation/create", { :token => token, :attributes => note_data.to_json }).body
+	id = RestClient.post("#{server}/annotation/create", credential.to_hash.merge(:attributes => note_data.to_json)).body
 	ap id
 	id
 end
 
-def update_appointment(server,token,appointment_id,attributes)
+def update_appointment(server,credential,appointment_id,attributes)
 	if attributes.nil? then
 		throw :attributes_must_be_specified
 	end
@@ -197,118 +197,118 @@ def update_appointment(server,token,appointment_id,attributes)
 		'activityid' => appointment_id
 	})
 	
-	RestClient.post("#{server}/activity/udate", { :token => token, :attributes => attributes.to_json }).body
+	RestClient.post("#{server}/activity/udate", credential.to_hash.merge(:attributes => attributes.to_json)).body
 end
 
 #----------------------------
 
-def generate_new_contacts(server,token,identity,contact_count,additional_attributes=nil,create_notes=false)
+def generate_new_contacts(server,credential,identity,contact_count,additional_attributes=nil,create_notes=false)
 	puts "Generating #{contact_count} new contacts"
 	created_contact_ids = []
 	for i in 1..contact_count
-		created_contact_ids.push(create_contact(server, token, identity, additional_attributes))
+		created_contact_ids.push(create_contact(server, credential, identity, additional_attributes))
 	end
-	generate_new_notes(server,token,created_contact_ids,'contact') if create_notes
+	generate_new_notes(server,credential,created_contact_ids,'contact') if create_notes
 	created_contact_ids
 end
 
-def generate_new_opportunities(server,token,identity,contact_ids,additional_attributes=nil,create_notes=false)
+def generate_new_opportunities(server,credential,identity,contact_ids,additional_attributes=nil,create_notes=false)
 	puts "Generating #{contact_ids.count} new opportunities"
 	created_opportunity_ids = []
 	contact_ids.each { |contact_id|
-		created_opportunity_ids.push(create_opportunity(server, token, contact_id, identity, additional_attributes))
+		created_opportunity_ids.push(create_opportunity(server, credential, contact_id, identity, additional_attributes))
 	}
-	generate_new_notes(server,token,created_opportunity_ids,'opportunity') if create_notes
+	generate_new_notes(server,credential,created_opportunity_ids,'opportunity') if create_notes
 	created_opportunity_ids
 end
 
-def generate_new_phonecalls(server,token,opportunity_ids,additional_attributes=nil,create_notes=false)
+def generate_new_phonecalls(server,credential,opportunity_ids,additional_attributes=nil,create_notes=false)
 	puts "Generating #{opportunity_ids.count} new phonecalls"
 	created_phonecall_ids = []
 	opportunity_ids.each { |opportunity_id|
-		created_phonecall_ids.push(create_phonecall(server, token, opportunity_id, additional_attributes))
+		created_phonecall_ids.push(create_phonecall(server, credential, opportunity_id, additional_attributes))
 	}
-	generate_new_notes(server,token,created_phonecall_ids,'phonecall') if create_notes
+	generate_new_notes(server,credential,created_phonecall_ids,'phonecall') if create_notes
 	created_phonecall_ids
 end
 
-def generate_new_appointments(server,token,opportunity_ids,additional_attributes=nil,create_notes=false)
+def generate_new_appointments(server,credential,opportunity_ids,additional_attributes=nil,create_notes=false)
 	puts "Generating #{opportunity_ids.count} new appointments"
 	created_appointment_ids = []
 	opportunity_ids.each { |opportunity_id|
-		created_appointment_ids.push(create_appointment(server, token, opportunity_id, additional_attributes))
+		created_appointment_ids.push(create_appointment(server, credential, opportunity_id, additional_attributes))
 	}
-	generate_new_notes(server,token,created_appointment_ids,'appointment') if create_notes
+	generate_new_notes(server,credential,created_appointment_ids,'appointment') if create_notes
 	created_appointment_ids
 end
 
-def generate_new_notes(server,token,object_ids,object_type,additional_attributes=nil)
+def generate_new_notes(server,credential,object_ids,object_type,additional_attributes=nil)
 	puts "Generating #{object_ids.count} new notes"
-	object_ids.map {|objectId| create_note(server,token,objectId,object_type,additional_attributes)}
+	object_ids.map {|objectId| create_note(server,credential,objectId,object_type,additional_attributes)}
 end
 
 #-----------------------
 
-def generate_leads_with_phonecall(server,token,identity,lead_count,phonecall_attributes=nil,create_notes=false)
+def generate_leads_with_phonecall(server,credential,identity,lead_count,phonecall_attributes=nil,create_notes=false)
 	puts "Generating #{lead_count} new leads with phone calls"
-	created_lead_ids = generate_new_leads(server,token,identity,lead_count,nil,create_notes)
-	created_phonecall_ids = generate_new_phonecalls(server,token,created_lead_ids,phonecall_attributes,create_notes)
+	created_lead_ids = generate_new_leads(server,credential,identity,lead_count,nil,create_notes)
+	created_phonecall_ids = generate_new_phonecalls(server,credential,created_lead_ids,phonecall_attributes,create_notes)
 end
 
-def generate_leads_with_appointment(server,token,identity,lead_count,appointment_attributes=nil,create_notes=false)
+def generate_leads_with_appointment(server,credential,identity,lead_count,appointment_attributes=nil,create_notes=false)
 	puts "Generating #{lead_count} new leads with appointments"
-	created_lead_ids = generate_new_leads(server,token,identity,lead_count,nil,create_notes)
-	created_appointment_ids = generate_new_appointments(server,token,created_lead_ids,appointment_attributes,create_notes)
+	created_lead_ids = generate_new_leads(server,credential,identity,lead_count,nil,create_notes)
+	created_appointment_ids = generate_new_appointments(server,credential,created_lead_ids,appointment_attributes,create_notes)
 	
 end
 
 #-----------------------
 
-def generate_new_leads(server,token,identity,lead_count,created_seconds_ago=nil,create_notes=false)
+def generate_new_leads(server,credential,identity,lead_count,created_seconds_ago=nil,create_notes=false)
 	puts "Generating #{lead_count} new leads, created #{created_seconds_ago} seconds ago"
 	override_created_on = created_seconds_ago.nil? ? {} : {
 		'overriddencreatedon' => format_date_time(Time.now - created_seconds_ago)
 	}
-	created_contact_ids = generate_new_contacts(server,token,identity,lead_count,nil,create_notes)
-	created_opportunity_ids = generate_new_opportunities(server,token,identity,created_contact_ids,override_created_on,create_notes)
+	created_contact_ids = generate_new_contacts(server,credential,identity,lead_count,nil,create_notes)
+	created_opportunity_ids = generate_new_opportunities(server,credential,identity,created_contact_ids,override_created_on,create_notes)
 	created_opportunity_ids
 end
 
-def generate_new_leads_for_contact(server,token,identity,lead_count,contact_id,created_seconds_ago=nil,create_notes=false)
+def generate_new_leads_for_contact(server,credential,identity,lead_count,contact_id,created_seconds_ago=nil,create_notes=false)
 	puts "Generating #{lead_count} new leads for contact #{contact_id}, created #{created_seconds_ago} seconds ago"
 	override_created_on = created_seconds_ago.nil? ? {} : {
 		'overriddencreatedon' => format_date_time(Time.now - created_seconds_ago)
 	}
 	created_opportunity_ids = []
 	for i in 1..lead_count
-		created_opportunity_ids.push(create_opportunity(server, token, contact_id, identity, override_created_on))
+		created_opportunity_ids.push(create_opportunity(server, credential, contact_id, identity, override_created_on))
 	end
-	generate_new_notes(server,token,created_opportunity_ids,'opportunity') if create_notes
+	generate_new_notes(server,credential,created_opportunity_ids,'opportunity') if create_notes
 	created_opportunity_ids
 end
 
-def generate_followup_leads(server,token,identity,lead_count,due_seconds=nil,create_notes=false)
+def generate_followup_leads(server,credential,identity,lead_count,due_seconds=nil,create_notes=false)
 	puts "Generating #{lead_count} new phonecalls, due #{due_seconds} seconds from now"
 	phonecall_attributes = due_seconds.nil? ? {} : {
 		'scheduledend' => format_date_time(Time.now + due_seconds)
 	}
-	generate_leads_with_phonecall(server,token,identity,lead_count,phonecall_attributes,create_notes)
+	generate_leads_with_phonecall(server,credential,identity,lead_count,phonecall_attributes,create_notes)
 end
 
-def generate_stale_leads(server,token,identity,lead_count,create_notes=false)
+def generate_stale_leads(server,credential,identity,lead_count,create_notes=false)
 	puts "Generating #{lead_count} closed phonecalls"
 	phonecall_attributes = {
 		'statecode' => 'Completed',
 		'cssi_disposition' => 'No Answer'
 	}
-	generate_leads_with_phonecall(server,token,identity,lead_count,phonecall_attributes,create_notes)
+	generate_leads_with_phonecall(server,credential,identity,lead_count,phonecall_attributes,create_notes)
 end
 
-def generate_appointment_leads(server,token,identity,lead_count,due_seconds=nil,create_notes=false)
+def generate_appointment_leads(server,credential,identity,lead_count,due_seconds=nil,create_notes=false)
 	puts "Generating #{lead_count} leads with appointments due in #{due_seconds} seconds"
 	dueStartTime = (Time.now + (due_seconds || 0))
 	dueEndTime = (dueStartTime + (60 * 30))
 	appointment_attributes = get_crm_appointment_time_hash(dueStartTime, dueEndTime)
 	ap appointment_attributes
-	generate_leads_with_appointment(server,token,identity,lead_count,appointment_attributes,create_notes)
+	generate_leads_with_appointment(server,credential,identity,lead_count,appointment_attributes,create_notes)
 end
