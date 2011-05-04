@@ -3,12 +3,12 @@
 #:rhoadmin_password: 88a93d3FRTBEBE4
 
 #MODEL
-# :crm_path: https://mobileproxy.model.insphereis.net/
-# :rhoadmin_password: ""
+:crm_path: https://mobileproxy.model.insphereis.net/
+:rhoadmin_password: ""
 
 #DEV
-:crm_path: http://nrhwwwd401.insp.dom:5000/
-:rhoadmin_password: ""
+# :crm_path: http://nrhwwwd401.insp.dom:5000/
+# :rhoadmin_password: ""
 
 #LOCAL
 # :crm_path: http://192.168.51.128/
@@ -16,3 +16,7 @@
 
 # Randomly generated from http://www.grc.com/passwords.htm
 :crypt_key: "61AA71C0AB689FAEE09CD9310CB59A809D688652C78AA1CAB65B961D2FFAF7D1"
+
+# Minimum version needed before client is forced to upgrade; also verbosely named so
+# we don't conflict with the Rhodes side
+:minimum_required_version: "1.0.1"
