@@ -1,12 +1,14 @@
 
+
 API_KEY = 'b8788d7b2ae404c9661f40215f5d9258aede9c83'
 
 
 $settings_file = 'settings/settings.yml'
 $config = YAML::load_file($settings_file)
 $app_path = File.expand_path(File.dirname(__FILE__))
-$target = :test
+$target = :model
 $server = ($config[$target] ? $config[$target][:syncserver] : "").sub('/application', '')
+$password = ($config[$target] ? $config[$target][:password] : "")
 
 
 namespace :server do
@@ -26,7 +28,6 @@ namespace :server do
   end
 
   login = 'rhoadmin'
-  password = ''
   tokenfile = '.rhosync_token'
   
   task :set_token do
@@ -37,12 +38,26 @@ namespace :server do
         puts "using persisted token: #{@token}..."
       else
         puts "no persisted token found, authenticating at #{$server}..."
-        puts "Posting to: #{$server}login -- #{{ :login => 'rhoadmin', :password => "" }.to_json}"
-        res = RestClient.post("#{$server}login", { :login => 'rhoadmin', :password => "" }.to_json, :content_type => :json)
-        puts "Response #{res.inspect}"
-        @token = RestClient.post("#{$server}api/get_api_token",'',{ :cookies => res.cookies })
-        File.open(tokenfile, 'w') {|f| f.write(@token) }
+        puts "Posting to: #{$server}login -- #{{ :login => 'rhoadmin', :password => $password }.to_json}"
+        res = RestClient.post("#{$server}login", { :login => 'rhoadmin', :password => $password }.to_json, :content_type => :json)
+        
+        puts "Pre-token cookies #{res.cookies.inspect}"
+        
+        #The following fix is needed when using rest-client 1.6.1;
+        #The make_headers function (lib/restclient/request.rb, line 86) uses CGI::unescape, but we want the cookies
+        #submitted to RhoSync to remain escaped. The following code simply replaces all '%' characters with their
+        #URL-encoded value of '%25' to prevent escaped characters in the given cookie from being unescaped by
+        #rest-client. For example, a given cookie of "1234%3D%0A5" would have been unescaped and sent back to
+        #RhoSync as "12345=\n5", but RhoSync expects the cookie to be in its original escaped format.
+        preserved_cookies = res.cookies.inject({}){ |h,(key,value)| 
+          h[key] = value.gsub('%', '%25')
+          h
+        }
+                
+        @token = RestClient.post("#{$server}api/get_api_token",'',{ :cookies => preserved_cookies, })
+        
         puts "new token: #{@token}"
+        File.open(tokenfile, 'w') {|f| f.write(@token) }
       end
       Rake::Task['server:show'].invoke
     rescue Exception => e
