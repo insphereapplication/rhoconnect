@@ -11,9 +11,9 @@ class AppInfo < SourceAdapter
   def query(params=nil)
     ap "AppInfo.query"
     settings = YAML::load_file('settings/settings.yml')
-    ap "*** Settings file = #{settings.inspect}"
-    mrv = settings[:app_info][:minimum_required_version]
-    url = settings[:app_info][:upgrade_url]
+    ap "*** Settings file = #{settings[:app_info].inspect}"
+    mrv = settings[:app_info][:min_required_version]
+    url = settings[:app_info][:force_upgrade_url]
     ap "*** Client should be using at least version #{mrv} ***"
     ap "*** Upgrade URL is #{url} ***"
     @result = { "1" => { :min_required_version => mrv, :upgrade_url => url } }
