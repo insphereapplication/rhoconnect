@@ -20,10 +20,10 @@ CONFIG = YAML::load_file("#{File.expand_path(File.join(File.dirname(__FILE__)))}
 
 # the following code loads the resque scheduler and worker into forked processes, which is necessary in order to run
 # the nightly data aging cleanup task. 
-Resque.redis = Redis.connect(:url => ENV['REDIS'])
-Resque.schedule = YAML.load_file(File.join(File.dirname(__FILE__), 'settings/resque_schedule.yml'))
-Resque::Scheduler.run if fork.nil?
-Resque::Worker.new('clean_old_opportunity_data').work(1) if fork.nil?
+# Resque.redis = Redis.connect(:url => ENV['REDIS'])
+# Resque.schedule = YAML.load_file(File.join(File.dirname(__FILE__), 'settings/resque_schedule.yml'))
+# Resque::Scheduler.run if fork.nil?
+# Resque::Worker.new('clean_old_opportunity_data').work(1) if fork.nil?
 
 
 
