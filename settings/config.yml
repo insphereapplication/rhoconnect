@@ -3,10 +3,9 @@
 #:rhoadmin_password: 88a93d3FRTBEBE4
 
 #MODEL
-:crm_path: https://mobileproxy.model.insphereis.net/
-:rhoadmin_password: ""
+# :crm_path: https://mobileproxy.model.insphereis.net/
+# :rhoadmin_password: U5PgMPngu27j
 
 #DEV
- # :crm_path: http://75.31.122.27/
- # :rhoadmin_passwod: ""
-
+:crm_path: http://75.31.122.27/
+:rhoadmin_password: iGyz5rk6JVYA
