@@ -3,6 +3,7 @@ GEM
   specs:
     SystemTimer (1.2.3)
     awesome_print (0.3.2)
+    crypt (1.1.4)
     exceptional (2.0.32)
       rack
     faker (0.9.5)
@@ -38,6 +39,7 @@ PLATFORMS
 DEPENDENCIES
   SystemTimer
   awesome_print
+  crypt
   exceptional
   faker
   resque-scheduler
