@@ -14,7 +14,7 @@
     :poll_interval: 1
  
 :app_info:
-  :min_required_version: 1.0
+  :min_required_version: 1.2
   :force_upgrade_url: http://www.apple.com/
   
 :test: 
