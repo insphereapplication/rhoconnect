@@ -11,6 +11,7 @@ GEM
     i18n (0.5.0)
     json (1.4.6)
     rack (1.2.1)
+    rack-ssl-enforcer (0.2.2)
     redis (2.2.0)
     redis-namespace (0.10.0)
       redis (< 3.0.0)
@@ -42,4 +43,5 @@ DEPENDENCIES
   crypt
   exceptional
   faker
+  rack-ssl-enforcer
   resque-scheduler

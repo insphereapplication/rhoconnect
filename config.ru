@@ -14,6 +14,9 @@ require 'resque/server'
 require 'sinatra'
 require 'exceptional'
 
+# Library for forcing SSL
+require 'rack/ssl-enforcer'
+
 set :raise_errors, true
 use Rack::Exceptional, 'b8788d7b2ae404c9661f40215f5d9258aede9c83' #CONFIG[:exceptional_api_key]
 
@@ -28,6 +31,9 @@ Rhosync::Server.set     :environment, :production
 Rhosync::Server.set     :secret,      '8b885f195f8561e9738cec8f1e280af467722366a28128af0a61310eeeb23d5e1c59b1726711ca2e87ebc744781a4e7c47c7b52697f6d80c52f49a8152b0a7ab'
 Rhosync::Server.set     :root,        ROOT_PATH
 Rhosync::Server.use     Rack::Static, :urls => ["/data"], :root => Rhosync::Server.root
+
+# Force SSL
+Rhosync::Server.use     Rack::SslEnforcer
 
 # Load our rhosync application
 require 'application'
