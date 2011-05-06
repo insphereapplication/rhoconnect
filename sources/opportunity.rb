@@ -34,14 +34,16 @@ class Opportunity < SourceAdapter
       Exceptional.context(:current_user => current_user.login )
       unless Store.get_value(@initialized_key) == 'true'   
         ap "QUERY FOR OPPORTUNITIES"
-        parsed_values = JSON.parse(RestClient.post(@opportunity_url,
-            {:username => @username, 
+        
+        res = RestClient.post(@opportunity_url,
+          {:username => @username, 
             :password => @password},
             :content_type => :json
-          )
         )
-        @result = parsed_values.reduce({}){|sum, value| sum[value['opportunityid']] = value; sum }
-        Exceptional.context(:parsed_values => parsed_values, :result => @result)
+        
+        @result = Mapper.map_source_data(res, 'Opportunity')
+        
+        Exceptional.context(:result => @result)
         ap @result
       end 
     end
@@ -69,11 +71,15 @@ class Opportunity < SourceAdapter
       update_hash['cssi_fromrhosync'] = 'true'
       Exceptional.context(:current_user => current_user.inspect, :update_hash => update_hash)
       ap update_hash
+      
+      mapped_hash = OpportunityMapper.map_data_from_client(update_hash.clone)
+      
       result = RestClient.post("#{@opportunity_url}/update", 
           {:username => @username, 
           :password => @password,
-          :attributes => update_hash.to_json}
+          :attributes => mapped_hash.to_json}
         ).body
+        
       Exceptional.context(:result => result)
       ap result
     end
