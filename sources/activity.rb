@@ -1,3 +1,4 @@
+require 'helpers/crypto'
 
 class Activity < SourceAdapter
   def initialize(source,credential)
@@ -8,7 +9,10 @@ class Activity < SourceAdapter
   def login
     Exceptional.rescue_and_reraise do
       @username = Store.get_value("username:#{current_user.login.downcase}:username")
-      @password = Store.get_value("username:#{current_user.login.downcase}:password")
+      
+      encryptedPassword = Store.get_value("username:#{current_user.login.downcase}:password")
+      @password = Crypto.decrypt( encryptedPassword )
+      
       @initialized_key = "username:#{current_user.login.downcase}:activity:initialized"
       @user_id_key = "username:#{current_user.login.downcase}:crm_user_id"
     end
