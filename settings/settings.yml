@@ -24,7 +24,7 @@
     :iphoneserver: gateway.sandbox.push.apple.com
     :iphoneport: 2195
     :syncserver: https://rhohub-insphere-b3789b06.heroku.com/application/
-    :password: 88a93d3FRTBEBE4
+    :password: aW9wVhyU84Sj
     :authtoken: 'DQAAALEAAACGrfH6ZfOMVxZXyYlonWDB-eJvjfya3zcT_6p71LomPfxI10401l7o5Sd5Z30abSeSNAMNAWJpCcRUBEL99vpxTGny1YxAvUop5tLUdWJyhtnlCxkq0qksleXmYv8LXkymjJr7t8oIC2Cm78UfySxqIytNvJt5DFM-nEU-uHeJLje1oIxKw14EAJoQOPql9boX2x8SZaAq4P9DDeYRzEaSJbkipVYz8TXW92qmBbNwhsqc8CWzgstqB9ztYP5_N3k'
 :model: 
   :iphonecertfile: settings/apple_push_cert.pem
