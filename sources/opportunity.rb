@@ -69,10 +69,12 @@ class Opportunity < SourceAdapter
       update_hash['cssi_fromrhosync'] = 'true'
       Exceptional.context(:current_user => current_user.inspect, :update_hash => update_hash)
       ap update_hash
+      
+      mapped_hash = OpportunityMapper.map_data_from_client(update_hash)
       result = RestClient.post("#{@opportunity_url}/update", 
           {:username => @username, 
           :password => @password,
-          :attributes => update_hash.to_json}
+          :attributes => mapped_hash.to_json}
         ).body
       Exceptional.context(:result => result)
       ap result
