@@ -4,5 +4,6 @@ gem "awesome_print"
 gem "exceptional"
 gem "resque-scheduler"
 gem "SystemTimer"
-# gem 'rest-client', '=1.4.2'
-# gem 'larsburgess-rest-client', '=1.6.1'
+gem "crypt"
+gem "rack-ssl-enforcer"
+gem "rhosync", :git => "git://github.com/rhomobile/rhosync.git", :branch => "2-1-stable", :require => "rhosync/server"

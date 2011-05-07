@@ -1,5 +1,5 @@
 Rhosync::Server.api :reset_sync_status do |params,user|
-  Exceptional.rescue_and_reraise do
+  ExceptionUtil.rescue_and_reraise do
     user_pattern = params[:user_pattern]
     ap "RESET SYNC FOR USERS MATCHING PATTERN #{user_pattern}"
     ap params

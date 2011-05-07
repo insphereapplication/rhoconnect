@@ -1,21 +1,26 @@
+require 'helpers/crypto'
+
 class Note < SourceAdapter
   def initialize(source,credential)
-    Exceptional.rescue_and_reraise do
+    ExceptionUtil.rescue_and_reraise do
       @note_url = "#{CONFIG[:crm_path]}annotation"
       super(source,credential)
     end
   end
  
   def login
-    Exceptional.rescue_and_reraise do
+    ExceptionUtil.rescue_and_reraise do
       @username = Store.get_value("username:#{current_user.login.downcase}:username")
-      @password = Store.get_value("username:#{current_user.login.downcase}:password")     
+      
+      encryptedPassword = Store.get_value("username:#{current_user.login.downcase}:password")
+      @password = Crypto.decrypt( encryptedPassword )
+          
       @initialized_key = "username:#{current_user.login.downcase}:note:initialized"
     end
   end
  
   def query(params=nil)
-    Exceptional.rescue_and_reraise do
+    ExceptionUtil.rescue_and_reraise do
       unless Store.get_value(@initialized_key) == 'true'
         ap "NOTE QUERY"
         res = RestClient.post(@note_url,
@@ -30,7 +35,7 @@ class Note < SourceAdapter
   end
  
   def sync
-    Exceptional.rescue_and_reraise do
+    ExceptionUtil.rescue_and_reraise do
       unless Store.get_value(@initialized_key) == 'true'
         super
         Store.put_value(@initialized_key, 'true')
@@ -39,7 +44,7 @@ class Note < SourceAdapter
   end
  
   def create(create_hash,blob=nil)
-    Exceptional.rescue_and_reraise do
+    ExceptionUtil.rescue_and_reraise do
       puts "CREATE NOTE"
       ap create_hash
       ap "#{@note_url}/create"
@@ -58,7 +63,7 @@ class Note < SourceAdapter
   end
  
   def update(update_hash)
-    Exceptional.rescue_and_reraise do
+    ExceptionUtil.rescue_and_reraise do
       result = JSON.parse(RestClient.post("#{@note_url}/update", 
           {:username => @username, 
           :password => @password,

@@ -1,10 +1,11 @@
 require 'ap'
+require 'helpers/crypto'
 
 class Opportunity < SourceAdapter
   
   on_api_push do |user_id|
-    Exceptional.rescue_and_reraise do
-       Exceptional.context(:user_id => user_id )
+    ExceptionUtil.rescue_and_reraise do
+       ExceptionUtil.context(:user_id => user_id )
        PingJob.perform(
          'user_id' => user_id,
          'message' => 'You have new Opportunities',
@@ -15,40 +16,45 @@ class Opportunity < SourceAdapter
   end
   
   def initialize(source,credential)
-    Exceptional.rescue_and_reraise do
+    ExceptionUtil.rescue_and_reraise do
       @opportunity_url = "#{CONFIG[:crm_path]}opportunity"
       super(source,credential)
     end
   end
  
-  def login
-    Exceptional.rescue_and_reraise do
+  def login    
+    ExceptionUtil.rescue_and_reraise do
       @username = Store.get_value("username:#{current_user.login.downcase}:username")
-      @password = Store.get_value("username:#{current_user.login.downcase}:password")     
+      
+      encryptedPassword = Store.get_value("username:#{current_user.login.downcase}:password")
+      @password = Crypto.decrypt( encryptedPassword )
+      
       @initialized_key = "username:#{current_user.login.downcase}:opportunity:initialized"
     end
   end
  
   def query(params=nil)
-    Exceptional.rescue_and_reraise do
-      Exceptional.context(:current_user => current_user.login )
+    ExceptionUtil.rescue_and_reraise do
+      ExceptionUtil.context(:current_user => current_user.login )
       unless Store.get_value(@initialized_key) == 'true'   
         ap "QUERY FOR OPPORTUNITIES"
-        parsed_values = JSON.parse(RestClient.post(@opportunity_url,
-            {:username => @username, 
+        
+        res = RestClient.post(@opportunity_url,
+          {:username => @username, 
             :password => @password},
             :content_type => :json
-          )
         )
-        @result = parsed_values.reduce({}){|sum, value| sum[value['opportunityid']] = value; sum }
-        Exceptional.context(:parsed_values => parsed_values, :result => @result)
+        
+        @result = Mapper.map_source_data(res, 'Opportunity')
+        
+        ExceptionUtil.context(:result => @result)
         ap @result
       end 
     end
   end
  
   def sync
-    Exceptional.rescue_and_reraise do
+    ExceptionUtil.rescue_and_reraise do
       unless Store.get_value(@initialized_key) == 'true'  
         super
         Store.put_value(@initialized_key, 'true')
@@ -64,19 +70,21 @@ class Opportunity < SourceAdapter
   end
  
   def update(update_hash)
-    Exceptional.rescue_and_reraise do
+    ExceptionUtil.rescue_and_reraise do
       puts "UPDATE OPPORTUNITY"
       update_hash['cssi_fromrhosync'] = 'true'
-      Exceptional.context(:current_user => current_user.inspect, :update_hash => update_hash)
+      ExceptionUtil.context(:current_user => current_user.inspect, :update_hash => update_hash)
       ap update_hash
-      
-      mapped_hash = OpportunityMapper.map_data_from_client(update_hash)
+
+      mapped_hash = OpportunityMapper.map_data_from_client(update_hash.clone)
+
       result = RestClient.post("#{@opportunity_url}/update", 
           {:username => @username, 
           :password => @password,
           :attributes => mapped_hash.to_json}
         ).body
-      Exceptional.context(:result => result)
+        
+      ExceptionUtil.context(:result => result)
       ap result
     end
   end

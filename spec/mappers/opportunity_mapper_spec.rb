@@ -1,5 +1,6 @@
 require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 require 'rest-client'
+require 'active_support/core_ext'
 
 describe OpportunityMapper do 
   it_should_behave_like "SpecHelper"
@@ -16,21 +17,21 @@ describe OpportunityMapper do
     
   end
   
-  before(:each) do
-    raw_opps_query = JSON
-    JSON.stub!(:parse).and_return(RAW_OPPS_QUERY)
-    RestClient.stub!(:post).and_return('')
-    setup_test_for Opportunity, @current_user.login
-    @early_opp_id = "d2db3339-4d64-e011-90a3-0050569c2250"
-    @late_opp_id = "d66659f2-a864-e011-90a3-0050569c2250"
-  end
-    
-  it "should process Opportunity query" do
-    JSON.stub!(:parse).and_return(RAW_OPPS_QUERY)
-    RestClient.stub!(:post).and_return('')
-    test_query.size.should > 0
-    query_errors.should == {}
-  end
+  # before(:each) do
+  #   raw_opps_query = JSON
+  #   JSON.stub!(:parse).and_return(RAW_OPPS_QUERY)
+  #   RestClient.stub!(:post).and_return('')
+  #   setup_test_for Opportunity, @current_user.login
+  #   @early_opp_id = "d2db3339-4d64-e011-90a3-0050569c2250"
+  #   @late_opp_id = "d66659f2-a864-e011-90a3-0050569c2250"
+  # end
+  #   
+  # it "should process Opportunity query" do
+  #   JSON.stub!(:parse).and_return(RAW_OPPS_QUERY)
+  #   RestClient.stub!(:post).and_return('')
+  #   test_query.size.should > 0
+  #   query_errors.should == {}
+  # end
   
   
   it "should send down conflict fields if last_activity_date in Redis is earlier than last_activity_date on the client" do

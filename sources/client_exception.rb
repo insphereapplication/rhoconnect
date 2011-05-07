@@ -12,15 +12,15 @@ class ClientException < SourceAdapter
   def sync
   end
  
-  def create(exception,blob=nil)
-    Exceptional.rescue_and_reraise do
+  def create(client_exception,blob=nil)
+    ExceptionUtil.rescue_and_reraise do
       puts "CREATE EXCEPTION"
-      ap exception
-      e = Exception.new(exception['message'])
-      Exceptional.context(:client_exception_data => e.inspect)
-      Exceptional.handle(e, "Client raised error: #{exception['backtrace']}")
+      ap client_exception
+      e = Exception.new(client_exception['message'])
+      ExceptionUtil.context(:client_exception_data => e.inspect)
+      ExceptionUtil.handle(e, "Client raised error: #{client_exception['backtrace']}")
 
-      exception['exception_id']
+      client_exception['exception_id']
     end
   end
  
