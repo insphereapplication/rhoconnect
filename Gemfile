@@ -1,7 +1,6 @@
 source "http://rubygems.org"
 gem "faker"
 gem "awesome_print"
-gem "exceptional"
 gem "resque-scheduler"
 gem "SystemTimer"
 gem "crypt"

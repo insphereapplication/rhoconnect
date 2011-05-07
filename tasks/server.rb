@@ -164,7 +164,7 @@ namespace :server do
     )
   end
   
-  desc "manually raise a test exception (should send a notification to Exceptional)" 
+  desc "manually raise a test exception (should send a notification to ExceptionUtil)" 
   task :test_exception, [:message] => [:set_token] do |t, args|
     puts "posting to #{$server}api/test_exception"
     puts({:api_token => @token, :message => args.message }.to_json)
