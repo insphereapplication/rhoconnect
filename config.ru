@@ -2,7 +2,7 @@
 require 'bundler'
 Bundler.require
 
-ENV['REDIS'] = "redis://nrhrho103:6279"
+ENV['REDIS'] = "redis://nrhrho103:6379"
 
 # Try to load vendor-ed rhosync, otherwise load the gem
 begin
