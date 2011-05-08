@@ -5,7 +5,7 @@ set :use_sudo,    false
 set :deploy_to,   "/var/www/#{application}"
 set :deploy_via, :copy
 set :scm,         :git
-set :user,        "dsims"
+set :user,        "cap"
 
 server "10.143.28.181", :app, :web
 
