@@ -1,20 +1,3 @@
-GIT
-  remote: git://github.com/rhomobile/rhosync.git
-  revision: 67a35d7b4a594cd179c280212db1e58ced730b72
-  branch: 2-1-stable
-  specs:
-    rhosync (2.1.2)
-      json (~> 1.4.2)
-      rake (>= 0.8.7)
-      redis (~> 2.1.1)
-      resque (~> 1.14.0)
-      rest-client (~> 1.6.1)
-      rubyzip (~> 0.9.4)
-      sinatra (~> 1.2)
-      sqlite3-ruby (~> 1.2.5)
-      templater (~> 1.0.0)
-      uuidtools (>= 2.1.1)
-
 GEM
   remote: http://rubygems.org/
   specs:
@@ -48,6 +31,17 @@ GEM
       rufus-scheduler
     rest-client (1.6.1)
       mime-types (>= 1.16)
+    rhosync (2.1.3)
+      json (~> 1.4.2)
+      rake (>= 0.8.7)
+      redis (~> 2.1.1)
+      resque (~> 1.14.0)
+      rest-client (~> 1.6.1)
+      rubyzip (~> 0.9.4)
+      sinatra (~> 1.2)
+      sqlite3-ruby (~> 1.2.5)
+      templater (~> 1.0.0)
+      uuidtools (>= 2.1.1)
     rubyzip (0.9.4)
     rufus-scheduler (2.0.9)
       tzinfo (>= 0.3.23)
@@ -76,4 +70,4 @@ DEPENDENCIES
   faker
   rack-ssl-enforcer
   resque-scheduler
-  rhosync!
+  rhosync (= 2.1.3)
