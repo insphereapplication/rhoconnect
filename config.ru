@@ -1,4 +1,8 @@
 #!/usr/bin/env ruby
+require 'bundler'
+Bundler.require
+
+ENV['REDIS'] = "redis://nrhrho103:6379"
 
 # Try to load vendor-ed rhosync, otherwise load the gem
 begin
@@ -14,7 +18,7 @@ require 'resque/server'
 require 'sinatra'
 
 # Library for forcing SSL
-require 'rack/ssl-enforcer'
+# require 'rack/ssl-enforcer'
 
 set :raise_errors, true
 
@@ -31,7 +35,7 @@ Rhosync::Server.set     :root,        ROOT_PATH
 Rhosync::Server.use     Rack::Static, :urls => ["/data"], :root => Rhosync::Server.root
 
 # Force SSL
-Rhosync::Server.use     Rack::SslEnforcer
+# Rhosync::Server.use     Rack::SslEnforcer
 
 # Load our rhosync application
 require 'application'
