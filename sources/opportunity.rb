@@ -1,4 +1,3 @@
-require 'ap'
 require 'helpers/crypto'
 
 class Opportunity < SourceAdapter
@@ -37,7 +36,7 @@ class Opportunity < SourceAdapter
     ExceptionUtil.rescue_and_reraise do
       ExceptionUtil.context(:current_user => current_user.login )
       unless Store.get_value(@initialized_key) == 'true'   
-        ap "QUERY FOR OPPORTUNITIES"
+        InsiteLogger.info "QUERY FOR OPPORTUNITIES"
         
         res = RestClient.post(@opportunity_url,
           {:username => @username, 
@@ -48,7 +47,7 @@ class Opportunity < SourceAdapter
         @result = Mapper.map_source_data(res, 'Opportunity')
         
         ExceptionUtil.context(:result => @result)
-        ap @result
+        InsiteLogger.info @result.inspect
       end 
     end
   end
@@ -71,10 +70,10 @@ class Opportunity < SourceAdapter
  
   def update(update_hash)
     ExceptionUtil.rescue_and_reraise do
-      puts "UPDATE OPPORTUNITY"
+      InsiteLogger.info "UPDATE OPPORTUNITY"
       update_hash['cssi_fromrhosync'] = 'true'
       ExceptionUtil.context(:current_user => current_user.inspect, :update_hash => update_hash)
-      ap update_hash
+      InsiteLogger.info update_hash.inspect
 
       mapped_hash = OpportunityMapper.map_data_from_client(update_hash.clone)
 
@@ -85,7 +84,7 @@ class Opportunity < SourceAdapter
         ).body
         
       ExceptionUtil.context(:result => result)
-      ap result
+      InsiteLogger.info result.inspect
     end
   end
   

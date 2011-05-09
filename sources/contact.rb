@@ -24,7 +24,7 @@ class Contact < SourceAdapter
   def query(params=nil)
     ExceptionUtil.rescue_and_reraise do
       unless Store.get_value(@initialized_key) == 'true'
-        puts "INITIALIZING USER CONTACTS for #{current_user.login.downcase}"
+        InsiteLogger.info "INITIALIZING USER CONTACTS for #{current_user.login.downcase}"
         ExceptionUtil.context(:current_user => current_user.login )
         res = RestClient.post(@contact_url,
           {:username => @username, 
@@ -55,7 +55,7 @@ class Contact < SourceAdapter
   
   def update(update_hash)
     ExceptionUtil.rescue_and_reraise do
-      puts "UPDATE CONTACT"
+      InsiteLogger.info "UPDATE CONTACT"
       ExceptionUtil.context(:current_user => current_user.login )
       
       mapped_hash = ContactMapper.map_data_from_client(update_hash.clone)
@@ -66,7 +66,7 @@ class Contact < SourceAdapter
           :attributes => mapped_hash.to_json}
       ).body
       
-      ap result
+      InsiteLogger.info result.info
       ExceptionUtil.context(:result => result )
       result
     end

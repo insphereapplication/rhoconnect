@@ -5,6 +5,10 @@
 #MODEL
 :crm_path: https://mobileproxy.model.insphereis.net/
 :rhoadmin_password: U5PgMPngu27j
+:log:
+  :path: /var/log/insite_mobile.log
+  :max_file_size: 1024000
+  :num_old_logs: 10
 
 #DEV
 #:crm_path: http://75.31.122.27/

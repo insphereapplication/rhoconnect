@@ -21,15 +21,15 @@ class ExceptionUtil
   private
   
   def self.print_exception(exception, exception_string=nil)
-    ap "*** EXCEPTION TYPE ***"
-    ap exception.inspect
-    ap "*** EXCEPTION CONTEXT ***"
-    ap "#{@context.inspect}"
-    ap "*** EXCEPTION STRING ***"
-    ap exception_string
-    ap "*** EXCEPTION STACK TRACE ***"
-    ap caller
-    ap "*** END EXCEPTION ***"
+    InsiteLogger.info "*** EXCEPTION TYPE ***"
+    InsiteLogger.info exception.inspect
+    InsiteLogger.info "*** EXCEPTION CONTEXT ***"
+    InsiteLogger.info "#{@context.inspect}"
+    InsiteLogger.info "*** EXCEPTION STRING ***"
+    InsiteLogger.info exception_string
+    InsiteLogger.info "*** EXCEPTION STACK TRACE ***"
+    InsiteLogger.info caller.join("\n")
+    InsiteLogger.info "*** END EXCEPTION ***"
   end # print_exception
   
 end # class
