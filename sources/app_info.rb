@@ -13,10 +13,12 @@ class AppInfo < SourceAdapter
     settings = YAML::load_file('settings/settings.yml')
     ap "*** Settings file = #{settings[:app_info].inspect}"
     mrv = settings[:app_info][:min_required_version]
-    url = settings[:app_info][:force_upgrade_url]
+    apple_url = settings[:app_info][:apple_force_upgrade_url]
+    android_url = settings[:app_info][:android_force_upgrade_url]
     ap "*** Client should be using at least version #{mrv} ***"
-    ap "*** Upgrade URL is #{url} ***"
-    @result = { "1" => { :min_required_version => mrv, :upgrade_url => url } }
+    ap "*** Apple Upgrade URL is #{apple_url} ***"
+    ap "*** Android Upgrade URL is #{android_url} ***"
+    @result = { "1" => { :min_required_version => mrv, :apple_upgrade_url => apple_url, :android_upgrade_url => android_url } }
     
     # TODO: Query your backend data source and assign the records 
     # to a nested hash structure called @result. For example:
