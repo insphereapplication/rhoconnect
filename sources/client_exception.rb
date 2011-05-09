@@ -14,8 +14,8 @@ class ClientException < SourceAdapter
  
   def create(client_exception,blob=nil)
     ExceptionUtil.rescue_and_reraise do
-      puts "CREATE EXCEPTION"
-      ap client_exception
+      InsiteLogger.info "CREATE EXCEPTION"
+      InsiteLogger.info client_exception
       e = Exception.new(client_exception['message'])
       ExceptionUtil.context(:client_exception_data => e.inspect)
       ExceptionUtil.handle(e, "Client raised error: #{client_exception['backtrace']}")

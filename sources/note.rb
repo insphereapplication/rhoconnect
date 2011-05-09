@@ -22,14 +22,14 @@ class Note < SourceAdapter
   def query(params=nil)
     ExceptionUtil.rescue_and_reraise do
       unless Store.get_value(@initialized_key) == 'true'
-        ap "NOTE QUERY"
+        InsiteLogger.info "NOTE QUERY"
         res = RestClient.post(@note_url,
             {:username => @username, 
             :password => @password},
             :content_type => :json
           )
         @result = Mapper.map_source_data(res, 'Note')
-        ap @result
+        InsiteLogger.info @result.inspect
       end
     end
   end
@@ -45,18 +45,18 @@ class Note < SourceAdapter
  
   def create(create_hash,blob=nil)
     ExceptionUtil.rescue_and_reraise do
-      puts "CREATE NOTE"
-      ap create_hash
-      ap "#{@note_url}/create"
+      InsiteLogger.info "CREATE NOTE"
+      InsiteLogger.info create_hash.inspect
+      InsiteLogger.info "#{@note_url}/create"
       mapped_hash = NoteMapper.map_data_from_client(create_hash.clone)
-      ap mapped_hash
+      InsiteLogger.info mapped_hash.inspect
     
       result = RestClient.post("#{@note_url}/create", 
           {:username => @username, 
           :password => @password,
           :attributes => mapped_hash.to_json}
         ).body
-      ap result
+      InsiteLogger.info result.inspect
     
       result
     end

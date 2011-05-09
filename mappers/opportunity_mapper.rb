@@ -1,5 +1,5 @@
 
-class OpportunityMapper
+class OpportunityMapper < Mapper
   OPPORTUNITY_CONFLICT_FIELDS = [:statuscode, :statecode, :cssi_lastactivitydate]
   def self.map_data_from_client(data, current_user=nil)
     if data[:cssi_lastactivitydate]
