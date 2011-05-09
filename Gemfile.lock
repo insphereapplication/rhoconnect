@@ -15,7 +15,6 @@ GEM
     json (1.4.6)
     mime-types (1.16)
     rack (1.2.2)
-    rack-ssl-enforcer (0.2.2)
     rake (0.8.7)
     redis (2.1.1)
     redis-namespace (0.10.0)
@@ -68,6 +67,5 @@ DEPENDENCIES
   crypt
   exceptional
   faker
-  rack-ssl-enforcer
   resque-scheduler
   rhosync (= 2.1.3)
