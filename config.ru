@@ -42,7 +42,9 @@ Rhosync::Server.use     Rack::Static, :urls => ["/data"], :root => Rhosync::Serv
 # Force SSL
 if !!CONFIG[:ssl]
   require 'rack/ssl-enforcer'
-  Rhosync::Server.use     Rack::SslEnforcer
+  Rhosync::Server.use         Rack::SslEnforcer
+  RhosyncConsole::Server.use  Rack::SslEnforcer
+  Resque::Server.use          Rack::SslEnforcer
 end
 
 # Load our rhosync application
