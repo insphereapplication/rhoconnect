@@ -15,18 +15,17 @@
     
 
 :app_info:
-    :min_required_version: 1.0.12 # This MUST be 3 groups of numbers, in the form x.x.x, or there is a risk of tossing an exception when checking for an upgrade
+    :min_required_version: 1.0.0 # This MUST be 3 groups of numbers, in the form x.x.x, or there is a risk of tossing an exception when checking for an upgrade
     :apple_force_upgrade_url: http://www.apple.com/
     :android_force_upgrade_url: http://www.google.com/
     
 # !!! env defines the global context for the server !!!
 :env: onsite
 
-# use one of the following keys for the :crm: value in the environment sections below to determine which crm deployment Rhosync will use, i.e., ':crm: model_crm'
-model_crm: https://mobileproxy.model.insphereis.net/
-dev_crm: https://devmobileproxy.insphereis.net/
-prod_crm: https://mobileproxy.insphereis.net/
-
+# use one of the following keys for the :crm_proxy: value in the environment sections below to determine which crm deployment Rhosync will use, i.e., ':crm_proxy: model_crm_proxy'
+model_crm_proxy: https://mobileproxy.model.insphereis.net/
+dev_crm_proxy: https://devmobileproxy.insphereis.net/
+prod_crm_proxy: https://mobileproxy.insphereis.net/
 
 # global settings are given to all environments as defaults, and can be overridden in specific environment sections below (:test, :model, etc.) 
 # !!! However, DO NOT use any of the following Rhosync values in global: redis, licensefile, authtoken, iphone*, rhoadmin_password, syncserver.
@@ -36,7 +35,7 @@ prod_crm: https://mobileproxy.insphereis.net/
   :ssl: true
   # the resque daemons have to be forked off of the main process in Rhohub, but not onsite (see boot.rb)
   :fork_resque: true
-  :crm: dev_crm
+  :crm_proxy: dev_crm_proxy
   :log:
     :path: ./log/insite_mobile.log
     :max_file_size: 1024000
@@ -46,7 +45,7 @@ prod_crm: https://mobileproxy.insphereis.net/
 # The following sections inherit from the global section and will override any values duplicated from global (:ssl:, etc.)
 # The :env: value above determines which of these sections is used by the Rhosync environment.
 :test: 
-  :crm: model_crm
+  :crm_proxy: model_crm_proxy
   :redis: localhost:6379
   :licensefile: settings/license.key
   :syncserver: http://localhost:9292/application/
@@ -55,7 +54,7 @@ prod_crm: https://mobileproxy.insphereis.net/
   :ssl: false
   :fork_resque: false
 :production: 
-  :crm: prod_crm
+  :crm_proxy: prod_crm_proxy
   :iphonecertfile: settings/apple_push_cert.pem
   :redis: localhost:6379
   :iphonepassphrase: Pariveda1
@@ -66,7 +65,7 @@ prod_crm: https://mobileproxy.insphereis.net/
   :authtoken: 'DQAAAN4AAABMr5gOJS_7EvXDtx6gyJAk2xHHmkV_RybjlOgPQWOKv5Bjr6ylRnTHt8ogtQcOCAm_j-LjqFQ3f0OHLExbmeRCxOKcRqBY2drlhkMPJL3CW679Dadnwg5VNnufZUEFdHl4SUIwd7dGJK-AtjnDSRC_pPYlP7N0Ldjn2vessXN9Yk4v-k9CGNtKcuFRG2LGeLwRfHco8d5aHpMI4kKbDrOPjRHSKn6jEalsmLmv9Gq6tRxVRkxoN8EiUv6bg638U2nOOHHgr_wF0hcmg9WuYmtlPE41Hm2GlPhrV-nh9Mhu6w'
   :rhoadmin_password: aW9wVhyU84Sj
 :model: 
-  :crm: model_crm
+  :crm_proxy: model_crm_proxy
   :iphonecertfile: settings/apple_push_cert.pem
   :redis: localhost:6379
   :iphonepassphrase: Pariveda1
@@ -77,7 +76,7 @@ prod_crm: https://mobileproxy.insphereis.net/
   :authtoken: 'DQAAAN4AAABMr5gOJS_7EvXDtx6gyJAk2xHHmkV_RybjlOgPQWOKv5Bjr6ylRnTHt8ogtQcOCAm_j-LjqFQ3f0OHLExbmeRCxOKcRqBY2drlhkMPJL3CW679Dadnwg5VNnufZUEFdHl4SUIwd7dGJK-AtjnDSRC_pPYlP7N0Ldjn2vessXN9Yk4v-k9CGNtKcuFRG2LGeLwRfHco8d5aHpMI4kKbDrOPjRHSKn6jEalsmLmv9Gq6tRxVRkxoN8EiUv6bg638U2nOOHHgr_wF0hcmg9WuYmtlPE41Hm2GlPhrV-nh9Mhu6w'
   :rhoadmin_password: U5PgMPngu27j
 :development: 
-  :crm: dev_crm
+  :crm_proxy: dev_crm_proxy
   :iphonecertfile: settings/apple_push_cert.pem
   :redis: localhost:6379
   :iphonepassphrase: Pariveda1
@@ -88,7 +87,7 @@ prod_crm: https://mobileproxy.insphereis.net/
   :authtoken: 'DQAAAN4AAABMr5gOJS_7EvXDtx6gyJAk2xHHmkV_RybjlOgPQWOKv5Bjr6ylRnTHt8ogtQcOCAm_j-LjqFQ3f0OHLExbmeRCxOKcRqBY2drlhkMPJL3CW679Dadnwg5VNnufZUEFdHl4SUIwd7dGJK-AtjnDSRC_pPYlP7N0Ldjn2vessXN9Yk4v-k9CGNtKcuFRG2LGeLwRfHco8d5aHpMI4kKbDrOPjRHSKn6jEalsmLmv9Gq6tRxVRkxoN8EiUv6bg638U2nOOHHgr_wF0hcmg9WuYmtlPE41Hm2GlPhrV-nh9Mhu6w'
   :rhoadmin_password: iGyz5rk6JVYA
 :onsite: 
-  :crm: model_crm
+  :crm_proxy: model_crm_proxy
   :iphonecertfile: settings/apple_push_cert.pem
   :redis: nrhrho103:6379
   :iphonepassphrase: Pariveda1
