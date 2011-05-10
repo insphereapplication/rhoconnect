@@ -1,5 +1,5 @@
 set :application, "InsiteMobile"
-set :domain,      "mobile.insphere.com"
+set :domain,      "rhosync.insphereis.net"
 set :repository,  "git@git.rhohub.com:insphere/InsiteMobile-dev-rhosync.git"
 set :branch,      "onsite_master"
 set :use_sudo,    false
