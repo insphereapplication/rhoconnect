@@ -12,7 +12,7 @@
     :poll_interval: 1
     
 # !! env defines the global context for the server
-:env: test
+:env: development
 
 model_crm: https://mobileproxy.model.insphereis.net/
 dev_crm: http://75.31.122.27/
