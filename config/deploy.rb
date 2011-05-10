@@ -9,7 +9,7 @@ set :scm,         :git
 set :user,        "cap"
 set :normalize_asset_timestamps, false
 
-role :app, "nrhrho101"
+role :app, "nrhrho101", "nrhrho102"
 
 namespace :deploy do
   task :start, :roles => :app do
