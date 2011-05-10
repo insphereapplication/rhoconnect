@@ -1,5 +1,7 @@
 #Sources 
 :sources: 
+  AppInfo:
+    :poll_interval: 1
   Contact: 
     :poll_interval: 1
   Opportunity: 
@@ -10,6 +12,11 @@
     :poll_interval: 1
   Note: 
     :poll_interval: 1
+    
+:app_info:
+    :min_required_version: 1.0.12 # This MUST be 3 groups of numbers, in the form x.x.x, or there is a risk of tossing an exception when checking for an upgrade
+    :apple_force_upgrade_url: http://www.apple.com/
+    :android_force_upgrade_url: http://www.google.com/
     
 # !!! env defines the global context for the server !!!
 :env: development
