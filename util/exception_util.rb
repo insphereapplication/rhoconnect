@@ -24,7 +24,7 @@ class ExceptionUtil
     InsiteLogger.info "*** EXCEPTION TYPE ***"
     InsiteLogger.info exception
     InsiteLogger.info "*** EXCEPTION CONTEXT ***"
-    InsiteLogger.info "#{@context.inspect}"
+    InsiteLogger.info @context
     InsiteLogger.info "*** EXCEPTION STRING ***"
     InsiteLogger.info exception_string
     InsiteLogger.info "*** EXCEPTION STACK TRACE ***"
