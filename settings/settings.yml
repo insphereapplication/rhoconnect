@@ -23,7 +23,7 @@ prod_crm: https://mobileproxy.insphereis.net/
   :ssl: true
   :fork_resque: true
   :log:
-    :path: /var/log/insite_mobile/insite_mobile.log
+    :path: /var/www/InsiteMobile/shared/log/insite_mobile.log
     :max_file_size: 1024000
     :num_old_logs: 10
     :mode: stdout
