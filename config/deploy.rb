@@ -7,8 +7,9 @@ set :deploy_to,   "/var/www/#{application}"
 set :deploy_via, :copy
 set :scm,         :git
 set :user,        "cap"
+set :normalize_asset_timestamps, false
 
-server "10.143.28.181", :app, :web
+role :app, "nrhrho101"
 
 namespace :deploy do
   task :start, :roles => :app do
