@@ -7,10 +7,11 @@ app_path = File.expand_path(File.join(File.dirname(__FILE__)))
 
 require "#{app_path}/initializers/hash_extension"
 
-temp_config = YAML::load_file("#{app_path}/settings/settings.yml")
-env = temp_config[:env].to_sym
-CONFIG = temp_config[:global].deep_merge(temp_config[env])
-CONFIG[:crm_path] = temp_config[CONFIG[:crm]]
+# load and merge all global and env-specific settings from settings.yml
+settings = YAML::load_file("#{app_path}/settings/settings.yml")
+env = settings[:env].to_sym
+CONFIG = settings[:global].deep_merge(settings[env])
+CONFIG[:crm_path] = settings[CONFIG[:crm]]
 CONFIG[:env] = env
 
 # Try to load vendor-ed rhosync, otherwise load the gem
@@ -37,7 +38,7 @@ Rhosync::Server.enable  :stats
 Rhosync::Server.disable :run
 Rhosync::Server.disable :clean_trace
 Rhosync::Server.enable  :raise_errors
-Rhosync::Server.set     :environment, env
+Rhosync::Server.set     :environment, CONFIG[:env]
 Rhosync::Server.set     :secret,      '8b885f195f8561e9738cec8f1e280af467722366a28128af0a61310eeeb23d5e1c59b1726711ca2e87ebc744781a4e7c47c7b52697f6d80c52f49a8152b0a7ab'
 Rhosync::Server.set     :root,        ROOT_PATH
 Rhosync::Server.use     Rack::Static, :urls => ["/data"], :root => Rhosync::Server.root

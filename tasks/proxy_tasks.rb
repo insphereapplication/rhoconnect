@@ -7,7 +7,7 @@ $create_notes = false
 
 $environments = {'local' => 'http://localhost:52904', 
   'dev-internal' => 'http://nrhwwwd401.insp.dom:5000', 
-  'dev-external' => 'http://75.31.122.27', 
+  'dev-external' => 'https://devmobileproxy.insphereis.net', 
   'model-internal' => 'http://nrhwwwm201.insp.dom:5000', 
   'model-external' => 'https://mobileproxy.model.insphereis.net',
   'production-external' => 'https://mobileproxy.insphereis.net'}

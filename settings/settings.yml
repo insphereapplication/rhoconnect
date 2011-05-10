@@ -22,9 +22,9 @@
 # !!! env defines the global context for the server !!!
 :env: onsite
 
-# use one of the following keys for the :crm: value in the environment sections below
+# use one of the following keys for the :crm: value in the environment sections below to determine which crm deployment Rhosync will use, i.e., ':crm: model_crm'
 model_crm: https://mobileproxy.model.insphereis.net/
-dev_crm: http://75.31.122.27/
+dev_crm: https://devmobileproxy.insphereis.net/
 prod_crm: https://mobileproxy.insphereis.net/
 
 
