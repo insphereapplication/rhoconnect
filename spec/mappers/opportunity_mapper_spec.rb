@@ -10,11 +10,6 @@ describe OpportunityMapper do
     def @current_user.login
        "testuser" 
     end
-    # 
-    # JSON.stub!(:parse).and_return(RAW_OPPS_QUERY)
-    # RestClient.stub!(:post).and_return('')
-    
-    
   end
   
   # before(:each) do

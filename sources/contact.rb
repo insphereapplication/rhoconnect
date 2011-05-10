@@ -35,7 +35,7 @@ class Contact < SourceAdapter
         @result = Mapper.map_source_data(res, 'Contact')
         
         ExceptionUtil.context(:result => @result )
-        ap @result
+        InsiteLogger.info @result
       end
     end
   end
