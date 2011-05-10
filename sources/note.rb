@@ -29,7 +29,7 @@ class Note < SourceAdapter
             :content_type => :json
           )
         @result = Mapper.map_source_data(res, 'Note')
-        InsiteLogger.info @result.inspect
+        InsiteLogger.info @result
       end
     end
   end
@@ -46,17 +46,17 @@ class Note < SourceAdapter
   def create(create_hash,blob=nil)
     ExceptionUtil.rescue_and_reraise do
       InsiteLogger.info "CREATE NOTE"
-      InsiteLogger.info create_hash.inspect
+      InsiteLogger.info create_hash
       InsiteLogger.info "#{@note_url}/create"
       mapped_hash = NoteMapper.map_data_from_client(create_hash.clone)
-      InsiteLogger.info mapped_hash.inspect
+      InsiteLogger.info mapped_hash
     
       result = RestClient.post("#{@note_url}/create", 
           {:username => @username, 
           :password => @password,
           :attributes => mapped_hash.to_json}
         ).body
-      InsiteLogger.info result.inspect
+      InsiteLogger.info result
     
       result
     end

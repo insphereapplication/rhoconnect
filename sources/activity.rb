@@ -49,7 +49,7 @@ class Activity < SourceAdapter
   def create(create_hash,blob=nil)
     ExceptionUtil.rescue_and_reraise do
       InsiteLogger.info "CREATE ACTIVITY"
-      InsiteLogger.info create_hash.inspect
+      InsiteLogger.info create_hash
       InsiteLogger.info "#{@activity_url}/create"
       InsiteLogger.info @token
       
@@ -67,13 +67,13 @@ class Activity < SourceAdapter
       mapped_hash['cssi_fromrhosync'] = 'true'
       ExceptionUtil.context(:current_user => current_user.login, :mapped_activity_hash => mapped_hash )
       
-      InsiteLogger.info mapped_hash.inspect
+      InsiteLogger.info mapped_hash
       result = RestClient.post("#{@activity_url}/create", 
           {:username => @username, 
           :password => @password,
           :attributes => mapped_hash.to_json}
         ).body
-      InsiteLogger.info result.inspect
+      InsiteLogger.info result
     
       result
     end
@@ -82,9 +82,9 @@ class Activity < SourceAdapter
   def update(update_hash)
     ExceptionUtil.rescue_and_reraise do
       InsiteLogger.info "UPDATE ACTIVITY"
-      InsiteLogger.info update_hash.inspect
+      InsiteLogger.info update_hash
       activity = ActivityModel.get_model(current_user.login, update_hash['id'])
-      InsiteLogger.info activity.inspect
+      InsiteLogger.info activity
     
       #calling clone on the following line is EXTREMELY important - update_hash is passed by reference and is what is going to be committed to the DB
       mapped_hash = ActivityMapper.map_data_from_client(update_hash.clone)

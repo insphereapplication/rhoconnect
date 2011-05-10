@@ -10,13 +10,35 @@
     :poll_interval: 1
   Note: 
     :poll_interval: 1
- 
+    
+# !! env defines the global context for the server
+:env: test
+
+model_crm: https://mobileproxy.model.insphereis.net/
+dev_crm: http://75.31.122.27/
+prod_crm: https://mobileproxy.insphereis.net/
+    
+:global:
+  :crypt_key: "61AA71C0AB689FAEE09CD9310CB59A809D688652C78AA1CAB65B961D2FFAF7D1"
+  :ssl: true
+  :fork_resque: true
+  :log:
+    :path: /var/log/insite_mobile.log
+    :max_file_size: 1024000
+    :num_old_logs: 10
+    :mode: stdout
+        
 :test: 
+  :crm: model_crm
   :redis: localhost:6379
   :licensefile: settings/license.key
   :syncserver: http://localhost:9292/application/
   :authtoken: 'DQAAALEAAACGrfH6ZfOMVxZXyYlonWDB-eJvjfya3zcT_6p71LomPfxI10401l7o5Sd5Z30abSeSNAMNAWJpCcRUBEL99vpxTGny1YxAvUop5tLUdWJyhtnlCxkq0qksleXmYv8LXkymjJr7t8oIC2Cm78UfySxqIytNvJt5DFM-nEU-uHeJLje1oIxKw14EAJoQOPql9boX2x8SZaAq4P9DDeYRzEaSJbkipVYz8TXW92qmBbNwhsqc8CWzgstqB9ztYP5_N3k'
+  :rhoadmin_password: ''
+  :ssl: false
+  :fork_resque: false
 :production: 
+  :crm: prod_crm
   :iphonecertfile: settings/apple_push_cert.pem
   :redis: localhost:6379
   :iphonepassphrase: Pariveda1
@@ -24,9 +46,10 @@
   :iphoneserver: gateway.sandbox.push.apple.com
   :iphoneport: 2195
   :syncserver: https://rhohub-insphere-b3789b06.heroku.com/application/
-  :password: aW9wVhyU84Sj
   :authtoken: 'DQAAALEAAACGrfH6ZfOMVxZXyYlonWDB-eJvjfya3zcT_6p71LomPfxI10401l7o5Sd5Z30abSeSNAMNAWJpCcRUBEL99vpxTGny1YxAvUop5tLUdWJyhtnlCxkq0qksleXmYv8LXkymjJr7t8oIC2Cm78UfySxqIytNvJt5DFM-nEU-uHeJLje1oIxKw14EAJoQOPql9boX2x8SZaAq4P9DDeYRzEaSJbkipVYz8TXW92qmBbNwhsqc8CWzgstqB9ztYP5_N3k'
+  :rhoadmin_password: aW9wVhyU84Sj
 :model: 
+  :crm: model_crm
   :iphonecertfile: settings/apple_push_cert.pem
   :redis: localhost:6379
   :iphonepassphrase: Pariveda1
@@ -34,9 +57,10 @@
   :iphoneserver: gateway.sandbox.push.apple.com
   :iphoneport: 2195
   :syncserver: https://rhohub-insphere-c3d43885.heroku.com/application/
-  :password: U5PgMPngu27j
   :authtoken: 'DQAAALEAAACGrfH6ZfOMVxZXyYlonWDB-eJvjfya3zcT_6p71LomPfxI10401l7o5Sd5Z30abSeSNAMNAWJpCcRUBEL99vpxTGny1YxAvUop5tLUdWJyhtnlCxkq0qksleXmYv8LXkymjJr7t8oIC2Cm78UfySxqIytNvJt5DFM-nEU-uHeJLje1oIxKw14EAJoQOPql9boX2x8SZaAq4P9DDeYRzEaSJbkipVYz8TXW92qmBbNwhsqc8CWzgstqB9ztYP5_N3k'
+  :rhoadmin_password: U5PgMPngu27j
 :development: 
+  :crm: dev_crm
   :iphonecertfile: settings/apple_push_cert.pem
   :redis: localhost:6379
   :iphonepassphrase: Pariveda1
@@ -44,5 +68,20 @@
   :iphoneserver: gateway.sandbox.push.apple.com
   :iphoneport: 2195
   :syncserver: https://rhohub-insphere-a06075d6.heroku.com/application/
-  :password: iGyz5rk6JVYA
   :authtoken: 'DQAAALEAAACGrfH6ZfOMVxZXyYlonWDB-eJvjfya3zcT_6p71LomPfxI10401l7o5Sd5Z30abSeSNAMNAWJpCcRUBEL99vpxTGny1YxAvUop5tLUdWJyhtnlCxkq0qksleXmYv8LXkymjJr7t8oIC2Cm78UfySxqIytNvJt5DFM-nEU-uHeJLje1oIxKw14EAJoQOPql9boX2x8SZaAq4P9DDeYRzEaSJbkipVYz8TXW92qmBbNwhsqc8CWzgstqB9ztYP5_N3k'
+  :rhoadmin_password: iGyz5rk6JVYA
+:onsite: 
+  :crm: model_crm
+  :iphonecertfile: settings/apple_push_cert.pem
+  :redis: nrhrho103:6379
+  :iphonepassphrase: Pariveda1
+  :licensefile: settings/license.key
+  :iphoneserver: gateway.sandbox.push.apple.com
+  :iphoneport: 2195
+  :syncserver: http://10.143.28.181/application/
+  :authtoken: 'DQAAALEAAACGrfH6ZfOMVxZXyYlonWDB-eJvjfya3zcT_6p71LomPfxI10401l7o5Sd5Z30abSeSNAMNAWJpCcRUBEL99vpxTGny1YxAvUop5tLUdWJyhtnlCxkq0qksleXmYv8LXkymjJr7t8oIC2Cm78UfySxqIytNvJt5DFM-nEU-uHeJLje1oIxKw14EAJoQOPql9boX2x8SZaAq4P9DDeYRzEaSJbkipVYz8TXW92qmBbNwhsqc8CWzgstqB9ztYP5_N3k'
+  :rhoadmin_password: ''
+  :ssl: false
+  :fork_resque: false
+  :log:
+     :mode: 'file'

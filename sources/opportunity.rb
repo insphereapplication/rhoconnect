@@ -47,7 +47,7 @@ class Opportunity < SourceAdapter
         @result = Mapper.map_source_data(res, 'Opportunity')
         
         ExceptionUtil.context(:result => @result)
-        InsiteLogger.info @result.inspect
+        InsiteLogger.info @result
       end 
     end
   end
@@ -73,7 +73,7 @@ class Opportunity < SourceAdapter
       InsiteLogger.info "UPDATE OPPORTUNITY"
       update_hash['cssi_fromrhosync'] = 'true'
       ExceptionUtil.context(:current_user => current_user.inspect, :update_hash => update_hash)
-      InsiteLogger.info update_hash.inspect
+      InsiteLogger.info update_hash
 
       # mapped_hash = OpportunityMapper.map_data_from_client(update_hash.clone)
 
@@ -84,7 +84,7 @@ class Opportunity < SourceAdapter
         ).body
         
       ExceptionUtil.context(:result => result)
-      InsiteLogger.info result.inspect
+      InsiteLogger.info result
     end
   end
   

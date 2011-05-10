@@ -22,13 +22,13 @@ class ExceptionUtil
   
   def self.print_exception(exception, exception_string=nil)
     InsiteLogger.info "*** EXCEPTION TYPE ***"
-    InsiteLogger.info exception.inspect
+    InsiteLogger.info exception
     InsiteLogger.info "*** EXCEPTION CONTEXT ***"
     InsiteLogger.info "#{@context.inspect}"
     InsiteLogger.info "*** EXCEPTION STRING ***"
     InsiteLogger.info exception_string
     InsiteLogger.info "*** EXCEPTION STACK TRACE ***"
-    InsiteLogger.info caller.join("\n")
+    InsiteLogger.info exception.backtrace
     InsiteLogger.info "*** END EXCEPTION ***"
   end # print_exception
   
