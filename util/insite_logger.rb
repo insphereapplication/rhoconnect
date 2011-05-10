@@ -16,7 +16,7 @@ module InsiteLogger
     
     if log_conf[:mode] == 'file' 
       Dir.mkdir(File.dirname(log_conf[:path])) unless File.exists?(File.dirname(log_conf[:path]))
-      @logger = Logger.new(log_conf[:path], log_conf[:num_old_logs], log_conf[:max_log_size]) 
+      @logger = Logger.new(log_conf[:path], log_conf[:num_archived_logs], log_conf[:max_log_size]) 
     end
   end
 end

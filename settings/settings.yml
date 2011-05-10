@@ -11,23 +11,32 @@
   Note: 
     :poll_interval: 1
     
-# !! env defines the global context for the server
+# !!! env defines the global context for the server !!!
 :env: development
 
+# use one of the following keys for the :crm: value in the environment sections below
 model_crm: https://mobileproxy.model.insphereis.net/
 dev_crm: http://75.31.122.27/
 prod_crm: https://mobileproxy.insphereis.net/
-    
+
+
+# global settings are given to all environments as defaults, and can be overridden in specific environment sections below (:test, :model, etc.) 
+# !!! However, DO NOT use any of the following Rhosync values in global: redis, licensefile, authtoken, iphone*, rhoadmin_password, syncserver.
+# Those values are used internally by Rhosync and have to be duplicated in each section.   
 :global:
   :crypt_key: "61AA71C0AB689FAEE09CD9310CB59A809D688652C78AA1CAB65B961D2FFAF7D1"
   :ssl: true
+  # the resque daemons have to be forked off of the main process in Rhohub, but not onsite (see boot.rb)
   :fork_resque: true
+  :crm: dev_crm
   :log:
     :path: ./log/insite_mobile.log
     :max_file_size: 1024000
-    :num_old_logs: 10
-    :mode: stdout
-        
+    :num_archived_logs: 10
+    :mode: stdout # logging defaults to stdout only; set mode to 'file' to turn on file logging to log:path (above)
+    
+# The following sections inherit from the global section and will override any values duplicated from global (:ssl:, etc.)
+# The :env: value above determines which of these sections is used by the Rhosync environment.
 :test: 
   :crm: model_crm
   :redis: localhost:6379
