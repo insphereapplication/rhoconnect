@@ -7,7 +7,7 @@ require "#{app_path}/initializers/hash_extension"
 settings = YAML::load_file("#{app_path}/settings/settings.yml")
 env = settings[:env].to_sym
 CONFIG = settings[:global].deep_merge(settings[env])
-CONFIG[:crm_path] = settings[CONFIG[:crm]]
+CONFIG[:crm_path] = settings[CONFIG[:crm_proxy]]
 CONFIG[:env] = env
 
 # Try to load vendor-ed rhosync, otherwise load the gem
