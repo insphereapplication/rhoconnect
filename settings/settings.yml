@@ -13,6 +13,7 @@
   Note: 
     :poll_interval: 1
     
+
 :app_info:
     :min_required_version: 1.0.12 # This MUST be 3 groups of numbers, in the form x.x.x, or there is a risk of tossing an exception when checking for an upgrade
     :apple_force_upgrade_url: http://www.apple.com/
@@ -94,7 +95,7 @@ prod_crm: https://mobileproxy.insphereis.net/
   :licensefile: settings/license.key
   :iphoneserver: gateway.sandbox.push.apple.com
   :iphoneport: 2195
-  :syncserver: http://10.143.28.181/application/
+  :syncserver: http://nrhrho101/application/
   :authtoken: 'DQAAAN4AAABMr5gOJS_7EvXDtx6gyJAk2xHHmkV_RybjlOgPQWOKv5Bjr6ylRnTHt8ogtQcOCAm_j-LjqFQ3f0OHLExbmeRCxOKcRqBY2drlhkMPJL3CW679Dadnwg5VNnufZUEFdHl4SUIwd7dGJK-AtjnDSRC_pPYlP7N0Ldjn2vessXN9Yk4v-k9CGNtKcuFRG2LGeLwRfHco8d5aHpMI4kKbDrOPjRHSKn6jEalsmLmv9Gq6tRxVRkxoN8EiUv6bg638U2nOOHHgr_wF0hcmg9WuYmtlPE41Hm2GlPhrV-nh9Mhu6w'
   :rhoadmin_password: ''
   :ssl: false
