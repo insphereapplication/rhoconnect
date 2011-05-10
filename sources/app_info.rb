@@ -12,9 +12,9 @@ class AppInfo < SourceAdapter
     ap "AppInfo.query"
     settings = YAML::load_file('settings/settings.yml')
     ap "*** Settings file = #{settings[:app_info].inspect}"
-    mrv = settings[:app_info][:min_required_version]
-    apple_url = settings[:app_info][:apple_force_upgrade_url]
-    android_url = settings[:app_info][:android_force_upgrade_url]
+    mrv = settings[:global][:app_info][:min_required_version]
+    apple_url = settings[:global][:app_info][:apple_force_upgrade_url]
+    android_url = settings[:global][:app_info][:android_force_upgrade_url]
     ap "*** Client should be using at least version #{mrv} ***"
     ap "*** Apple Upgrade URL is #{apple_url} ***"
     ap "*** Android Upgrade URL is #{android_url} ***"
