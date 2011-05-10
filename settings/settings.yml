@@ -12,7 +12,7 @@
     :poll_interval: 1
     
 # !! env defines the global context for the server
-:env: test
+:env: development
 
 model_crm: https://mobileproxy.model.insphereis.net/
 dev_crm: http://75.31.122.27/
@@ -33,7 +33,7 @@ prod_crm: https://mobileproxy.insphereis.net/
   :redis: localhost:6379
   :licensefile: settings/license.key
   :syncserver: http://localhost:9292/application/
-  :authtoken: 'DQAAALEAAACGrfH6ZfOMVxZXyYlonWDB-eJvjfya3zcT_6p71LomPfxI10401l7o5Sd5Z30abSeSNAMNAWJpCcRUBEL99vpxTGny1YxAvUop5tLUdWJyhtnlCxkq0qksleXmYv8LXkymjJr7t8oIC2Cm78UfySxqIytNvJt5DFM-nEU-uHeJLje1oIxKw14EAJoQOPql9boX2x8SZaAq4P9DDeYRzEaSJbkipVYz8TXW92qmBbNwhsqc8CWzgstqB9ztYP5_N3k'
+  :authtoken: 'DQAAAN4AAABMr5gOJS_7EvXDtx6gyJAk2xHHmkV_RybjlOgPQWOKv5Bjr6ylRnTHt8ogtQcOCAm_j-LjqFQ3f0OHLExbmeRCxOKcRqBY2drlhkMPJL3CW679Dadnwg5VNnufZUEFdHl4SUIwd7dGJK-AtjnDSRC_pPYlP7N0Ldjn2vessXN9Yk4v-k9CGNtKcuFRG2LGeLwRfHco8d5aHpMI4kKbDrOPjRHSKn6jEalsmLmv9Gq6tRxVRkxoN8EiUv6bg638U2nOOHHgr_wF0hcmg9WuYmtlPE41Hm2GlPhrV-nh9Mhu6w'
   :rhoadmin_password: ''
   :ssl: false
   :fork_resque: false
@@ -46,7 +46,7 @@ prod_crm: https://mobileproxy.insphereis.net/
   :iphoneserver: gateway.sandbox.push.apple.com
   :iphoneport: 2195
   :syncserver: https://rhohub-insphere-b3789b06.heroku.com/application/
-  :authtoken: 'DQAAALEAAACGrfH6ZfOMVxZXyYlonWDB-eJvjfya3zcT_6p71LomPfxI10401l7o5Sd5Z30abSeSNAMNAWJpCcRUBEL99vpxTGny1YxAvUop5tLUdWJyhtnlCxkq0qksleXmYv8LXkymjJr7t8oIC2Cm78UfySxqIytNvJt5DFM-nEU-uHeJLje1oIxKw14EAJoQOPql9boX2x8SZaAq4P9DDeYRzEaSJbkipVYz8TXW92qmBbNwhsqc8CWzgstqB9ztYP5_N3k'
+  :authtoken: 'DQAAAN4AAABMr5gOJS_7EvXDtx6gyJAk2xHHmkV_RybjlOgPQWOKv5Bjr6ylRnTHt8ogtQcOCAm_j-LjqFQ3f0OHLExbmeRCxOKcRqBY2drlhkMPJL3CW679Dadnwg5VNnufZUEFdHl4SUIwd7dGJK-AtjnDSRC_pPYlP7N0Ldjn2vessXN9Yk4v-k9CGNtKcuFRG2LGeLwRfHco8d5aHpMI4kKbDrOPjRHSKn6jEalsmLmv9Gq6tRxVRkxoN8EiUv6bg638U2nOOHHgr_wF0hcmg9WuYmtlPE41Hm2GlPhrV-nh9Mhu6w'
   :rhoadmin_password: aW9wVhyU84Sj
 :model: 
   :crm: model_crm
@@ -57,7 +57,7 @@ prod_crm: https://mobileproxy.insphereis.net/
   :iphoneserver: gateway.sandbox.push.apple.com
   :iphoneport: 2195
   :syncserver: https://rhohub-insphere-c3d43885.heroku.com/application/
-  :authtoken: 'DQAAALEAAACGrfH6ZfOMVxZXyYlonWDB-eJvjfya3zcT_6p71LomPfxI10401l7o5Sd5Z30abSeSNAMNAWJpCcRUBEL99vpxTGny1YxAvUop5tLUdWJyhtnlCxkq0qksleXmYv8LXkymjJr7t8oIC2Cm78UfySxqIytNvJt5DFM-nEU-uHeJLje1oIxKw14EAJoQOPql9boX2x8SZaAq4P9DDeYRzEaSJbkipVYz8TXW92qmBbNwhsqc8CWzgstqB9ztYP5_N3k'
+  :authtoken: 'DQAAAN4AAABMr5gOJS_7EvXDtx6gyJAk2xHHmkV_RybjlOgPQWOKv5Bjr6ylRnTHt8ogtQcOCAm_j-LjqFQ3f0OHLExbmeRCxOKcRqBY2drlhkMPJL3CW679Dadnwg5VNnufZUEFdHl4SUIwd7dGJK-AtjnDSRC_pPYlP7N0Ldjn2vessXN9Yk4v-k9CGNtKcuFRG2LGeLwRfHco8d5aHpMI4kKbDrOPjRHSKn6jEalsmLmv9Gq6tRxVRkxoN8EiUv6bg638U2nOOHHgr_wF0hcmg9WuYmtlPE41Hm2GlPhrV-nh9Mhu6w'
   :rhoadmin_password: U5PgMPngu27j
 :development: 
   :crm: dev_crm
@@ -68,7 +68,7 @@ prod_crm: https://mobileproxy.insphereis.net/
   :iphoneserver: gateway.sandbox.push.apple.com
   :iphoneport: 2195
   :syncserver: https://rhohub-insphere-a06075d6.heroku.com/application/
-  :authtoken: 'DQAAALEAAACGrfH6ZfOMVxZXyYlonWDB-eJvjfya3zcT_6p71LomPfxI10401l7o5Sd5Z30abSeSNAMNAWJpCcRUBEL99vpxTGny1YxAvUop5tLUdWJyhtnlCxkq0qksleXmYv8LXkymjJr7t8oIC2Cm78UfySxqIytNvJt5DFM-nEU-uHeJLje1oIxKw14EAJoQOPql9boX2x8SZaAq4P9DDeYRzEaSJbkipVYz8TXW92qmBbNwhsqc8CWzgstqB9ztYP5_N3k'
+  :authtoken: 'DQAAAN4AAABMr5gOJS_7EvXDtx6gyJAk2xHHmkV_RybjlOgPQWOKv5Bjr6ylRnTHt8ogtQcOCAm_j-LjqFQ3f0OHLExbmeRCxOKcRqBY2drlhkMPJL3CW679Dadnwg5VNnufZUEFdHl4SUIwd7dGJK-AtjnDSRC_pPYlP7N0Ldjn2vessXN9Yk4v-k9CGNtKcuFRG2LGeLwRfHco8d5aHpMI4kKbDrOPjRHSKn6jEalsmLmv9Gq6tRxVRkxoN8EiUv6bg638U2nOOHHgr_wF0hcmg9WuYmtlPE41Hm2GlPhrV-nh9Mhu6w'
   :rhoadmin_password: iGyz5rk6JVYA
 :onsite: 
   :crm: model_crm
@@ -79,7 +79,7 @@ prod_crm: https://mobileproxy.insphereis.net/
   :iphoneserver: gateway.sandbox.push.apple.com
   :iphoneport: 2195
   :syncserver: http://10.143.28.181/application/
-  :authtoken: 'DQAAALEAAACGrfH6ZfOMVxZXyYlonWDB-eJvjfya3zcT_6p71LomPfxI10401l7o5Sd5Z30abSeSNAMNAWJpCcRUBEL99vpxTGny1YxAvUop5tLUdWJyhtnlCxkq0qksleXmYv8LXkymjJr7t8oIC2Cm78UfySxqIytNvJt5DFM-nEU-uHeJLje1oIxKw14EAJoQOPql9boX2x8SZaAq4P9DDeYRzEaSJbkipVYz8TXW92qmBbNwhsqc8CWzgstqB9ztYP5_N3k'
+  :authtoken: 'DQAAAN4AAABMr5gOJS_7EvXDtx6gyJAk2xHHmkV_RybjlOgPQWOKv5Bjr6ylRnTHt8ogtQcOCAm_j-LjqFQ3f0OHLExbmeRCxOKcRqBY2drlhkMPJL3CW679Dadnwg5VNnufZUEFdHl4SUIwd7dGJK-AtjnDSRC_pPYlP7N0Ldjn2vessXN9Yk4v-k9CGNtKcuFRG2LGeLwRfHco8d5aHpMI4kKbDrOPjRHSKn6jEalsmLmv9Gq6tRxVRkxoN8EiUv6bg638U2nOOHHgr_wF0hcmg9WuYmtlPE41Hm2GlPhrV-nh9Mhu6w'
   :rhoadmin_password: ''
   :ssl: false
   :fork_resque: false
