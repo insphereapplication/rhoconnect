@@ -3,16 +3,7 @@ require 'bundler'
 Bundler.require
 
 ENV['REDIS'] = "redis://nrhrho103:6379"
-app_path = File.expand_path(File.join(File.dirname(__FILE__))) 
-
-require "#{app_path}/initializers/hash_extension"
-
-# load and merge all global and env-specific settings from settings.yml
-settings = YAML::load_file("#{app_path}/settings/settings.yml")
-env = settings[:env].to_sym
-CONFIG = settings[:global].deep_merge(settings[env])
-CONFIG[:crm_path] = settings[CONFIG[:crm_proxy]]
-CONFIG[:env] = env
+require "#{File.dirname(__FILE__)}/util/config_file"
 
 # Try to load vendor-ed rhosync, otherwise load the gem
 begin
