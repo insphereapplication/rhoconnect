@@ -5,7 +5,7 @@ API_KEY = 'b8788d7b2ae404c9661f40215f5d9258aede9c83'
 $settings_file = 'settings/settings.yml'
 $config = YAML::load_file($settings_file)
 $app_path = File.expand_path(File.dirname(__FILE__))
-$target = :onsite
+$target = :model
 $server = ($config[$target] ? $config[$target][:syncserver] : "").sub('/application', '')
 $password = ($config[$target] ? $config[$target][:rhoadmin_password] : "")
 
@@ -48,11 +48,10 @@ namespace :server do
         #URL-encoded value of '%25' to prevent escaped characters in the given cookie from being unescaped by
         #rest-client. For example, a given cookie of "1234%3D%0A5" would have been unescaped and sent back to
         #RhoSync as "12345=\n5", but RhoSync expects the cookie to be in its original escaped format.
-        # preserved_cookies = res.cookies.inject({}){ |h,(key,value)| 
-        #    h[key] = value.gsub('%', '%25')
-        #    h
-        #  }
-        preserved_cookies = res.cookies
+        preserved_cookies = res.cookies.inject({}){ |h,(key,value)| 
+           h[key] = value.gsub('%', '%25')
+           h
+         }
                 
         @token = RestClient.post("#{$server}api/get_api_token",'',{ :cookies => preserved_cookies, })
         
