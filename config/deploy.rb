@@ -30,7 +30,7 @@ end
 
 desc "Set the Rhosync license key for the particular host machine"
 task :set_license , :roles => :app do
-  # this task assumes that there is a license key file named "<hostname>_license.key" in the settings directory
+  # This task assumes that there is a license key file named "<hostname>_license.key" in the settings directory
   # in source control for every deployment target defined above in "role :app, '<hostname>', '<hostname>'", etc.
   # It will copy the server-specific license key to the /settings/license.key file which Rhosync will use
   # for that server.
