@@ -15,13 +15,13 @@ module RedisUtil
       md = get_data(model, user)
       ap md
     end
-  end
   
-  def get_model(model, user, key)
-    md = get_md(model, user)
-    unless model = md[key]
-      raise "No #{model} with key #{key} found"
+    def get_model(model, user, key)
+      md = get_md(model, user)
+      unless model = md[key]
+        raise "No #{model} with key #{key} found"
+      end
+      model
     end
-    model
   end
 end
