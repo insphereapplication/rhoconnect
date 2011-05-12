@@ -81,7 +81,7 @@ class Activity < SourceAdapter
     ExceptionUtil.rescue_and_reraise do
       InsiteLogger.info "UPDATE ACTIVITY"
       InsiteLogger.info update_hash
-      activity = RedisModel.get_model('Activity', current_user.login, update_hash['id'])
+      activity = RedisUtil.get_model('Activity', current_user.login, update_hash['id'])
       InsiteLogger.info activity
     
       #calling clone on the following line is EXTREMELY important - update_hash is passed by reference and is what is going to be committed to the DB
