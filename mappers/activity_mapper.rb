@@ -23,7 +23,12 @@ class ActivityMapper < Mapper
     activity_array.reduce({}){|sum, value| sum[value["activityid"]] = value if value; sum }
   end
   
+  REJECT_FIELDS = ['createdon']
+  
   def self.map_data_from_client(data)
+    #reject fields that shouldn't be sent to the proxy. these are read-only from CRM and should not be ever be included in a create/update message
+    data.reject!{|key, value| REJECT_FIELDS.include?(key.to_s)}
+    
     if data['parent_type'] || data['parent_id']
       data.merge!({
         'regardingobjectid' => {
