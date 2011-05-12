@@ -11,6 +11,8 @@ set :normalize_asset_timestamps, false
 
 role :app, "nrhrho101", "nrhrho102"
 
+after "deploy:update", :set_license
+
 namespace :deploy do
   task :start, :roles => :app do
     run "touch #{current_release}/tmp/restart.txt"
@@ -24,9 +26,9 @@ namespace :deploy do
   task :restart, :roles => :app do
      run "touch #{current_release}/tmp/restart.txt"
   end
-  
-  desc "Set the Rhosync license key for the particular host machine"
-  task :set_license , :roles => :app do
-    run "mv #{current_release}/settings/$CAPISTRANO:HOST$_license.key #{current_release}/settings/license.key"
-  end
+end
+
+desc "Set the Rhosync license key for the particular host machine"
+task :set_license , :roles => :app do
+  run "mv #{current_release}/settings/$CAPISTRANO:HOST$_license.key #{current_release}/settings/license.key"
 end
