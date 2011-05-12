@@ -19,7 +19,7 @@ require 'sinatra'
    |dir| Dir[File.join(File.dirname(__FILE__),dir,'**','*.rb')].each { |file| require file }
  end
  
-if !!CONFIG[:fork_resque]
+if !!CONFIG[:fork_resque] && ENV['RHO_ENV'] != 'test'
   # the following code loads the resque scheduler and worker into forked processes, which is necessary in order to run
   # the nightly data aging cleanup task. 
   Resque.redis = Redis.connect(:url => ENV['REDIS'])

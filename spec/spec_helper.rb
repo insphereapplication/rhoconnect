@@ -5,6 +5,7 @@ ENV['RHO_ENV'] = 'test'
 ROOT_PATH = File.expand_path(File.join(File.dirname(__FILE__),'..'))
 
 
+
 # Try to load vendor-ed rhosync, otherwise load the gem
 begin
   require 'vendor/rhosync/lib/rhosync'
