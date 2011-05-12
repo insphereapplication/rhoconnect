@@ -19,7 +19,7 @@ namespace :deploy do
   end
 
   task :stop, :roles => :app do
-    run  "/usr/sbin/apachectl stop"
+    # run  "/usr/sbin/apachectl stop"
   end
 
   desc "Restart Application"
