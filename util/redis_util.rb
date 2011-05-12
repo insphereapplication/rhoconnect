@@ -16,14 +16,12 @@ module RedisUtil
       ap md
     end
   end
-end
-
-class ActivityModel
-  def self.get_model(user, key)
-    md = RedisUtil.get_md('Activity', user)
+  
+  def get_model(model, user, key)
+    md = get_md(model, user)
     unless model = md[key]
-      raise "No Activity with key #{key} found"
+      raise "No #{model} with key #{key} found"
     end
-     model
+    model
   end
 end
