@@ -20,7 +20,7 @@ class ExceptionUtil
   
   private
   
-  def self.print_exception(exception, exception_string="")\
+  def self.print_exception(exception, exception_string="")
    [ 
      "*** EXCEPTION MESSAGE ***",
      exception.message,
