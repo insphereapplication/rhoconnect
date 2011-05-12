@@ -20,16 +20,20 @@ class ExceptionUtil
   
   private
   
-  def self.print_exception(exception, exception_string=nil)
-    InsiteLogger.info "*** EXCEPTION TYPE ***"
-    InsiteLogger.info exception
-    InsiteLogger.info "*** EXCEPTION CONTEXT ***"
-    InsiteLogger.info @context
-    InsiteLogger.info "*** EXCEPTION STRING ***"
-    InsiteLogger.info exception_string
-    InsiteLogger.info "*** EXCEPTION STACK TRACE ***"
-    InsiteLogger.info exception.backtrace
-    InsiteLogger.info "*** END EXCEPTION ***"
+  def self.print_exception(exception, exception_string="")\
+   [ 
+     "*** EXCEPTION MESSAGE ***",
+     exception.message,
+     "*** EXCEPTION TYPE ***",
+     exception.class,
+     "*** EXCEPTION CONTEXT ***",
+     @context,
+     "*** EXCEPTION STRING ***",
+     exception_string,
+     "*** EXCEPTION STACK TRACE ***",
+     exception.backtrace,
+     "*** END EXCEPTION ***"
+    ].each { |line| InsiteLogger.info line }
   end # print_exception
   
 end # class
