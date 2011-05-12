@@ -50,8 +50,6 @@ class Activity < SourceAdapter
     ExceptionUtil.rescue_and_reraise do
       InsiteLogger.info "CREATE ACTIVITY"
       InsiteLogger.info create_hash
-      InsiteLogger.info "#{@activity_url}/create"
-      InsiteLogger.info @token
       
       #calling clone on the following line is EXTREMELY important - create_hash is passed by reference and is what is going to be committed to the DB
       mapped_hash = ActivityMapper.map_data_from_client(create_hash.clone)
