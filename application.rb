@@ -1,6 +1,8 @@
 require File.expand_path(File.dirname(__FILE__) + '/boot.rb')
 require 'helpers/crypto'
 
+Store.db = Redis.new(:host => 'localhost', :port => 6379, :timeout => 60)
+
 class Application < Rhosync::Base
   class << self
     def authenticate(username,password,session)
