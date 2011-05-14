@@ -71,8 +71,8 @@ class Activity < SourceAdapter
           :password => @password,
           :attributes => mapped_hash.to_json}
         ).body
-      InsiteLogger.info result
-    
+      InsiteLogger.info "Activity Create Result: #{result}"
+  
       result
     end
   end

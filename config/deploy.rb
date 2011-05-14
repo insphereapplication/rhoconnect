@@ -28,11 +28,11 @@ namespace :deploy do
   end
 end
 
+# The set_license task assumes that there is a license key file named "<hostname>" in the settings/host_keys directory
+# in source control for every deployment target defined above in "role :app, '<hostname>', '<hostname>'", etc.
+# It will copy the server-specific license key to the /settings/license.key file which Rhosync will use
+# for that server.
 desc "Set the Rhosync license key for the particular host machine"
 task :set_license , :roles => :app do
-  # This task assumes that there is a license key file named "<hostname>_license.key" in the settings directory
-  # in source control for every deployment target defined above in "role :app, '<hostname>', '<hostname>'", etc.
-  # It will copy the server-specific license key to the /settings/license.key file which Rhosync will use
-  # for that server.
-  run "mv #{current_release}/settings/$CAPISTRANO:HOST$_license.key #{current_release}/settings/license.key"
+  run "mv #{current_release}/settings/host_keys/$CAPISTRANO:HOST$ #{current_release}/settings/license.key"
 end
