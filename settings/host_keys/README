@@ -1,13 +1,20 @@
-The files in this folder are named after the HOST name of the machine they will be copied to as 'license.key' by the Capistrano deploy script
-config/deploy.rb. Each machine needs its own license key from Rhosync in order to have more than 10 available devices.
+********* Machine-specific License Keys **********
 
-If a new machine is added, a new key file from Rhosync should be added to this folder, named after that machine's HOST name. Then, if that machine
-is added as a deploy target to the 'role :app' setting in deploy.rb, that machine's key will be copied from this folder to the 'settings' folder
-and renamed to 'license.key'. 
+The files in this folder are Rhosync license keys. They are named after the HOSTNAME of the machine they will be copied to as 'license.key' by the Capistrano deploy script 'config/deploy.rb' in the set_license task. 
+
+Each production machine needs its own license key from RhoMobile.
+
+To add a new key for a new machine:
+
+* Add a new key file from Rhosync to this folder. 
+* Rename that file to the target machine's HOSTNAME. (i.e., 'nrhrho103')
+* Add that machine's HOSTNAME as a deploy target of the 'role :app' setting in deploy.rb. 
+
+On the next deployment, that machine's license key will be copied over the existing 'settings/license.key' file. 
 
 For example, if you add a machine named 'nrhrho103' as a load-balanced target of rhosync.insphereis.net, first add 'nrhrho103' to the role
 setting of deploy.rb:
 
     role :app, "nrhrho101", "nrhrho102", "nrhrho103"
 
-Then get a new license for that box from Rhosync, rename to "nrhrho103" and add it to this folder. 
+Then get a new license for that box from RhoMobile, rename to "nrhrho103" and add it to this folder. 
