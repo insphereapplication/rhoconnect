@@ -1,4 +1,4 @@
-********* Machine-specific License Keys **********
+********* Machine-specific Rhosync License Keys **********
 
 The files in this folder are Rhosync license keys. They are named after the HOSTNAME of the machine they will be copied to as 'license.key' by the Capistrano deploy script 'config/deploy.rb' in the set_license task. 
 
