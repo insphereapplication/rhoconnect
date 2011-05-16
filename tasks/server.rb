@@ -330,4 +330,10 @@ namespace :server do
       ap res
     end
   end
+  
+  task :fix_bootstrap do
+    ROOT_PATH = '.'
+    require 'rhosync/server'
+    require 'application'
+  end
 end
