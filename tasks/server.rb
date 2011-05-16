@@ -331,6 +331,7 @@ namespace :server do
     end
   end
   
+  desc "temp task for Passenger bug fix"
   task :fix_bootstrap do
     ROOT_PATH = '.'
     require 'rhosync/server'
