@@ -52,7 +52,7 @@ def get_fake_contact_data(identity)
 		'telephone1' => Faker::Base.numerify('(###) ###-####'),
 		'telephone2' => Faker::Base.numerify('(###) ###-####'),
 		'gendercode' => rand_gender,
-		'cssi_assignedagentid' => {'type' => 'systemuser', 'id' => identity['id']}
+		'ownerid' => {'type' => 'systemuser', 'id' => identity['id']}
 	};
 	fake_data
 end
@@ -63,7 +63,7 @@ def get_fake_opportunity_data(contact_id, identity)
 		'cssi_leadsourceid' => rand_array_item($lead_sources),
 		'cssi_leadvendorid' => rand_array_item($lead_vendors),
 		'cssi_leadtypeid' => rand_array_item($lead_types),
-		'cssi_assignedagentid' => {'type' => 'systemuser', 'id' => identity['id']},
+		'ownerid' => {'type' => 'systemuser', 'id' => identity['id']},
 		'cssi_inputsource' => 'Integrated'
 	};
 	fake_data

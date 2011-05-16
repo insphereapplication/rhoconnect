@@ -8,7 +8,6 @@ $create_notes = false
 $environments = {'local' => 'http://localhost:52904', 
   'dev-internal' => 'http://nrhwwwd401.insp.dom:5000', 
   'dev-external' => 'https://devmobileproxy.insphereis.net', 
-  'model-internal' => 'http://nrhwwwm201.insp.dom:5000', 
   'model-external' => 'https://mobileproxy.model.insphereis.net',
   'production-external' => 'https://mobileproxy.insphereis.net'}
 
@@ -165,7 +164,6 @@ namespace :proxy do
 	task :get_persisted_credential do
 		if File.exists?($credentialfile)
 			@credential = Credential.from_string(File.readlines($credentialfile).first.strip)
-			ap @credential.inspect
 			puts "using persisted credential for user #{@credential.username}..."
 		else
 			abort "no persisted credential found, authenticate using login task..."
