@@ -333,6 +333,7 @@ namespace :server do
   
   desc "temp task for Passenger bug fix"
   task :fix_bootstrap do
+    ENV['REDIS'] = "redis://nrhrho103:6379"
     ROOT_PATH = '.'
     require 'rhosync/server'
     require 'application'
