@@ -60,7 +60,6 @@ ServerTokens Prod
 RewriteEngine On
 RewriteRule ^.*\.svn.*$ - [F,L]
 RewriteRule ^.*\.git.*$ - [F,L]
-
 DefaultType text/plain
 
 LogFormat "%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"" combined
@@ -75,7 +74,7 @@ ServerSignature On
 
 AddDefaultCharset UTF-8
 
-LoadModule <%= passenger_module %>
+LoadModule passenger_module <%= passenger_module %>
 PassengerRoot <%= passenger_root %>
 PassengerRuby <%= ruby_bin %>
 
