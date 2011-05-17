@@ -7,6 +7,8 @@ task :gen_httpd_conf do
   passenger_pool_idle_time = 0
   max_rhosync_processes = 10
   min_rhosync_processes = 10
+  server_name = "test.test.com"
+  passenger_log_level = 3
   ruby_bin = "/opt/ruby-enterprise-1.8.7-2011.03/bin/ruby"
   current_release = "/var/www/InsiteMobile/current"
   web_port = "80"
