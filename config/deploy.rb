@@ -13,8 +13,7 @@ role :app, "nrhrho101", "nrhrho102"
 
 after "deploy:update", "deploy:set_license"
 after "deploy:update", "deploy:gen_httpd_conf"
-# after "deploy:restart", "deploy:fix_bootstrap"
-# after "deploy:start", "deploy:fix_bootstrap"
+after "deploy:update", "deploy:fix_bootstrap"
 
 namespace :deploy do
   task :start, :roles => :app do
@@ -44,8 +43,8 @@ namespace :deploy do
     run "mv #{current_release}/settings/host_keys/$CAPISTRANO:HOST$ #{current_release}/settings/license.key"
   end
 
-  # The servers need to replace /etc/httpd/conf/httpd.conf with a symlink pointing to <current_release>/config/httpd.conf
-  desc "Generate the apache httpd.conf file from the template."
+  # For this task to have an effect, all target servers need to replace /etc/httpd/conf/httpd.conf with a symlink pointing to <current_release>/config/httpd.conf
+  desc "Generate the apache httpd.conf file from the config/templates/httpd.conf.template"
   task :gen_httpd_conf do
     require 'erb'
     document_root = "/var/www/InsiteMobile/current/public"
