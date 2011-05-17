@@ -1,4 +1,8 @@
 #!/usr/bin/env ruby
+require 'bundler'
+Bundler.require
+
+ENV['REDIS'] = "redis://nrhrho103:6379"
 require "#{File.dirname(__FILE__)}/util/config_file"
 
 # Try to load vendor-ed rhosync, otherwise load the gem
