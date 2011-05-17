@@ -69,5 +69,6 @@ DEPENDENCIES
   exceptional
   faker
   rack-ssl-enforcer
+  rake
   resque-scheduler
   rhosync (= 2.1.3)

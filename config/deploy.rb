@@ -13,11 +13,13 @@ role :app, "nrhrho101", "nrhrho102"
 
 after "deploy:update", "deploy:set_license"
 after "deploy:update", "deploy:gen_httpd_conf"
-after "deploy:gen_httpd_conf", "deploy:fix_bootstrap"
+# after "deploy:restart", "deploy:fix_bootstrap"
+# after "deploy:start", "deploy:fix_bootstrap"
 
 namespace :deploy do
   task :start, :roles => :app do
-    run "touch #{current_release}/tmp/restart.txt"
+    # run "touch #{current_release}/tmp/restart.txt"
+    run "sudo /usr/sbin/apachectl -k stop; sudo /usr/sbin/apachectl -k restart"
   end
 
   [:start, :stop].each do |t|
@@ -27,7 +29,8 @@ namespace :deploy do
 
   desc "Restart Application"
   task :restart, :roles => :app do
-     run "touch #{current_release}/tmp/restart.txt"
+     # run "touch #{current_release}/tmp/restart.txt"
+     run "sudo /usr/sbin/apachectl -k stop; sudo /usr/sbin/apachectl -k restart"
   end
   
   # The set_license task assumes that there is a license key file named "<hostname>" in the settings/host_keys directory
@@ -47,8 +50,8 @@ namespace :deploy do
     passenger_module = "/opt/ruby-enterprise-1.8.7-2011.03/lib/ruby/gems/1.8/gems/passenger-3.0.7/ext/apache2/mod_passenger.so"
     passenger_root = "/opt/ruby-enterprise-1.8.7-2011.03/lib/ruby/gems/1.8/gems/passenger-3.0.7"
     passenger_pool_idle_time = 0
-    max_rhosync_processes = 10
-    min_rhosync_processes = 10
+    max_rhosync_processes = 3
+    min_rhosync_processes = 3
     ruby_bin = "/opt/ruby-enterprise-1.8.7-2011.03/bin/ruby"
     current_release = "/var/www/InsiteMobile/current"
     web_port = "80"
@@ -61,7 +64,7 @@ namespace :deploy do
   
   desc "A temp fix for the multi-process bug in Passenger" 
   task :fix_bootstrap, :roles => :app do 
-    run "rake server:fix_bootstrap"
+    run "cd #{current_release}; rake server:fix_bootstrap"
   end
 end
 
