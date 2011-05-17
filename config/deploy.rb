@@ -56,6 +56,7 @@ namespace :deploy do
     ruby_bin = "/opt/ruby-enterprise-1.8.7-2011.03/bin/ruby"
     current_release = "/var/www/InsiteMobile/current"
     server_name = "https://rhosync.insphereis.net"
+    passenger_log_level = 3
     web_port = "80"
     time = Time.now.strftime('%m/%d/%Y %r')
 
