@@ -19,7 +19,8 @@ after "deploy:update", "deploy:gen_httpd_conf"
 namespace :deploy do
   task :start, :roles => :app do
     # run "touch #{current_release}/tmp/restart.txt"
-    run "sudo /usr/sbin/apachectl -k stop; sudo /usr/sbin/apachectl -k restart"
+    # run "apachectl -k stop; apachectl -k restart"
+    run "/etc/rc.d/init.d/httpd restart"
   end
 
   [:start, :stop].each do |t|
@@ -30,7 +31,8 @@ namespace :deploy do
   desc "Restart Application"
   task :restart, :roles => :app do
      # run "touch #{current_release}/tmp/restart.txt"
-     run "sudo /usr/sbin/apachectl -k stop; sudo /usr/sbin/apachectl -k restart"
+    run "apachectl -k stop; apachectl -k restart"
+    run "/etc/rc.d/init.d/httpd restart"     
   end
   
   # The set_license task assumes that there is a license key file named "<hostname>" in the settings/host_keys directory
@@ -50,8 +52,8 @@ namespace :deploy do
     passenger_module = "/opt/ruby-enterprise-1.8.7-2011.03/lib/ruby/gems/1.8/gems/passenger-3.0.7/ext/apache2/mod_passenger.so"
     passenger_root = "/opt/ruby-enterprise-1.8.7-2011.03/lib/ruby/gems/1.8/gems/passenger-3.0.7"
     passenger_pool_idle_time = 0
-    max_rhosync_processes = 3
-    min_rhosync_processes = 3
+    max_rhosync_processes = 1
+    min_rhosync_processes = 1
     ruby_bin = "/opt/ruby-enterprise-1.8.7-2011.03/bin/ruby"
     current_release = "/var/www/InsiteMobile/current"
     web_port = "80"
