@@ -7,9 +7,7 @@ Listen <%= web_port %>
 # Load Required Modules
 LoadModule dir_module         modules/mod_dir.so
 LoadModule authz_host_module  modules/mod_authz_host.so
-LoadModule mime_module        modules/mod_mime.so
 LoadModule log_config_module  modules/mod_log_config.so
-LoadModule rewrite_module     modules/mod_rewrite.so
 
 # prefork MPM
 # StartServers: number of server processes to start
@@ -30,11 +28,8 @@ LoadModule rewrite_module     modules/mod_rewrite.so
 User  apache
 Group apache
 
-ServerAdmin hostmaster@example.com
-
+ServerAdmin admin@insphereis.net
 DocumentRoot "<%= document_root %>"
-
-DirectoryIndex index.html
 
 # The following lines prevent .htaccess and .htpasswd files from being 
 # viewed by Web clients. 
@@ -46,27 +41,6 @@ DirectoryIndex index.html
 
 # Security Scanning Implementation
 ServerTokens Prod
-<DirectoryMatch ".*/\.svn.*">
-    Order allow,deny
-    Deny from all
-    Satisfy All
-</DirectoryMatch>
-<DirectoryMatch ".*/\.git.*">
-    Order allow,deny
-    Deny from all
-    Satisfy All
-</DirectoryMatch>
-
-RewriteEngine Off
-RewriteRule ^.*\.svn.*$ - [F,L]
-RewriteRule ^.*\.git.*$ - [F,L]
-
-
-DefaultType text/plain
-
-<IfModule mime_module>
-    TypesConfig /etc/mime.types
-</IfModule>
 
 LogFormat "%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"" combined
 LogFormat "%h %l %u %t \"%r\" %>s %b" common
@@ -80,9 +54,6 @@ ServerSignature On
 
 AddDefaultCharset UTF-8
 
-AddType application/x-compress .Z
-AddType application/x-gzip .gz .tgz
-
 LoadModule passenger_module <%= passenger_module %>
 PassengerRoot <%= passenger_root %>
 PassengerRuby <%= ruby_bin %>
@@ -90,7 +61,7 @@ PassengerRuby <%= ruby_bin %>
 NameVirtualHost *:<%= web_port %>
 
 <VirtualHost *:<%= web_port %>>
-  ServerName rhosync.insphereis.net
+  ServerName <%= server_name %>
   DocumentRoot <%= document_root %>
   PassengerPoolIdleTime <%= passenger_pool_idle_time %>
   PassengerMinInstances <%= min_rhosync_processes %>

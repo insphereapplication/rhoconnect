@@ -18,9 +18,9 @@ after "deploy:update", "deploy:gen_httpd_conf"
 
 namespace :deploy do
   task :start, :roles => :app do
-    # run "touch #{current_release}/tmp/restart.txt"
-    # run "apachectl -k stop; apachectl -k restart"
-    run "/etc/rc.d/init.d/httpd restart"
+    run "touch #{current_release}/tmp/restart.txt"
+    # run "apachectl -k graceful"
+    # run "/etc/rc.d/init.d/httpd restart"
   end
 
   [:start, :stop].each do |t|
@@ -30,9 +30,9 @@ namespace :deploy do
 
   desc "Restart Application"
   task :restart, :roles => :app do
-     # run "touch #{current_release}/tmp/restart.txt"
-    run "apachectl -k stop; apachectl -k restart"
-    run "/etc/rc.d/init.d/httpd restart"     
+     run "touch #{current_release}/tmp/restart.txt"
+    # run "apachectl -k graceful"
+    # run "/etc/rc.d/init.d/httpd restart"     
   end
   
   # The set_license task assumes that there is a license key file named "<hostname>" in the settings/host_keys directory
@@ -56,6 +56,7 @@ namespace :deploy do
     min_rhosync_processes = 1
     ruby_bin = "/opt/ruby-enterprise-1.8.7-2011.03/bin/ruby"
     current_release = "/var/www/InsiteMobile/current"
+    server_name = "https://rhosync.insphereis.net"
     web_port = "80"
     time = Time.now.strftime('%m/%d/%Y %r')
 
