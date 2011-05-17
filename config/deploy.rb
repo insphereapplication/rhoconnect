@@ -13,7 +13,7 @@ role :app, "nrhrho101", "nrhrho102"
 
 after "deploy:update", "deploy:set_license"
 after "deploy:update", "deploy:gen_httpd_conf"
-# after "deploy:update", "deploy:fix_bootstrap"
+after "deploy:update", "deploy:fix_bootstrap"
 
 namespace :deploy do
   task :start, :roles => :app do
@@ -51,8 +51,8 @@ namespace :deploy do
     passenger_module = "/opt/ruby-enterprise-1.8.7-2011.03/lib/ruby/gems/1.8/gems/passenger-3.0.7/ext/apache2/mod_passenger.so"
     passenger_root = "/opt/ruby-enterprise-1.8.7-2011.03/lib/ruby/gems/1.8/gems/passenger-3.0.7"
     passenger_pool_idle_time = 0
-    max_rhosync_processes = 1
-    min_rhosync_processes = 1
+    max_rhosync_processes = 3
+    min_rhosync_processes = 3
     ruby_bin = "/opt/ruby-enterprise-1.8.7-2011.03/bin/ruby"
     current_release = "/var/www/InsiteMobile/current"
     server_name = "https://rhosync.insphereis.net"
