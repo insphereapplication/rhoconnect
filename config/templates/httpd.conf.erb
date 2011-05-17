@@ -64,8 +64,6 @@ NameVirtualHost *:<%= web_port %>
   ServerName <%= server_name %>
   DocumentRoot <%= document_root %>
   PassengerPoolIdleTime <%= passenger_pool_idle_time %>
-  PassengerMinInstances <%= min_rhosync_processes %>
-  PassengerMaxPoolSize <%= max_rhosync_processes %>
   <directory "<%= document_root %>">
     Options FollowSymLinks
     AllowOverride None
