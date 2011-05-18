@@ -4,6 +4,12 @@ Rhosync::Server.api :push_mapped_objects do |params,user|
     InsiteLogger.info params
       
     source = Source.load(params[:source_id],{:app_id=>APP_NAME,:user_id=>params[:user_id]})
+    if source.nil?
+      fields[:name] = params[:source_id]
+      fields[:poll_interval] = CONFIG[:sources][params[:source_id]][:poll_interval]
+      source = Source.create(fields,{:app_id => APP_NAME})
+    end
+    
     InsiteLogger.info "SOURCE:"
     InsiteLogger.info source
     # source.name = source.id

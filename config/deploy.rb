@@ -13,7 +13,7 @@ role :app, "nrhrho101", "nrhrho102"
 
 after "deploy:update", "deploy:set_license"
 after "deploy:update", "deploy:gen_httpd_conf"
-after "deploy:update", "deploy:fix_bootstrap"
+# after "deploy:update", "deploy:fix_bootstrap"
 
 namespace :deploy do
   task :start, :roles => :app do

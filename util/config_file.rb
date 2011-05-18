@@ -8,6 +8,7 @@ class ConfigFile
     config = settings[:global].deep_merge(settings[env])
     config[:crm_path] = settings[config[:crm_proxy]]
     config[:env] = env
+    config[:sources] = settings[:sources]
     config
   end
 end
