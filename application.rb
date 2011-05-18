@@ -28,10 +28,14 @@ class Application < Rhosync::Base
     end
     
     def initializer(path)
+      InsiteLogger.info "%"*80
+      InsiteLogger.info "START INIT APPLICATION"
       admin = User.is_exist?('rhoadmin') ? User.load('rhoadmin') : User.create({:login => 'rhoadmin', :admin => 1})
       admin.password = CONFIG[:rhoadmin_password] || ''
       admin.create_token
       super
+      InsiteLogger.info "DONE INITIALIZING"
+      InsiteLogger.info "&"*80
     end
     
     def store_blob(object,field_name,blob)
