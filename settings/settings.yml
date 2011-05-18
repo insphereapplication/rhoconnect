@@ -37,7 +37,7 @@ local_crm_proxy: http://192.168.51.128/ # Change this if you're running locally 
     :num_archived_logs: 10
     :mode: stdout # logging defaults to stdout only; set mode to 'file' to turn on file logging to log:path (above)
   :app_info:
-    :min_required_version: 1.1.0 # This MUST be 3 groups of numbers, in the form x.x.x, or there is a risk of tossing an exception when checking for an upgrade
+    :min_required_version: 1.1.1 # This MUST be 3 groups of numbers, in the form x.x.x, or there is a risk of tossing an exception when checking for an upgrade
     :apple_force_upgrade_url: http://www.apple.com/
     :android_force_upgrade_url: http://www.google.com/
     
