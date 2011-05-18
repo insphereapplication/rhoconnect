@@ -9,7 +9,7 @@ set :scm,         :git
 set :user,        "cap"
 set :normalize_asset_timestamps, false
 
-role :app, "nrhrho101", "nrhrho102"
+role :app, "nrhrho101", "10.143.28.182"
 
 after "deploy:update", "deploy:set_license"
 after "deploy:update", "deploy:gen_httpd_conf"
