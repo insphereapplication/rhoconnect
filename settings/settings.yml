@@ -6,6 +6,8 @@
     :poll_interval: 1
   Opportunity: 
     :poll_interval: 1
+  Policy:
+    :poll_interval: 1
   ClientException: 
     :poll_interval: 300
   Activity: 
