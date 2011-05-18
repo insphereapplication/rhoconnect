@@ -5,7 +5,7 @@ API_KEY = 'b8788d7b2ae404c9661f40215f5d9258aede9c83'
 $settings_file = 'settings/settings.yml'
 $config = YAML::load_file($settings_file)
 $app_path = File.expand_path(File.dirname(__FILE__))
-$target = :model
+$target = :onsite
 $server = ($config[$target] ? $config[$target][:syncserver] : "").sub('/application', '')
 $password = ($config[$target] ? $config[$target][:rhoadmin_password] : "")
 
@@ -250,39 +250,39 @@ namespace :server do
     ap JSON.parse(res)
   end
   
-  # namespace :opportunity do
-  #   desc "Creates <num_contacts> contacts for <user_id> with generated attributes in the current target server."
-  #   task :create, [:user_id, :num_opportunities, :first_name, :last_name, :sort_ordinal]  => :set_token do |t, args|
-  #     contacts = (args.num_contacts || 1).to_i.times.reduce({}) do |sum, i|  
-  #       sum[rand(10**20)] = {
-  #         "city" => Faker::Address.city,
-  #         "created_on" => Time.now.to_s,
-  #         "updated_on" => Time.now.to_s,
-  #         "first_name" => args.first_name || Faker::Name.first_name,
-  #         "last_name" => args.last_name || Faker::Name.last_name,
-  #         "date_of_birth" => "#{rand(12)}/#{rand(28)}/#{rand(99)}",
-  #         "state" => Faker::Address.us_state
-  #         };
-  #         sum
-  #     end
-  #     
-  #     res = RestClient.post(
-  #       "#{$server}api/push_objects_notify", 
-  #       { 
-  #         :api_token => @token, 
-  #         :user_id => args.user_id || 'dave', 
-  #         :source_id => "Contact", 
-  #         :objects => contacts
-  #       }.to_json, 
-  #       :content_type => :json
-  #     )
-  #     puts "Created #{(args.num_contacts || 1)} new Contact(s):"
-  #     ap contacts
-  #     puts "Response:"
-  #     ap res
-  #   end
-  #   
-  # end
+  namespace :opportunity do
+    desc "Creates <num_contacts> opportunities for <user_id> with generated attributes in the current target server."
+    task :create, [:user_id, :num_opportunities, :first_name, :last_name, :sort_ordinal]  => :set_token do |t, args|
+      contacts = (args.num_contacts || 1).to_i.times.reduce({}) do |sum, i|  
+           sum[rand(10**20)] = {
+             "city" => Faker::Address.city,
+             "created_on" => Time.now.to_s,
+             "updated_on" => Time.now.to_s,
+             "first_name" => args.first_name || Faker::Name.first_name,
+             "last_name" => args.last_name || Faker::Name.last_name,
+             "date_of_birth" => "#{rand(12)}/#{rand(28)}/#{rand(99)}",
+             "state" => Faker::Address.us_state
+           }
+           sum
+         end
+         
+         res = RestClient.post(
+           "#{$server}api/push_objects_notify", 
+           { 
+             :api_token => @token, 
+             :user_id => args.user_id || 'dave', 
+             :source_id => "Opportunity", 
+             :objects => contacts
+           }.to_json, 
+           :content_type => :json
+         )
+      puts "Created #{(args.num_contacts || 1)} new Contact(s):"
+      # ap contacts
+      puts "Response:"
+      ap res
+    end
+    
+  end
 
   namespace :contact do 
     desc "Gives the number of contacts for the given user"
@@ -299,23 +299,19 @@ namespace :server do
     end
     
     desc "Creates <num_contacts> contacts for <user_id> with generated attributes in the current target server."
-    task :create, [:user_id, :num_contacts, :first_name, :last_name, :sort_ordinal]  => :set_token do |t, args|
+    task :create, [:user_id, :num_contacts, :first_name, :last_name]  => :set_token do |t, args|
       contacts = (args.num_contacts || 1).to_i.times.reduce({}) do |sum, i|  
         sum[rand(10**20)] = {
-          "sort_ordinal" => args.sort_ordinal || -(Time.now.to_i),
-          "city" => Faker::Address.city,
-          "created_on" => Time.now.to_s,
-          "updated_on" => Time.now.to_s,
-          "first_name" => args.first_name || Faker::Name.first_name,
-          "last_name" => args.last_name || Faker::Name.last_name,
-          "date_of_birth" => "#{rand(12)}/#{rand(28)}/#{rand(99)}",
-          "state" => Faker::Address.us_state
+          "firstname" => args.first_name || Faker::Name.first_name,
+          "lastname" => args.last_name || Faker::Name.last_name,
+          "cssi_preferredphone" => 'mobile',
+          "mobilephone" =>  Faker::PhoneNumber.phone_number,
           };
           sum
       end
       
       res = RestClient.post(
-        "#{$server}api/push_objects_notify", 
+        "#{$server}api/push_mapped_objects", 
         { 
           :api_token => @token, 
           :user_id => args.user_id || 'dave', 
@@ -329,5 +325,13 @@ namespace :server do
       puts "Response:"
       ap res
     end
+  end
+  
+  desc "temp task for Passenger bug fix"
+  task :fix_bootstrap do
+    ENV['REDIS'] = "redis://nrhrho103:6379"
+    ROOT_PATH = '.'
+    require 'rhosync/server'
+    require 'application'
   end
 end

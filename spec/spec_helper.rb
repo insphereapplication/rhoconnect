@@ -1,4 +1,5 @@
 require 'rubygems'
+require 'logger'
 
 # Set environment to test
 ENV['RHO_ENV'] = 'test'
