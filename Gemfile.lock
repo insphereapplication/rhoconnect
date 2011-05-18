@@ -31,7 +31,7 @@ GEM
       rufus-scheduler
     rest-client (1.6.1)
       mime-types (>= 1.16)
-    rhosync (2.1.3)
+    rhosync (2.1.4)
       json (~> 1.4.2)
       rake (>= 0.8.7)
       redis (~> 2.1.1)
@@ -69,6 +69,5 @@ DEPENDENCIES
   exceptional
   faker
   rack-ssl-enforcer
-  rake
   resque-scheduler
-  rhosync (= 2.1.3)
+  rhosync (= 2.1.4)
