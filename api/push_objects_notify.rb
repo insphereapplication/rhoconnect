@@ -8,13 +8,7 @@ Rhosync::Server.api :push_objects_notify do |params,user|
     InsiteLogger.info "#"*80
 
     source = Source.load(params[:source_id],{:app_id=>APP_NAME,:user_id=>params[:user_id]})
-    InsiteLogger.info "SOURCE: #{source}"
-    
-    if source.nil?
-      fields[:name] = params[:source_id]
-      fields[:poll_interval] = CONFIG[:sources][params[:source_id]][:poll_interval]
-      source = Source.create(fields,{:app_id => APP_NAME})
-    end
+    InsiteLogger.info "SOURCE: #{source.inspect}"
     
     source_sync = SourceSync.new(source)
 
