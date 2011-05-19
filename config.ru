@@ -7,7 +7,9 @@ if CONFIG[:bundler]
   Bundler.require
 end
 
-ENV['REDIS'] = "redis://#{CONFIG[:redis]}"
+if CONFIG[:redis_boot]
+  ENV['REDIS'] = "redis://#{CONFIG[:redis]}"
+end
 
 # Try to load vendor-ed rhosync, otherwise load the gem
 begin

@@ -15,7 +15,6 @@ set :normalize_asset_timestamps, false
 
 # apache/passenger config properties -- these are used by templates/httpd.conf.erb
 set :document_root, "#{deploy_to}/current/public"
-set :server_name, "https://rhosync.insphereis.net"
 set :max_rhosync_processes, 3
 set :min_rhosync_processes, 3
 set :passenger_pool_idle_time, 0
