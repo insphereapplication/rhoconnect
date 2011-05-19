@@ -5,7 +5,7 @@ API_KEY = 'b8788d7b2ae404c9661f40215f5d9258aede9c83'
 $settings_file = 'settings/settings.yml'
 $config = YAML::load_file($settings_file)
 $app_path = File.expand_path(File.dirname(__FILE__))
-$target = :test
+$target = :onsite
 $server = ($config[$target] ? $config[$target][:syncserver] : "").sub('/application', '')
 $password = ($config[$target] ? $config[$target][:rhoadmin_password] : "")
 
@@ -258,23 +258,26 @@ namespace :server do
                 "lastname" => args.last_name || Faker::Name.last_name,
                  "emailaddress1" => "6rco@create.com",
                  "contactid" => "fd47db4d-0ccb-df11-9bfd-0050568d0f01"}]
-      
-     res = RestClient.post(
-       "#{$server}api/push_objects_notify", 
-       { 
-         :api_token => @token, 
-         :user_id => args.user_id || 'dave', 
-         :source_id => "Opportunity", 
-         :objects => contact
-       }.to_json, 
-       :content_type => :json
-     )
-      puts "Created new Contact:"
-      ap contact
-      puts "Response:"
-      ap res
-    end
+                 
+      10.times { break if fork.nil? }
     
+      25.times do
+       res = RestClient.post(
+         "#{$server}api/push_objects_notify", 
+         { 
+           :api_token => @token, 
+           :user_id => args.user_id || 'dave', 
+           :source_id => "Opportunity", 
+           :objects => contact
+         }.to_json, 
+         :content_type => :json
+       )
+        puts "Created new Contact:"
+        ap contact
+        puts "Response:"
+        ap res
+      end
+    end
   end
 
   namespace :contact do 
@@ -303,20 +306,22 @@ namespace :server do
           sum
       end
       
-      res = RestClient.post(
-        "#{$server}api/push_mapped_objects", 
-        { 
-          :api_token => @token, 
-          :user_id => args.user_id || 'dave', 
-          :source_id => "Contact", 
-          :objects => contacts
-        }.to_json, 
-        :content_type => :json
-      )
-      puts "Created #{(args.num_contacts || 1)} new Contact(s):"
-      ap contacts
-      puts "Response:"
-      ap res
+      5.times do
+        res = RestClient.post(
+          "#{$server}api/push_mapped_objects", 
+          { 
+            :api_token => @token, 
+            :user_id => args.user_id || 'dave', 
+            :source_id => "Contact", 
+            :objects => contacts
+          }.to_json, 
+          :content_type => :json
+        )
+        puts "Created #{(args.num_contacts || 1)} new Contact(s):"
+        ap contacts
+        puts "Response:"
+        ap res
+      end
     end
   end
   
