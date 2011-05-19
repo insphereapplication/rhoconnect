@@ -1,9 +1,12 @@
 #!/usr/bin/env ruby
-require 'bundler'
-Bundler.require
-
-ENV['REDIS'] = "redis://nrhrho103:6379"
 require "#{File.dirname(__FILE__)}/util/config_file"
+
+
+if CONFIG[:bundler]
+  require 'bundler'
+  Bundler.require
+end
+
 
 # Try to load vendor-ed rhosync, otherwise load the gem
 begin
@@ -35,7 +38,7 @@ Rhosync::Server.set     :root,        ROOT_PATH
 Rhosync::Server.use     Rack::Static, :urls => ["/data"], :root => Rhosync::Server.root
 
 # Force SSL
-if !!CONFIG[:ssl]
+if CONFIG[:ssl]
   require 'rack/ssl-enforcer'
   Rhosync::Server.use         Rack::SslEnforcer
   RhosyncConsole::Server.use  Rack::SslEnforcer

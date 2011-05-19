@@ -19,3 +19,10 @@ task :gen_httpd_conf do
   result = template.result(binding)
   puts result
 end
+
+task :test_settings do 
+  settings_path = File.expand_path(File.dirname(__FILE__)) + "/../settings/settings.yml"
+  settings = File.readlines(settings_path)
+  settings.map!{|l| l =~ /^:env:/ ? ":env: TEST\n"  : l }
+  puts settings
+end

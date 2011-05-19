@@ -28,14 +28,10 @@ class Application < Rhosync::Base
     end
     
     def initializer(path)
-      InsiteLogger.info "%"*80
-      InsiteLogger.info "START INIT APPLICATION"
       admin = User.is_exist?('rhoadmin') ? User.load('rhoadmin') : User.create({:login => 'rhoadmin', :admin => 1})
       admin.password = CONFIG[:rhoadmin_password] || ''
       admin.create_token
       super
-      InsiteLogger.info "DONE INITIALIZING"
-      InsiteLogger.info "&"*80
     end
     
     def store_blob(object,field_name,blob)
@@ -45,5 +41,6 @@ class Application < Rhosync::Base
 end
 
 Application.initializer(ROOT_PATH)
-Store.db = Redis.new(:thread_safe => true, :host => 'nrhrho103', :port => 6379, :timeout => 60)
+ENV['REDIS'] = "redis://#{CONFIG[:redis]}"
+Store.db = Redis.new(:thread_safe => true, :host => CONFIG[:redis_url], :port => CONFIG[:redis_port], :timeout => CONFIG[:redis_timeout])
 
