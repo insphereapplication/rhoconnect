@@ -41,5 +41,7 @@ class Application < Rhosync::Base
 end
 
 Application.initializer(ROOT_PATH)
-Store.db = Redis.new(:thread_safe => true, :host => CONFIG[:redis_url], :port => CONFIG[:redis_port], :timeout => CONFIG[:redis_timeout])
+if CONFIG[:redis_boot]
+  Store.db = Redis.new(:thread_safe => true, :host => CONFIG[:redis_url], :port => CONFIG[:redis_port], :timeout => CONFIG[:redis_timeout])
+end
 

@@ -33,6 +33,7 @@ local_crm_proxy: http://192.168.51.128/ # Change this if you're running locally 
   :fork_resque: true
   :crm_proxy: dev_crm_proxy
   :redis_timeout: 60
+  :redis_boot: false
   :log:
     :path: ./log/insite_mobile.log
     :max_file_size: 1024000
@@ -91,6 +92,7 @@ local_crm_proxy: http://192.168.51.128/ # Change this if you're running locally 
   :rhoadmin_password: iGyz5rk6JVYA
 :onsite: 
   :bundler: true
+  :redis_boot: true
   :crm_proxy: dev_crm_proxy
   :iphonecertfile: settings/apple_push_cert.pem
   :redis: nrhrho103:6379
@@ -107,6 +109,7 @@ local_crm_proxy: http://192.168.51.128/ # Change this if you're running locally 
      :mode: 'file'
 :onsite_model: 
  :bundler: true
+ :redis_boot: true
  :crm_proxy: dev_crm_proxy
  :iphonecertfile: settings/apple_push_cert.pem
  :redis: nrhrho203:6379
