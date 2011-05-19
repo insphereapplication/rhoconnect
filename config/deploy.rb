@@ -1,16 +1,17 @@
+set :stages, %w(model prod)
+set :default_stage, 'model'
+require 'capistrano/ext/multistage'
+
 set :application, "InsiteMobile"
 set :domain,      "rhosync.insphereis.net"
 set :repository,  "git@git.rhohub.com:insphere/InsiteMobile-dev-rhosync.git"
-set :branch,      "onsite_master"
+set :branch,      "master"
 set :use_sudo,    false
 set :deploy_to,   "/var/www/#{application}"
 set :deploy_via, :copy
 set :scm,         :git
 set :user,        "cap"
 set :normalize_asset_timestamps, false
-
-# env determines the environment section in settings/settings.yml that will be used by Rhosync
-set :env, :onsite
 
 # apache/passenger config properties -- these are used by templates/httpd.conf.erb
 set :document_root, "#{deploy_to}/current/public"
@@ -24,9 +25,6 @@ set :time, Time.now.strftime('%m/%d/%Y %r')
 set :passenger_module, "/opt/ruby-enterprise-1.8.7-2011.03/lib/ruby/gems/1.8/gems/passenger-3.0.7/ext/apache2/mod_passenger.so"
 set :passenger_root, "/opt/ruby-enterprise-1.8.7-2011.03/lib/ruby/gems/1.8/gems/passenger-3.0.7"
 set :ruby_bin, "/opt/ruby-enterprise-1.8.7-2011.03/bin/ruby"
-
-# target servers 
-role :app, "nrhrho101", "nrhrho102"
 
 after "deploy:update", "deploy:settings"
 after "deploy:update", "deploy:set_license"
