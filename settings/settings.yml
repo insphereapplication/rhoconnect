@@ -62,7 +62,7 @@ local_crm_proxy: http://192.168.51.128/ # Change this if you're running locally 
   :redis: localhost:6379
   :iphonepassphrase: Pariveda1
   :licensefile: settings/license.key
-  :iphoneserver: gateway.sandbox.push.apple.com
+  :iphoneserver: gateway.push.apple.com
   :iphoneport: 2195
   :syncserver: https://rhohub-insphere-b3789b06.heroku.com/application/
   :authtoken: 'DQAAAN4AAABMr5gOJS_7EvXDtx6gyJAk2xHHmkV_RybjlOgPQWOKv5Bjr6ylRnTHt8ogtQcOCAm_j-LjqFQ3f0OHLExbmeRCxOKcRqBY2drlhkMPJL3CW679Dadnwg5VNnufZUEFdHl4SUIwd7dGJK-AtjnDSRC_pPYlP7N0Ldjn2vessXN9Yk4v-k9CGNtKcuFRG2LGeLwRfHco8d5aHpMI4kKbDrOPjRHSKn6jEalsmLmv9Gq6tRxVRkxoN8EiUv6bg638U2nOOHHgr_wF0hcmg9WuYmtlPE41Hm2GlPhrV-nh9Mhu6w'
@@ -73,7 +73,7 @@ local_crm_proxy: http://192.168.51.128/ # Change this if you're running locally 
   :redis: localhost:6379
   :iphonepassphrase: Pariveda1
   :licensefile: settings/license.key
-  :iphoneserver: gateway.sandbox.push.apple.com
+  :iphoneserver: gateway.push.apple.com
   :iphoneport: 2195
   :syncserver: https://rhohub-insphere-c3d43885.heroku.com/application/
   :authtoken: 'DQAAAN4AAABMr5gOJS_7EvXDtx6gyJAk2xHHmkV_RybjlOgPQWOKv5Bjr6ylRnTHt8ogtQcOCAm_j-LjqFQ3f0OHLExbmeRCxOKcRqBY2drlhkMPJL3CW679Dadnwg5VNnufZUEFdHl4SUIwd7dGJK-AtjnDSRC_pPYlP7N0Ldjn2vessXN9Yk4v-k9CGNtKcuFRG2LGeLwRfHco8d5aHpMI4kKbDrOPjRHSKn6jEalsmLmv9Gq6tRxVRkxoN8EiUv6bg638U2nOOHHgr_wF0hcmg9WuYmtlPE41Hm2GlPhrV-nh9Mhu6w'
@@ -84,7 +84,7 @@ local_crm_proxy: http://192.168.51.128/ # Change this if you're running locally 
   :redis: localhost:6379
   :iphonepassphrase: Pariveda1
   :licensefile: settings/license.key
-  :iphoneserver: gateway.sandbox.push.apple.com
+  :iphoneserver: gateway.push.apple.com
   :iphoneport: 2195
   :syncserver: https://rhohub-insphere-a06075d6.heroku.com/application/
   :authtoken: 'DQAAAN4AAABMr5gOJS_7EvXDtx6gyJAk2xHHmkV_RybjlOgPQWOKv5Bjr6ylRnTHt8ogtQcOCAm_j-LjqFQ3f0OHLExbmeRCxOKcRqBY2drlhkMPJL3CW679Dadnwg5VNnufZUEFdHl4SUIwd7dGJK-AtjnDSRC_pPYlP7N0Ldjn2vessXN9Yk4v-k9CGNtKcuFRG2LGeLwRfHco8d5aHpMI4kKbDrOPjRHSKn6jEalsmLmv9Gq6tRxVRkxoN8EiUv6bg638U2nOOHHgr_wF0hcmg9WuYmtlPE41Hm2GlPhrV-nh9Mhu6w'
@@ -96,7 +96,7 @@ local_crm_proxy: http://192.168.51.128/ # Change this if you're running locally 
   :redis: nrhrho103:6379
   :iphonepassphrase: Pariveda1
   :licensefile: settings/license.key
-  :iphoneserver: gateway.sandbox.push.apple.com
+  :iphoneserver: gateway.push.apple.com
   :iphoneport: 2195
   :syncserver: https://rhosync.insphereis.net/application/
   :authtoken: 'DQAAAN4AAABMr5gOJS_7EvXDtx6gyJAk2xHHmkV_RybjlOgPQWOKv5Bjr6ylRnTHt8ogtQcOCAm_j-LjqFQ3f0OHLExbmeRCxOKcRqBY2drlhkMPJL3CW679Dadnwg5VNnufZUEFdHl4SUIwd7dGJK-AtjnDSRC_pPYlP7N0Ldjn2vessXN9Yk4v-k9CGNtKcuFRG2LGeLwRfHco8d5aHpMI4kKbDrOPjRHSKn6jEalsmLmv9Gq6tRxVRkxoN8EiUv6bg638U2nOOHHgr_wF0hcmg9WuYmtlPE41Hm2GlPhrV-nh9Mhu6w'
