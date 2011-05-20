@@ -54,8 +54,8 @@ namespace :deploy do
     put(gemfile_lock, "#{current_release}/Gemfile.lock")
   end
   
-  # The set_license task assumes that there is a license key file named "<hostname>" in the settings/host_keys directory
-  # in source control for every deployment target defined above in "role :app, '<hostname>', '<hostname>'", etc.
+  # The set_license task assumes that there is a license key file named "<hostname*>" in the settings/host_keys directory
+  # in source control for every deployment target defined above in "role :app, '<hostname1>', '<hostname2>'", etc.
   # It will copy the server-specific license key to the /settings/license.key file which Rhosync will use
   # for that server.
   desc "Set the Rhosync license key for the particular host machine"
@@ -63,7 +63,13 @@ namespace :deploy do
     run "mv #{current_release}/settings/host_keys/$CAPISTRANO:HOST$ #{current_release}/settings/license.key"
   end
 
-  # For this task to have an effect, all target servers need to replace /etc/httpd/conf/httpd.conf with a symlink pointing to <current_release>/config/httpd.conf
+  # For this task to have an effect, all target servers need to replace /etc/httpd/conf/httpd.conf with a symlink pointing 
+  # to <current_release>/config/httpd.conf
+  #
+  # Apache needs to be restarted for changes in httpd.conf to be reflected. Running cap deploy:update only restarts Passenger.
+  #
+  # To restart Apache, on all target machines: sudo apachectl -k graceful
+  #
   desc "Generate the apache httpd.conf file from the config/templates/httpd.conf.template"
   task :httpd_conf do
     require 'erb'
