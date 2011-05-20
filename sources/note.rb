@@ -69,6 +69,8 @@ class Note < SourceAdapter
           :password => @password,
           :attributes => attributes.to_json}
         ).body)
+
+      UpdateUtil.push_objects(@source, update_hash)
     end
   end
  

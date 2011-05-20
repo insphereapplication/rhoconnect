@@ -3,6 +3,7 @@ app_path = File.expand_path(File.join(File.dirname(__FILE__)))
 require "#{app_path}/mappers/mapper"
 require "#{app_path}/util/redis_util"
 require "#{app_path}/util/exception_util"
+require "#{app_path}/util/update_util"
 require 'resque_scheduler'
 require 'ap'
 require 'rhosync'

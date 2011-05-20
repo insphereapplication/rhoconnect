@@ -82,6 +82,8 @@ class Opportunity < SourceAdapter
           :password => @password,
           :attributes => mapped_hash.to_json}
         ).body
+      
+      UpdateUtil.push_objects(@source, update_hash)
         
       ExceptionUtil.context(:result => result)
       InsiteLogger.info result

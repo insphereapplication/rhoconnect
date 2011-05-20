@@ -66,6 +66,8 @@ class Contact < SourceAdapter
           :attributes => mapped_hash.to_json}
       ).body
       
+      UpdateUtil.push_objects(@source, update_hash)
+      
       InsiteLogger.info result
       ExceptionUtil.context(:result => result )
       result
