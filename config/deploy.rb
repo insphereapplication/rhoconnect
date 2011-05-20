@@ -15,8 +15,6 @@ set :normalize_asset_timestamps, false
 
 # apache/passenger config properties -- these are used by templates/httpd.conf.erb
 set :document_root, "#{deploy_to}/current/public"
-set :max_rhosync_processes, 3
-set :min_rhosync_processes, 3
 set :passenger_pool_idle_time, 0
 set :passenger_log_level, 3
 set :web_port, "80"
