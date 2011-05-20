@@ -75,7 +75,7 @@ class Opportunity < SourceAdapter
       ExceptionUtil.context(:current_user => current_user.inspect, :update_hash => update_hash)
       InsiteLogger.info update_hash
 
-      mapped_hash = OpportunityMapper.map_data_from_client(update_hash.clone)
+      mapped_hash = OpportunityMapper.map_data_from_client(update_hash.clone, current_user)
 
       result = RestClient.post("#{@opportunity_url}/update", 
           {:username => @username, 
