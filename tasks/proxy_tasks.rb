@@ -12,12 +12,18 @@ $environments = {'local' => 'http://localhost:52904',
   'production-external' => 'https://mobileproxy.insphereis.net'}
 
 namespace :proxy do
-    desc "Generates [lead_count] new leads, [age] days old"
-    task :populate_newleads, [:lead_count,:age] => [:setup, :set_identity] do |t,args|
+  desc "Generates [policy_count] new policies and contacts"
+  task :populate_newpolicies, [:policy_count] => [:setup, :set_identity] do |t,args|
+    policy_count = args[:policy_count].nil? ? 1 : args[:policy_count].to_i
+    populate_new_policies(@proxy_url,@credential,@identity,policy_count)
+  end
+  
+  desc "Generates [lead_count] new leads, [age] days old"
+  task :populate_newleads, [:lead_count,:age] => [:setup, :set_identity] do |t,args|
 		lead_count = args[:lead_count].nil? ? 1 : args[:lead_count].to_i
 		age_seconds = args[:age].nil? ? nil : days_to_seconds(args[:age])
 		generate_new_leads(@proxy_url,@credential,@identity,lead_count.to_i,age_seconds,$create_notes)
-    end
+  end
 	
 	desc "Generates [lead_count] followup leads, due [due] days from now"
 	task :populate_followupleads, [:lead_count,:due] => [:setup, :set_identity] do |t,args|

@@ -1,6 +1,5 @@
 class AppInfo < SourceAdapter
   def initialize(source,credential)
-    ap "AppInfo.initialize"
     super(source,credential)
   end
  
@@ -9,7 +8,6 @@ class AppInfo < SourceAdapter
   end
  
   def query(params=nil)
-    ap "AppInfo.query"
     settings = YAML::load_file('settings/settings.yml')
     ap "*** Settings file = #{settings[:app_info].inspect}"
     mrv = settings[:global][:app_info][:min_required_version]
@@ -30,7 +28,6 @@ class AppInfo < SourceAdapter
   end
  
   def sync
-    ap "AppInfo.sync"
     # Manipulate @result before it is saved, or save it 
     # yourself using the Rhosync::Store interface.
     # By default, super is called below which simply saves @result
@@ -38,7 +35,6 @@ class AppInfo < SourceAdapter
   end
  
   def create(create_hash,blob=nil)
-    ap "AppInfo.create"
     # TODO: Create a new record in your backend data source
     # If your rhodes rhom object contains image/binary data 
     # (has the image_uri attribute), then a blob will be provided
@@ -46,13 +42,11 @@ class AppInfo < SourceAdapter
   end
  
   def update(update_hash)
-    ap "AppInfo.update"
     # TODO: Update an existing record in your backend data source
     # raise "Please provide some code to update a single record in the backend data source using the update_hash"
   end
  
   def delete(delete_hash)
-    ap "AppInfo.delete"
     # TODO: write some code here if applicable
     # be sure to have a hash key and value for "object"
     # for now, we'll say that its OK to not have a delete operation
@@ -60,7 +54,6 @@ class AppInfo < SourceAdapter
   end
  
   def logoff
-    ap "AppInfo.logoff"
     # TODO: Logout from the data source if necessary
   end
 end
