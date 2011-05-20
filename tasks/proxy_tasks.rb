@@ -5,7 +5,7 @@ $identityfile = '.overridden_identity'
 
 $create_notes = false
 
-$environments = {'local' => 'http://localhost:52904', 
+$environments = {'local' => 'http://192.168.51.128', 
   'dev-internal' => 'http://nrhwwwd401.insp.dom:5000', 
   'dev-external' => 'https://devmobileproxy.insphereis.net', 
   'model-external' => 'https://mobileproxy.model.insphereis.net',
