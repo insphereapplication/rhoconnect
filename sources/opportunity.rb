@@ -74,8 +74,10 @@ class Opportunity < SourceAdapter
       update_hash['cssi_fromrhosync'] = 'true'
       ExceptionUtil.context(:current_user => current_user.inspect, :update_hash => update_hash)
       InsiteLogger.info update_hash
+      
+      ConflictManagementUtil.manage_opportunity_conflicts(update_hash, current_user)
 
-      mapped_hash = OpportunityMapper.map_data_from_client(update_hash.clone, current_user)
+      mapped_hash = OpportunityMapper.map_data_from_client(update_hash.clone)
 
       result = RestClient.post("#{@opportunity_url}/update", 
           {:username => @username, 
