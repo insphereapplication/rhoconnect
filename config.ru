@@ -1,6 +1,16 @@
 #!/usr/bin/env ruby
 require "#{File.dirname(__FILE__)}/util/config_file"
 
+
+if CONFIG[:bundler]
+  require 'bundler'
+  Bundler.require
+end
+
+if CONFIG[:redis_boot]
+  ENV['REDIS'] = "redis://#{CONFIG[:redis]}"
+end
+
 # Try to load vendor-ed rhosync, otherwise load the gem
 begin
   require 'vendor/rhosync/lib/rhosync/server'
@@ -21,7 +31,7 @@ set :raise_errors, true
 ROOT_PATH = File.expand_path(File.dirname(__FILE__))
 
 # Rhosync server flags
-Rhosync::Server.enable  :stats
+# Rhosync::Server.enable  :stats
 Rhosync::Server.disable :run
 Rhosync::Server.disable :clean_trace
 Rhosync::Server.enable  :raise_errors
@@ -31,7 +41,7 @@ Rhosync::Server.set     :root,        ROOT_PATH
 Rhosync::Server.use     Rack::Static, :urls => ["/data"], :root => Rhosync::Server.root
 
 # Force SSL
-if !!CONFIG[:ssl]
+if CONFIG[:ssl]
   require 'rack/ssl-enforcer'
   Rhosync::Server.use         Rack::SslEnforcer
   RhosyncConsole::Server.use  Rack::SslEnforcer

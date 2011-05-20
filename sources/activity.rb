@@ -98,6 +98,9 @@ class Activity < SourceAdapter
         :password => @password,
         :attributes => mapped_hash.to_json}
         ).body
+      
+      UpdateUtil.push_objects(@source, update_hash)
+      
       InsiteLogger.info result
     end
   end

@@ -1,7 +1,11 @@
+set :stages, %w(model prod)
+set :default_stage, 'model'
+require 'capistrano/ext/multistage'
+
 set :application, "InsiteMobile"
 set :domain,      "rhosync.insphereis.net"
 set :repository,  "git@git.rhohub.com:insphere/InsiteMobile-dev-rhosync.git"
-set :branch,      "onsite_master"
+set :branch,      "master"
 set :use_sudo,    false
 set :deploy_to,   "/var/www/#{application}"
 set :deploy_via, :copy
@@ -9,17 +13,25 @@ set :scm,         :git
 set :user,        "cap"
 set :normalize_asset_timestamps, false
 
-role :app, "nrhrho101", "nrhrho102"
+# apache/passenger config properties -- these are used by templates/httpd.conf.erb
+set :document_root, "#{deploy_to}/current/public"
+set :max_rhosync_processes, 3
+set :min_rhosync_processes, 3
+set :passenger_pool_idle_time, 0
+set :passenger_log_level, 3
+set :web_port, "80"
+set :time, Time.now.strftime('%m/%d/%Y %r')
+set :passenger_module, "/opt/ruby-enterprise-1.8.7-2011.03/lib/ruby/gems/1.8/gems/passenger-3.0.7/ext/apache2/mod_passenger.so"
+set :passenger_root, "/opt/ruby-enterprise-1.8.7-2011.03/lib/ruby/gems/1.8/gems/passenger-3.0.7"
+set :ruby_bin, "/opt/ruby-enterprise-1.8.7-2011.03/bin/ruby"
 
+after "deploy:update", "deploy:settings"
 after "deploy:update", "deploy:set_license"
-after "deploy:update", "deploy:gen_httpd_conf"
-after "deploy:update", "deploy:fix_bootstrap"
+after "deploy:update", "deploy:httpd_conf"
 
 namespace :deploy do
   task :start, :roles => :app do
     run "touch #{current_release}/tmp/restart.txt"
-    # run "apachectl -k graceful"
-    # run "/etc/rc.d/init.d/httpd restart"
   end
 
   [:start, :stop].each do |t|
@@ -30,8 +42,6 @@ namespace :deploy do
   desc "Restart Application"
   task :restart, :roles => :app do
      run "touch #{current_release}/tmp/restart.txt"
-    # run "apachectl -k graceful"
-    # run "/etc/rc.d/init.d/httpd restart"     
   end
   
   # The set_license task assumes that there is a license key file named "<hostname>" in the settings/host_keys directory
@@ -45,29 +55,19 @@ namespace :deploy do
 
   # For this task to have an effect, all target servers need to replace /etc/httpd/conf/httpd.conf with a symlink pointing to <current_release>/config/httpd.conf
   desc "Generate the apache httpd.conf file from the config/templates/httpd.conf.template"
-  task :gen_httpd_conf do
+  task :httpd_conf do
     require 'erb'
-    document_root = "/var/www/InsiteMobile/current/public"
-    passenger_module = "/opt/ruby-enterprise-1.8.7-2011.03/lib/ruby/gems/1.8/gems/passenger-3.0.7/ext/apache2/mod_passenger.so"
-    passenger_root = "/opt/ruby-enterprise-1.8.7-2011.03/lib/ruby/gems/1.8/gems/passenger-3.0.7"
-    passenger_pool_idle_time = 0
-    max_rhosync_processes = 10
-    min_rhosync_processes = 10
-    ruby_bin = "/opt/ruby-enterprise-1.8.7-2011.03/bin/ruby"
-    current_release = "/var/www/InsiteMobile/current"
-    server_name = "https://rhosync.insphereis.net"
-    passenger_log_level = 3
-    web_port = "80"
-    time = Time.now.strftime('%m/%d/%Y %r')
-
     template = ERB.new(File.read('config/templates/httpd.conf.erb'), nil, '<>')
     result = template.result(binding)
     put(result, "#{current_release}/config/httpd.conf")
   end
   
-  desc "A temp fix for the multi-process bug in Passenger" 
-  task :fix_bootstrap, :roles => :app do 
-    run "cd #{current_release}; rake server:fix_bootstrap"
+  desc "Sets the environment of settings/settings.yml to use the environment defined in 'env'"
+  task :settings do 
+    settings_path = File.expand_path(File.dirname(__FILE__)) + "/../settings/settings.yml"
+    settings = File.readlines(settings_path)
+    settings.map!{|l| l =~ /^:env:/ ? ":env: #{env}\n"  : l }
+    put(settings.join, "#{current_release}/settings/settings.yml")
   end
 end
 

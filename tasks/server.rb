@@ -124,14 +124,14 @@ namespace :server do
   
   task :reset_sync_status, [:user_pattern] => [:set_token] do |t, args|
     abort "User pattern must be specified" unless args[:user_pattern]
-    res = JSON.parse(RestClient.post(
+    res = RestClient.post(
       "#{$server}api/reset_sync_status", 
       { 
         :api_token => @token, 
         :user_pattern => args[:user_pattern]
       }.to_json, 
       :content_type => :json
-    ).body)
+    ).body
     ap res
   end
   
@@ -252,36 +252,32 @@ namespace :server do
   
   namespace :opportunity do
     desc "Creates <num_contacts> opportunities for <user_id> with generated attributes in the current target server."
-    task :create, [:user_id, :num_opportunities, :first_name, :last_name, :sort_ordinal]  => :set_token do |t, args|
-      contacts = (args.num_contacts || 1).to_i.times.reduce({}) do |sum, i|  
-           sum[rand(10**20)] = {
-             "city" => Faker::Address.city,
-             "created_on" => Time.now.to_s,
-             "updated_on" => Time.now.to_s,
-             "first_name" => args.first_name || Faker::Name.first_name,
-             "last_name" => args.last_name || Faker::Name.last_name,
-             "date_of_birth" => "#{rand(12)}/#{rand(28)}/#{rand(99)}",
-             "state" => Faker::Address.us_state
-           }
-           sum
-         end
-         
-         res = RestClient.post(
-           "#{$server}api/push_objects_notify", 
-           { 
-             :api_token => @token, 
-             :user_id => args.user_id || 'dave', 
-             :source_id => "Opportunity", 
-             :objects => contacts
-           }.to_json, 
-           :content_type => :json
-         )
-      puts "Created #{(args.num_contacts || 1)} new Contact(s):"
-      # ap contacts
-      puts "Response:"
-      ap res
-    end
+    task :create, [:user_id, :first_name, :last_name]  => :set_token do |t, args|
+
+    contact = [{"firstname" => args.first_name || Faker::Name.first_name,
+                "lastname" => args.last_name || Faker::Name.last_name,
+                 "emailaddress1" => "6rco@create.com",
+                 "contactid" => "fd47db4d-0ccb-df11-9bfd-0050568d0f01"}]
+                 
+      # 10.times { break if fork.nil? }
     
+      25.times do
+       res = RestClient.post(
+         "#{$server}api/push_objects_notify", 
+         { 
+           :api_token => @token, 
+           :user_id => args.user_id || 'dave', 
+           :source_id => "Opportunity", 
+           :objects => contact
+         }.to_json, 
+         :content_type => :json
+       )
+        puts "Created new Contact:"
+        ap contact
+        puts "Response:"
+        ap res
+      end
+    end
   end
 
   namespace :contact do 
@@ -310,20 +306,22 @@ namespace :server do
           sum
       end
       
-      res = RestClient.post(
-        "#{$server}api/push_mapped_objects", 
-        { 
-          :api_token => @token, 
-          :user_id => args.user_id || 'dave', 
-          :source_id => "Contact", 
-          :objects => contacts
-        }.to_json, 
-        :content_type => :json
-      )
-      puts "Created #{(args.num_contacts || 1)} new Contact(s):"
-      ap contacts
-      puts "Response:"
-      ap res
+      5.times do
+        res = RestClient.post(
+          "#{$server}api/push_mapped_objects", 
+          { 
+            :api_token => @token, 
+            :user_id => args.user_id || 'dave', 
+            :source_id => "Contact", 
+            :objects => contacts
+          }.to_json, 
+          :content_type => :json
+        )
+        puts "Created #{(args.num_contacts || 1)} new Contact(s):"
+        ap contacts
+        puts "Response:"
+        ap res
+      end
     end
   end
   
