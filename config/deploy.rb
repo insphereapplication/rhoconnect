@@ -28,6 +28,7 @@ set :ruby_bin, "/opt/ruby-enterprise-1.8.7-2011.03/bin/ruby"
 after "deploy:update", "deploy:settings"
 after "deploy:update", "deploy:set_license"
 after "deploy:update", "deploy:httpd_conf"
+after "deploy:update", "deploy:gemfile"
 
 namespace :deploy do
   task :start, :roles => :app do
@@ -42,6 +43,15 @@ namespace :deploy do
   desc "Restart Application"
   task :restart, :roles => :app do
      run "touch #{current_release}/tmp/restart.txt"
+  end
+  
+  desc "Copy the onsite Gemfile/Gemfile.lock files up to the server"
+  task :gemfile, :roles => :app do 
+    gemfiles_path = File.expand_path(File.dirname(__FILE__)) + "/gemfiles/onsite/"
+    gemfile = File.read(gemfiles_path + "Gemfile")
+    gemfile_lock = File.read(gemfiles_path + "Gemfile.lock")
+    put(gemfile, "#{current_release}/Gemfile")
+    put(gemfile_lock, "#{current_release}/Gemfile.lock")
   end
   
   # The set_license task assumes that there is a license key file named "<hostname>" in the settings/host_keys directory
