@@ -149,6 +149,18 @@ namespace :server do
     ap res
   end
   
+  task :get_log => [:set_token] do
+    res = RestClient.post(
+      "#{$server}api/get_log",
+      {
+        :api_token => @token
+      }.to_json,
+      :content_type => :json
+    ).body
+    
+    puts res
+  end
+  
   desc "pushes objects and invokes the notify method associated with the sources" 
   task :push_objects_notify => [:set_token] do |t, args|
     res = RestClient.post(
