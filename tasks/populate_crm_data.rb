@@ -101,7 +101,7 @@ def get_fake_contact_data(identity)
 	fake_data
 end
 
-def get_fake_policy_data(contact_id,identity)
+def get_fake_policy_data(identity)
   fake_data = {
     'cssi_applicationdate' => "#{rand_year}/#{rand_month}/#{rand_day}",
     'cssi_paymentmode' => rand_payment_mode,
@@ -115,7 +115,6 @@ def get_fake_policy_data(contact_id,identity)
     'statuscode' => 'Active',
     'cssi_primaryinsured' => Faker::Name.name,
     'cssi_carrierstatusvalue' => 'Active and paying',
-    'cssi_contactid' => {'type' => 'contact', 'id' => contact_id},
     'cssi_statusreason' => 'InForce',
     'cssi_insuredtype' => rand_insured_type,
     'cssi_annualpremium' => Faker::Base.numerify('####.##')
@@ -206,11 +205,20 @@ def create_contact(server,credential,identity,additional_attributes=nil)
 end
 
 def create_policy(server,credential,identity,contact_id)
-  policy_data = get_fake_policy_data(contact_id,identity)
+  policy_data = get_fake_policy_data(identity)
   ap policy_data
-  id = RestClient.post("#{server}/policy/create", credential.to_hash.merge(:attributes => policy_data.to_json)).body
-  ap id
-  id
+  policy_id = RestClient.post("#{server}/policy/create", credential.to_hash.merge(:attributes => policy_data.to_json)).body
+  ap policy_id
+  
+  policy_update = {
+    "cssi_policyid" => "#{policy_id}",
+    'cssi_contactid' => {'type' => 'contact', 'id' => contact_id}
+  };
+  
+  update_id = RestClient.post("#{server}/policy/update", credential.to_hash.merge(:attributes => policy_update.to_json)).body
+  ap update_id
+  
+  policy_id
 end
 
 def create_opportunity(server,credential,contact_id,identity,additional_attributes=nil)
