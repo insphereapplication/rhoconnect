@@ -15,8 +15,6 @@ set :normalize_asset_timestamps, false
 
 # apache/passenger config properties -- these are used by templates/httpd.conf.erb
 set :document_root, "#{deploy_to}/current/public"
-set :max_rhosync_processes, 3
-set :min_rhosync_processes, 3
 set :passenger_pool_idle_time, 0
 set :passenger_log_level, 3
 set :web_port, "80"
@@ -28,6 +26,7 @@ set :ruby_bin, "/opt/ruby-enterprise-1.8.7-2011.03/bin/ruby"
 after "deploy:update", "deploy:settings"
 after "deploy:update", "deploy:set_license"
 after "deploy:update", "deploy:httpd_conf"
+after "deploy:update", "deploy:gemfile"
 
 namespace :deploy do
   task :start, :roles => :app do
@@ -44,8 +43,17 @@ namespace :deploy do
      run "touch #{current_release}/tmp/restart.txt"
   end
   
-  # The set_license task assumes that there is a license key file named "<hostname>" in the settings/host_keys directory
-  # in source control for every deployment target defined above in "role :app, '<hostname>', '<hostname>'", etc.
+  desc "Copy the onsite Gemfile/Gemfile.lock files up to the server"
+  task :gemfile, :roles => :app do 
+    gemfiles_path = File.expand_path(File.dirname(__FILE__)) + "/gemfiles/onsite/"
+    gemfile = File.read(gemfiles_path + "Gemfile")
+    gemfile_lock = File.read(gemfiles_path + "Gemfile.lock")
+    put(gemfile, "#{current_release}/Gemfile")
+    put(gemfile_lock, "#{current_release}/Gemfile.lock")
+  end
+  
+  # The set_license task assumes that there is a license key file named "<hostname*>" in the settings/host_keys directory
+  # in source control for every deployment target defined above in "role :app, '<hostname1>', '<hostname2>'", etc.
   # It will copy the server-specific license key to the /settings/license.key file which Rhosync will use
   # for that server.
   desc "Set the Rhosync license key for the particular host machine"
@@ -53,7 +61,13 @@ namespace :deploy do
     run "mv #{current_release}/settings/host_keys/$CAPISTRANO:HOST$ #{current_release}/settings/license.key"
   end
 
-  # For this task to have an effect, all target servers need to replace /etc/httpd/conf/httpd.conf with a symlink pointing to <current_release>/config/httpd.conf
+  # For this task to have an effect, all target servers need to replace /etc/httpd/conf/httpd.conf with a symlink pointing 
+  # to <current_release>/config/httpd.conf
+  #
+  # Apache needs to be restarted for changes in httpd.conf to be reflected. Running cap deploy:update only restarts Passenger.
+  #
+  # To restart Apache, on all target machines: sudo apachectl -k graceful
+  #
   desc "Generate the apache httpd.conf file from the config/templates/httpd.conf.template"
   task :httpd_conf do
     require 'erb'

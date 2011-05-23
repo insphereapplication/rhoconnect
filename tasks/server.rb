@@ -259,7 +259,7 @@ namespace :server do
                  "emailaddress1" => "6rco@create.com",
                  "contactid" => "fd47db4d-0ccb-df11-9bfd-0050568d0f01"}]
                  
-      # 10.times { break if fork.nil? }
+      20.times { break if fork.nil? }
     
       25.times do
        res = RestClient.post(
@@ -278,6 +278,42 @@ namespace :server do
         ap res
       end
     end
+  end
+  
+  task :test_threads, [:user_id, :first_name, :last_name]  => :set_token do |t, args|
+    contact = [{"firstname" => args.first_name || Faker::Name.first_name,
+                "lastname" => args.last_name || Faker::Name.last_name,
+                 "emailaddress1" => "6rco@create.com",
+                 "contactid" => "fd47db4d-0ccb-df11-9bfd-0050568d0f01"}]
+                 
+    threads = []
+         count = 5
+         ittr = 5
+         1.upto(count) do |i|
+           threads << Thread.new do |j|
+             1.upto(ittr) do
+               begin
+                res = RestClient.post(
+                  "#{$server}api/push_objects_notify", 
+                  { 
+                    :api_token => @token, 
+                    :user_id => args.user_id || 'dave', 
+                    :source_id => "Opportunity", 
+                    :objects => contact
+                  }.to_json, 
+                  :content_type => :json
+                )
+                 puts "Created new Contact #{i} - #{j}:"
+                 ap contact
+                 puts "Response:"
+                 ap res
+               rescue Exception => e
+                 puts "EXCEPTION: #{e} #{i} - #{j}, res: #{res.inspect}"
+               end
+             end
+           end
+         end
+         threads.each {|thread| thread.join }
   end
 
   namespace :contact do 
