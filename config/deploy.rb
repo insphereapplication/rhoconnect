@@ -5,7 +5,6 @@ require 'capistrano/ext/multistage'
 set :application, "InsiteMobile"
 set :domain,      "rhosync.insphereis.net"
 set :repository,  "git@git.rhohub.com:insphere/InsiteMobile-dev-rhosync.git"
-set :branch,      "master"
 set :use_sudo,    false
 set :deploy_to,   "/var/www/#{application}"
 set :deploy_via, :copy
@@ -14,6 +13,9 @@ set :user,        "cap"
 set :normalize_asset_timestamps, false
 
 # apache/passenger config properties -- these are used by templates/httpd.conf.erb
+set :admin_email, "admin@insphereis.net"
+set :apache_user, "apache"
+set :apache_group, "apache"
 set :document_root, "#{deploy_to}/current/public"
 set :passenger_pool_idle_time, 0
 set :passenger_log_level, 3
@@ -66,7 +68,7 @@ namespace :deploy do
   #
   # Apache needs to be restarted for changes in httpd.conf to be reflected. Running cap deploy:update only restarts Passenger.
   #
-  # To restart Apache, on all target machines: sudo apachectl -k graceful
+  # To restart Apache, on all target machines: sudo apachectl -k graceful.
   #
   desc "Generate the apache httpd.conf file from the config/templates/httpd.conf.template"
   task :httpd_conf do
@@ -84,4 +86,15 @@ namespace :deploy do
     put(settings.join, "#{current_release}/settings/settings.yml")
   end
 end
+
+namespace :util do 
+  task :show_gems do 
+    stream "gem list"
+  end
+  
+  task :rhosync_log, :roles => :app do
+    stream "tail -F #{shared_path}/log/insite_mobile.log"
+  end
+end
+
 

@@ -56,6 +56,7 @@ class Activity < SourceAdapter
     
       ExceptionUtil.context(:current_user => current_user.login, :mapped_activity_hash => mapped_hash )
       
+      # TODO: why isn't this rule in the mapper?
       if mapped_hash['type'].downcase == 'appointment'
         mapped_hash['organizer'] = [{:type => 'systemuser', :id => Store.get_value(@user_id_key)}]
       else #phone call

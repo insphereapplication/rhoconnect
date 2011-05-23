@@ -25,10 +25,10 @@ LoadModule log_config_module  modules/mod_log_config.so
 	MaxRequestsPerChild  4000
 </IfModule>
 
-User  apache
-Group apache
+User  <%= apache_user %>
+Group <%= apache_group %>
 
-ServerAdmin admin@insphereis.net
+ServerAdmin <%= admin_email %>
 DocumentRoot "<%= document_root %>"
 
 # The following lines prevent .htaccess and .htpasswd files from being 
