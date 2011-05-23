@@ -95,7 +95,7 @@ local_crm_proxy: http://192.168.51.128/ # Change this if you're running locally 
 :onsite: 
   :bundler: true
   :redis_boot: true
-  :crm_proxy: dev_crm_proxy
+  :crm_proxy: model_crm_proxy
   :iphonecertfile: settings/apple_push_cert.pem
   :redis: nrhrho103:6379
   :iphonepassphrase: Pariveda1
@@ -112,7 +112,7 @@ local_crm_proxy: http://192.168.51.128/ # Change this if you're running locally 
 :onsite_model: 
  :bundler: true
  :redis_boot: true
- :crm_proxy: dev_crm_proxy
+ :crm_proxy: model_crm_proxy
  :iphonecertfile: settings/apple_push_cert.pem
  :redis: nrhrho203:6379
  :iphonepassphrase: Pariveda1
