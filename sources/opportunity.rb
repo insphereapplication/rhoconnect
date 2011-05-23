@@ -33,7 +33,6 @@ class Opportunity < SourceAdapter
   end
  
   def query(params=nil)
-    start_query = Time.now
     ExceptionUtil.rescue_and_reraise do
       ExceptionUtil.context(:current_user => current_user.login )
       unless Store.get_value(@initialized_key) == 'true'   
@@ -50,7 +49,6 @@ class Opportunity < SourceAdapter
         ExceptionUtil.context(:result => @result)
       end 
     end
-    InsiteLogger.info "OPPORTUNITY QUERY DONE IN : #{Time.now - start_query} Seconds"
   end
  
   def sync
@@ -72,7 +70,6 @@ class Opportunity < SourceAdapter
   end
  
   def update(update_hash)
-    update_start
     ExceptionUtil.rescue_and_reraise do
       InsiteLogger.info "UPDATE OPPORTUNITY"
       update_hash['cssi_fromrhosync'] = 'true'
@@ -93,7 +90,6 @@ class Opportunity < SourceAdapter
       ExceptionUtil.context(:result => result)
       InsiteLogger.info result
     end
-    InsiteLogger.info "OPPORTUNITY UPDATE DONE IN : #{Time.now - update_start} Seconds"
   end
   
   def delete(object_id)

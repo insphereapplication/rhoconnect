@@ -19,7 +19,6 @@ class Activity < SourceAdapter
   end
  
   def query(params=nil)
-    activity_start = Time.now
     ExceptionUtil.rescue_and_reraise do      
       unless Store.get_value(@initialized_key) == 'true'
        
@@ -36,10 +35,8 @@ class Activity < SourceAdapter
         @result = Mapper.map_source_data(res, 'Activity')
         
         ExceptionUtil.context(:result => res, :mapped_result => @result )
-        # InsiteLogger.info @result
       end
     end
-    InsiteLogger.info "ACTIVITY DONE QUERY IN : #{Time.now - activity_start} Seconds"
   end
  
   def sync
@@ -54,7 +51,6 @@ class Activity < SourceAdapter
   end
  
   def create(create_hash,blob=nil)
-    start_create = Time.now
     ExceptionUtil.rescue_and_reraise do
       InsiteLogger.info "CREATE ACTIVITY"
       InsiteLogger.info create_hash
@@ -83,14 +79,11 @@ class Activity < SourceAdapter
         ).body
       InsiteLogger.info "ACTIVITY PROXY CREATE IN : #{Time.now - start_proxy} Seconds"
       InsiteLogger.info "Activity Create Result: #{result}"
-  
       result
     end
-    InsiteLogger.info "ACTIVITY CREATE DONE IN : #{Time.now - start_create} Seconds"
   end
   
   def update(update_hash)
-    start_update = Time.now
     ExceptionUtil.rescue_and_reraise do
       InsiteLogger.info "UPDATE ACTIVITY"
       InsiteLogger.info update_hash
@@ -117,7 +110,6 @@ class Activity < SourceAdapter
       
       InsiteLogger.info result
     end
-    InsiteLogger.info "ACTIVITY DONE UPDATE IN : #{Time.now - start_update} Seconds"
   end
  
   def delete(object_id)
