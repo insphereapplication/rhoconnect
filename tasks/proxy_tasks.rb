@@ -18,6 +18,14 @@ namespace :proxy do
     populate_new_policies(@proxy_url,@credential,@identity,policy_count)
   end
   
+  desc "Updates the [primary_insured] name of policy # [policy_id]"
+  task :update_policy_primaryinsured, [:policy_id, :primary_insured] => [:setup, :set_identity] do |t,args|
+    policy_id = args[:policy_id]
+    primary_insured = args[:primary_insured]
+    
+    update_policy_primary_insured(@proxy_url,@credential,@identity,policy_id,primary_insured)
+  end
+  
   desc "Generates [lead_count] new leads, [age] days old"
   task :populate_newleads, [:lead_count,:age] => [:setup, :set_identity] do |t,args|
 		lead_count = args[:lead_count].nil? ? 1 : args[:lead_count].to_i

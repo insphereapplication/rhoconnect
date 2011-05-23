@@ -366,6 +366,35 @@ def populate_new_policies(server,credential,identity,policy_count)
   created_policy_ids
 end
 
+def update_policy_primary_insured(server,credential,indenity,policy_id,primary_insured)
+  puts "Updating primary insured of #{policy_id} to #{primary_insured}"
+  
+  policy_update = {
+    "cssi_policyid" => "#{policy_id}",
+    "cssi_primaryinsured" => "#{primary_insured}"
+  };
+  
+   update_id = RestClient.post("#{server}/policy/update", credential.to_hash.merge(:attributes => policy_update.to_json)).body
+   ap update_id
+  
+   policy_id
+
+  # policy_data = get_fake_policy_data(identity)
+  #  ap policy_data
+  #  policy_id = RestClient.post("#{server}/policy/create", credential.to_hash.merge(:attributes => policy_data.to_json)).body
+  #  ap policy_id
+  # 
+  #  policy_update = {
+  #    "cssi_policyid" => "#{policy_id}",
+  #    'cssi_contactid' => {'type' => 'contact', 'id' => contact_id}
+  #  };
+  # 
+  #  update_id = RestClient.post("#{server}/policy/update", credential.to_hash.merge(:attributes => policy_update.to_json)).body
+  #  ap update_id
+  # 
+  #  policy_id
+end
+
 #-----------------------
 
 def generate_new_leads(server,credential,identity,lead_count,created_seconds_ago=nil,create_notes=false)
