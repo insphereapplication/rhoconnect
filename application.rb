@@ -40,6 +40,7 @@ class Application < Rhosync::Base
   end
 end
 
+require './util/insite_logger'
 Application.initializer(ROOT_PATH)
 if CONFIG[:redis_boot]
   Store.db = Redis.new(:thread_safe => true, :host => CONFIG[:redis_url], :port => CONFIG[:redis_port], :timeout => CONFIG[:redis_timeout])
