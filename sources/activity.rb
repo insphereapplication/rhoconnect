@@ -19,6 +19,7 @@ class Activity < SourceAdapter
   end
  
   def query(params=nil)
+    activity_start = Time.now
     ExceptionUtil.rescue_and_reraise do      
       unless Store.get_value(@initialized_key) == 'true'
        
@@ -31,13 +32,14 @@ class Activity < SourceAdapter
              :password => @password}, 
             :content_type => :json
           )
-        InsiteLogger.info "ACTIVITY QUERY IN : #{Time.now - start} Seconds"
+        InsiteLogger.info "ACTIVITY PROXY QUERY IN : #{Time.now - start} Seconds"
         @result = Mapper.map_source_data(res, 'Activity')
         
         ExceptionUtil.context(:result => res, :mapped_result => @result )
         # InsiteLogger.info @result
       end
     end
+    InsiteLogger.info "ACTIVITY DONE QUERY IN : #{Time.now - activity_start} Seconds"
   end
  
   def sync
@@ -52,6 +54,7 @@ class Activity < SourceAdapter
   end
  
   def create(create_hash,blob=nil)
+    start_create = Time.now
     ExceptionUtil.rescue_and_reraise do
       InsiteLogger.info "CREATE ACTIVITY"
       InsiteLogger.info create_hash
@@ -72,20 +75,22 @@ class Activity < SourceAdapter
       ExceptionUtil.context(:current_user => current_user.login, :mapped_activity_hash => mapped_hash )
       
       InsiteLogger.info mapped_hash
-      start = Time.now
+      start_proxy = Time.now
       result = RestClient.post("#{@activity_url}/create", 
           {:username => @username, 
           :password => @password,
           :attributes => mapped_hash.to_json}
         ).body
-      InsiteLogger.info "ACTIVITY CREATE IN : #{Time.now - start} Seconds"
+      InsiteLogger.info "ACTIVITY PROXY CREATE IN : #{Time.now - start_proxy} Seconds"
       InsiteLogger.info "Activity Create Result: #{result}"
   
       result
     end
+    InsiteLogger.info "ACTIVITY CREATE DONE IN : #{Time.now - start_create} Seconds"
   end
   
   def update(update_hash)
+    start_update = Time.now
     ExceptionUtil.rescue_and_reraise do
       InsiteLogger.info "UPDATE ACTIVITY"
       InsiteLogger.info update_hash
@@ -107,11 +112,12 @@ class Activity < SourceAdapter
         :password => @password,
         :attributes => mapped_hash.to_json}
         ).body
-      InsiteLogger.info "ACTIVITY UPDATE IN : #{Time.now - start} Seconds"
+      InsiteLogger.info "ACTIVITY PROXY UPDATE IN : #{Time.now - start} Seconds"
       UpdateUtil.push_objects(@source, update_hash)
       
       InsiteLogger.info result
     end
+    InsiteLogger.info "ACTIVITY DONE UPDATE IN : #{Time.now - start_update} Seconds"
   end
  
   def delete(object_id)

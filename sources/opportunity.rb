@@ -33,6 +33,7 @@ class Opportunity < SourceAdapter
   end
  
   def query(params=nil)
+    start_query = Time.now
     ExceptionUtil.rescue_and_reraise do
       ExceptionUtil.context(:current_user => current_user.login )
       unless Store.get_value(@initialized_key) == 'true'   
@@ -44,11 +45,12 @@ class Opportunity < SourceAdapter
             :password => @password},
             :content_type => :json
         )
-        InsiteLogger.info "OPPORTUNITY QUERY IN : #{Time.now - start} Seconds"
+        InsiteLogger.info "OPPORTUNITY QUERY PROXY CALL IN : #{Time.now - start} Seconds"
         @result = Mapper.map_source_data(res, 'Opportunity')
         ExceptionUtil.context(:result => @result)
       end 
     end
+    InsiteLogger.info "OPPORTUNITY QUERY DONE IN : #{Time.now - start_query} Seconds"
   end
  
   def sync
@@ -70,6 +72,7 @@ class Opportunity < SourceAdapter
   end
  
   def update(update_hash)
+    update_start
     ExceptionUtil.rescue_and_reraise do
       InsiteLogger.info "UPDATE OPPORTUNITY"
       update_hash['cssi_fromrhosync'] = 'true'
@@ -84,12 +87,13 @@ class Opportunity < SourceAdapter
           :password => @password,
           :attributes => mapped_hash.to_json}
         ).body
-      InsiteLogger.info "OPPORTUNITY UPDATE IN : #{Time.now - start} Seconds"
+      InsiteLogger.info "OPPORTUNITY PROXY UPDATE IN : #{Time.now - start} Seconds"
       UpdateUtil.push_objects(@source, update_hash)
         
       ExceptionUtil.context(:result => result)
       InsiteLogger.info result
     end
+    InsiteLogger.info "OPPORTUNITY UPDATE DONE IN : #{Time.now - update_start} Seconds"
   end
   
   def delete(object_id)
