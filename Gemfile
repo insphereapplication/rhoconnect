@@ -7,4 +7,5 @@ gem "SystemTimer"
 gem "crypt"
 gem "rack-ssl-enforcer"
 gem "awesome_print"
+gem 'helpers/crypto'
 # gem "rhosync", '2.1.4', :require => "rhosync/server"

@@ -1,5 +1,7 @@
-require File.expand_path(File.dirname(__FILE__) + '/boot.rb')
-require 'helpers/crypto'
+app_path = File.expand_path(File.join(File.dirname(__FILE__))) 
+require "#{app_path}/boot.rb"
+# require "#{app_path}/util/insite_logger"
+# require "#{app_path}/helpers/crypto"
 
 class Application < Rhosync::Base
   class << self
@@ -40,7 +42,6 @@ class Application < Rhosync::Base
   end
 end
 
-require './util/insite_logger'
 Application.initializer(ROOT_PATH)
 if CONFIG[:redis_boot]
   Store.db = Redis.new(:thread_safe => true, :host => CONFIG[:redis_url], :port => CONFIG[:redis_port], :timeout => CONFIG[:redis_timeout])

@@ -1,5 +1,3 @@
-require 'helpers/crypto'
-
 class Note < SourceAdapter
   def initialize(source,credential)
     ExceptionUtil.rescue_and_reraise do

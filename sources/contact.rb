@@ -1,5 +1,3 @@
-require 'helpers/crypto'
-
 class Contact < SourceAdapter
   
   def initialize(source,credential)

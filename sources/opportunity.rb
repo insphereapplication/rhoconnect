@@ -1,5 +1,3 @@
-require 'helpers/crypto'
-
 class Opportunity < SourceAdapter
   
   on_api_push do |user_id|

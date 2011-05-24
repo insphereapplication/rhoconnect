@@ -1,5 +1,3 @@
-require 'helpers/crypto'
-
 class Activity < SourceAdapter
   def initialize(source,credential)
     @activity_url = "#{CONFIG[:crm_path]}activity"
