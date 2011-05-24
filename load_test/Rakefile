@@ -1,15 +1,60 @@
 require 'rhosync_session'
 require 'test_data'
 
-agent = {:login => 'stephen.pillow', :password => 'Pariveda1'}
+# agent = {:login => 'stephen.pillow', :password => 'Pariveda1'}
 base_url = 'https://rhosync.insphereis.net/application'
 
+namespace :client do 
+  task :load_session, [:login, :password] do |t, args|
+    @session = RhosyncSession.load_or_create(base_url, args.login, args.password)
+  end
 
-task :load_test do 
-  session = RhosyncSession.new(base_url, agent[:login], agent[:password])
-  opps = session.query('Opportunity')
-  # ap opps
-  opp = opps.first
-  create_hash = TestData.create_phone_call(opp['opportunityid'], opp['contact_id'], "Left Message", 'Open', 'Open')
-  session.create('Activity', create_hash)
+  task :reset do 
+    RhosyncSession.clear_local_serialized
+  end
+
+  task :load_opps => :load_session do 
+    @opps = @session.query('Opportunity')
+  end
+  
+  task :update_opp => :load_opps do 
+    opp = @opps.first
+    update_opp_hash = TestData.get_opportunity_updated(opp['opportunityid'], "No Answer")
+    @session.update('Opportunity', update_opp_hash)
+  end
+
+  task :create_and_update_activity => [:load_session, :load_opps] do 
+    raise "no opps created" unless @opps
+    opp = @opps.first
+    create_hash = TestData.create_phone_call(opp['opportunityid'], opp['contact_id'], "Left Message", 'Open', 'Open')
+    new_activity_id = @session.create('Activity', create_hash)
+    
+    update_hash = TestData.get_activity_updated('PhoneCall', new_activity_id, "Left Message", 'Completed', 'Made')
+    @session.update('Activity', update_hash)
+  end
+  
+  
+  task :script => [:load_session, :load_opps] do 
+    raise "no opps created" unless @opps
+    @session.start_test
+    2.times do
+      opp = @opps[rand(@opps.count)]
+      create_hash = TestData.create_phone_call(opp['opportunityid'], opp['contact_id'], "Left Message", 'Open', 'Open')
+      new_activity_id = @session.create('Activity', create_hash)
+    
+      update_hash = TestData.get_activity_updated('PhoneCall', new_activity_id, "Left Message", 'Completed', 'Made')
+      @session.update('Activity', update_hash)
+    
+      update_opp_hash = TestData.get_opportunity_updated(opp['opportunityid'], "No Answer")
+      @session.update('Opportunity', update_opp_hash)
+    end
+    @session.end_test
+    @session.persist_local
+    @session.show_stats
+  end
+  
+  task :stats => [:load_session] do
+    @session.show_stats
+  end
+  
 end
