@@ -1,5 +1,7 @@
-require File.expand_path(File.dirname(__FILE__) + '/boot.rb')
-require 'helpers/crypto'
+app_path = File.expand_path(File.join(File.dirname(__FILE__))) 
+require "#{app_path}/boot.rb"
+# require "#{app_path}/util/insite_logger"
+# require "#{app_path}/helpers/crypto"
 
 class Application < Rhosync::Base
   class << self

@@ -1,5 +1,3 @@
-require 'helpers/crypto'
-
 class Activity < SourceAdapter
   def initialize(source,credential)
     @activity_url = "#{CONFIG[:crm_path]}activity"
@@ -21,18 +19,20 @@ class Activity < SourceAdapter
   def query(params=nil)
     ExceptionUtil.rescue_and_reraise do      
       unless Store.get_value(@initialized_key) == 'true'
-        InsiteLogger.info "ACTIVITY QUERY"
-        
+       
         ExceptionUtil.context(:current_user => current_user.login )
+        
+        InsiteLogger.info "ACTIVITY QUERY"
+        start = Time.now
         res = RestClient.post(@activity_url,
             {:username => @username, 
              :password => @password}, 
             :content_type => :json
           )
+        InsiteLogger.info "ACTIVITY PROXY QUERY IN : #{Time.now - start} Seconds"
         @result = Mapper.map_source_data(res, 'Activity')
         
         ExceptionUtil.context(:result => res, :mapped_result => @result )
-        InsiteLogger.info @result
       end
     end
   end
@@ -40,8 +40,10 @@ class Activity < SourceAdapter
   def sync
     ExceptionUtil.rescue_and_reraise do
       unless Store.get_value(@initialized_key) == 'true'  
+        start = Time.now
         super
         Store.put_value(@initialized_key, 'true')
+        InsiteLogger.info "ACTIVITY SYNC IN #{Time.now - start} SECONDS" 
       end
     end
   end
@@ -67,13 +69,14 @@ class Activity < SourceAdapter
       ExceptionUtil.context(:current_user => current_user.login, :mapped_activity_hash => mapped_hash )
       
       InsiteLogger.info mapped_hash
+      start_proxy = Time.now
       result = RestClient.post("#{@activity_url}/create", 
           {:username => @username, 
           :password => @password,
           :attributes => mapped_hash.to_json}
         ).body
+      InsiteLogger.info "ACTIVITY PROXY CREATE IN : #{Time.now - start_proxy} Seconds"
       InsiteLogger.info "Activity Create Result: #{result}"
-  
       result
     end
   end
@@ -94,12 +97,13 @@ class Activity < SourceAdapter
       InsiteLogger.info mapped_hash
       ExceptionUtil.context(:current_user => current_user.login, :mapped_activity_hash => mapped_hash )
       
+      start = Time.now
       result = RestClient.post("#{@activity_url}/update", 
         {:username => @username, 
         :password => @password,
         :attributes => mapped_hash.to_json}
         ).body
-      
+      InsiteLogger.info "ACTIVITY PROXY UPDATE IN : #{Time.now - start} Seconds"
       UpdateUtil.push_objects(@source, update_hash)
       
       InsiteLogger.info result

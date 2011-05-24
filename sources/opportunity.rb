@@ -1,5 +1,3 @@
-require 'helpers/crypto'
-
 class Opportunity < SourceAdapter
   
   on_api_push do |user_id|
@@ -38,16 +36,15 @@ class Opportunity < SourceAdapter
       unless Store.get_value(@initialized_key) == 'true'   
         InsiteLogger.info "QUERY FOR OPPORTUNITIES"
         
+        start = Time.now
         res = RestClient.post(@opportunity_url,
           {:username => @username, 
             :password => @password},
             :content_type => :json
         )
-        
+        InsiteLogger.info "OPPORTUNITY QUERY PROXY CALL IN : #{Time.now - start} Seconds"
         @result = Mapper.map_source_data(res, 'Opportunity')
-        
         ExceptionUtil.context(:result => @result)
-        InsiteLogger.info @result
       end 
     end
   end
@@ -55,8 +52,10 @@ class Opportunity < SourceAdapter
   def sync
     ExceptionUtil.rescue_and_reraise do
       unless Store.get_value(@initialized_key) == 'true'  
+        start = Time.now
         super
         Store.put_value(@initialized_key, 'true')
+        InsiteLogger.info "OPPORTUNITY SYNC IN #{Time.now - start} SECONDS" 
       end
     end
   end
@@ -77,12 +76,13 @@ class Opportunity < SourceAdapter
 
       mapped_hash = OpportunityMapper.map_data_from_client(update_hash.clone, current_user)
 
+      start = Time.now
       result = RestClient.post("#{@opportunity_url}/update", 
           {:username => @username, 
           :password => @password,
           :attributes => mapped_hash.to_json}
         ).body
-      
+      InsiteLogger.info "OPPORTUNITY PROXY UPDATE IN : #{Time.now - start} Seconds"
       UpdateUtil.push_objects(@source, update_hash)
         
       ExceptionUtil.context(:result => result)
