@@ -26,9 +26,8 @@ module InsiteLogger
   end
   
   def self.host_name
-      @host_name ||= `echo $HOSTNAME`.strip
-    rescue
-      ""
-    end
+    @host_name ||= `echo $HOSTNAME`.strip
+  rescue
+    ""
   end
 end
