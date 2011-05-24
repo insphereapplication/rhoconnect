@@ -1,10 +1,10 @@
 module InsiteLogger  
 
   def self.info(message)
-    # output_host_name
+    output_host_name
     ap message  
     message = message.kind_of?(Array) ? message.join("\n") : message.inspect
-    insite_logger.info(message) if insite_logger
+    insite_logger.info("#{host_name} -- #{message}") if insite_logger
   end
   
   def self.insite_logger
@@ -26,8 +26,9 @@ module InsiteLogger
   end
   
   def self.host_name
-    @host_name ||= `echo $HOSTNAME`.strip
-  rescue
-    ""
+      @host_name ||= `echo $HOSTNAME`.strip
+    rescue
+      ""
+    end
   end
 end

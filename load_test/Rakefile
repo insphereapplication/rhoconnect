@@ -11,5 +11,5 @@ task :load_test do
   # ap opps
   opp = opps.first
   create_hash = TestData.create_phone_call(opp['opportunityid'], opp['contact_id'], "Left Message", 'Open', 'Open')
-  # session.create('Activity', create_hash)
+  session.create('Activity', create_hash)
 end
