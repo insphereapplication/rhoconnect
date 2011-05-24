@@ -4,6 +4,7 @@ GEM
     SystemTimer (1.2.3)
     awesome_print (0.3.2)
     crypt (1.1.4)
+    crypto (0.0.3)
     exceptional (2.0.32)
       rack
     faker (0.9.5)
@@ -41,6 +42,7 @@ DEPENDENCIES
   SystemTimer
   awesome_print
   crypt
+  crypto
   exceptional
   faker
   rack-ssl-enforcer
