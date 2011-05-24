@@ -1,0 +1,15 @@
+require 'rhosync_session'
+require 'test_data'
+
+agent = {:login => 'stephen.pillow', :password => 'Pariveda1'}
+base_url = 'https://rhosync.insphereis.net/application'
+
+
+task :load_test do 
+  session = RhosyncSession.new(base_url, agent[:login], agent[:password])
+  opps = session.query('Opportunity')
+  # ap opps
+  opp = opps.first
+  create_hash = TestData.create_phone_call(opp['opportunityid'], opp['contact_id'], "Left Message", 'Open', 'Open')
+  # session.create('Activity', create_hash)
+end
