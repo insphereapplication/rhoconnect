@@ -50,6 +50,26 @@ def rand_gender
 	['Male','Female'][rand(2)]
 end
 
+def rand_tf
+  ['True','False'][rand(2)]
+end
+
+def rand_height_feet
+  rand_height_feet = rand(3) + 4
+end
+
+def rand_height_inches
+  rand_height_inches = rand(11)
+end
+
+def rand_weight
+  rand_weight = rand(250) + 100
+end
+
+def rand_marital_status
+  ['Single','Married','Divorced','Widowed'][rand(4)]
+end
+
 #----------------------- Policy rands
 
 def rand_payment_mode
@@ -96,7 +116,24 @@ def get_fake_contact_data(identity)
 		'telephone1' => Faker::Base.numerify('(###) ###-####'),
 		'telephone2' => Faker::Base.numerify('(###) ###-####'),
 		'gendercode' => rand_gender,
-		'ownerid' => {'type' => 'systemuser', 'id' => identity['id']}
+		'ownerid' => {'type' => 'systemuser', 'id' => identity['id']},
+		'cssi_heightft' => rand_height_feet,
+		'cssi_heightin' => rand_height_inches,
+		'cssi_weight' => rand_weight,
+		'cssi_usetobacco' => rand_tf,
+		'familystatuscode' => rand_marital_status,
+		'cssi_allowcallsalternatephone' => rand_tf,
+		'cssi_allowcallsbusinessphone' => rand_tf,
+		'cssi_allowcallshomephone' => rand_tf,
+		'cssi_allowcallsmobilephone' => rand_tf,
+		'cssi_spousename' => Faker::Name.first_name,
+		'cssi_spouselastname' => Faker::Name.last_name,
+		'cssi_spousebirthdate' => "#{rand_year}/#{rand_month}/#{rand_day}",
+		'cssi_spouseheightft' => rand_height_feet,
+		'cssi_spouseheightin' => rand_height_inches,
+		'cssi_spouseweight' => rand_weight,
+		'cssi_spouseusetobacco' => rand_tf,
+		'cssi_spousegender' => rand_gender
 	};
 	fake_data
 end
