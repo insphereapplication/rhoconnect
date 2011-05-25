@@ -88,7 +88,7 @@ class RhosyncSession
     ap post_headers
     start = Time.now
     res = RestClient.post(base_url, post_args(args_hash), post_headers)
-    @request_stats.add({:action => "post", :time => Time.now - start})
+    @request_stats.add({:action => "post", :time => Time.now - start, :args => args_hash})
     res
   end
   
@@ -113,7 +113,7 @@ class RhosyncSession
     raise "No session established" unless session_established
     # first post the create
     puts "Creating new #{model}..."
-    post({:source_name => model}.merge({:create => create_hash}))
+    post({:source_name => model, :create => create_hash})
     puts "Getting #{model} links hash..."
     # next get the links hash from a query call -- the links has the new guid from the last create action
     res = get({'source_name' => model})
@@ -135,7 +135,7 @@ class RhosyncSession
   
   def update(model, update_hash)
     puts "Updating #{model}..."
-    post({:source_name => model}.merge({:update => update_hash}))
+    post({:source_name => model, :update => update_hash})
     puts "Updated #{model}"
   end
   

@@ -38,6 +38,27 @@ namespace :client do
   end
   
   
+  task :script_test, [:login, :password] do |t,args|
+    session = RhosyncSession.new(base_url, args.login, args.password)
+    session.start_test
+    opps = session.query('Opportunity')
+    2.times do
+      opp = opps[rand(opps.count)]
+      create_hash = TestData.create_phone_call(opp['opportunityid'], opp['contact_id'], "Left Message", 'Open', 'Open')
+      new_activity_id = session.create('Activity', create_hash)
+    
+      update_hash = TestData.get_activity_updated('PhoneCall', new_activity_id, "Left Message", 'Completed', 'Made')
+      session.update('Activity', update_hash)
+    
+      update_opp_hash = TestData.get_opportunity_updated(opp['opportunityid'], "No Answer")
+      session.update('Opportunity', update_opp_hash)
+    end
+    session.end_test
+    session.persist_local
+    session.show_stats
+  end
+  
+  
   task :script, [:login] => [:login, :load_opps] do |t, args|
     $CURRENT_LOGIN = args.login
     raise "no opps created" unless @opps
