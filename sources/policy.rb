@@ -18,20 +18,20 @@ class Policy < SourceAdapter
   end
  
   def query(params=nil)
-    # ExceptionUtil.rescue_and_reraise do
-    #   unless Store.get_value(@initialized_key) == 'true'
-    #     InsiteLogger.info "QUERY FOR POLICIES for #{current_user.login.downcase}"
-    #     ExceptionUtil.context(:current_user => current_user.login)
-    #     res = RestClient.post(@policy_url, {:username => @username,
-    #                                         :password => @password},
-    #                                         :content_type => :json)
-    #                                         
-    #     @result = Mapper.map_source_data(res, 'Policy')
-    #     
-    #     ExceptionUtil.context(:result => @result)
-    #     InsiteLogger.info @result
-    #   end
-    # end
+    ExceptionUtil.rescue_and_reraise do
+      unless Store.get_value(@initialized_key) == 'true'
+        InsiteLogger.info "QUERY FOR POLICIES for #{current_user.login.downcase}"
+        ExceptionUtil.context(:current_user => current_user.login)
+        res = RestClient.post(@policy_url, {:username => @username,
+                                            :password => @password},
+                                            :content_type => :json)
+                                            
+        @result = Mapper.map_source_data(res, 'Policy')
+        
+        ExceptionUtil.context(:result => @result)
+        InsiteLogger.info @result
+      end
+    end
   end
  
   def sync
