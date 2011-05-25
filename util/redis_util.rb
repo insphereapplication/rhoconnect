@@ -18,10 +18,10 @@ module RedisUtil
   
     def get_model(model, user, key)
       md = get_md(model, user)
-      unless model = md[key]
-        raise "No #{model} with key #{key} found"
+      unless record = md[key]
+        raise "No #{model} record with key #{key} found"
       end
-      model
+      record
     end
   end
 end
