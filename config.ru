@@ -1,4 +1,6 @@
 #!/usr/bin/env ruby
+require "#{File.dirname(__FILE__)}/util/config_file"
+
 
 if CONFIG[:bundler]
   require 'bundler'
