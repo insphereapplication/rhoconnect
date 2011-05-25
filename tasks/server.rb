@@ -5,7 +5,7 @@ API_KEY = 'b8788d7b2ae404c9661f40215f5d9258aede9c83'
 $settings_file = 'settings/settings.yml'
 $config = YAML::load_file($settings_file)
 $app_path = File.expand_path(File.dirname(__FILE__))
-$target = :test
+$target = :onsite
 $server = ($config[$target] ? $config[$target][:syncserver] : "").sub('/application', '')
 $password = ($config[$target] ? $config[$target][:rhoadmin_password] : "")
 
@@ -122,6 +122,7 @@ namespace :server do
     users.gsub(/[\[\]]/, '').split(",").each { |u| puts u }
   end
   
+  desc "Reset the user's sync flag to force a full query on the next login"
   task :reset_sync_status, [:user_pattern] => [:set_token] do |t, args|
     abort "User pattern must be specified" unless args[:user_pattern]
     res = RestClient.post(

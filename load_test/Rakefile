@@ -3,27 +3,31 @@ require 'test_data'
 
 # agent = {:login => 'stephen.pillow', :password => 'Pariveda1'}
 base_url = 'https://rhosync.insphereis.net/application'
+$CURRENT_LOGIN
 
 namespace :client do 
-  task :load_session, [:login, :password] do |t, args|
-    @session = RhosyncSession.load_or_create(base_url, args.login, args.password)
+  task :login, [:login, :password, :force_reload] do |t, args|
+    @session = RhosyncSession.load_or_create(base_url, (args.login || $CURRENT_LOGIN), args.password, args.force_reload)
   end
 
-  task :reset do 
+  task :clear_all_sessions do 
     RhosyncSession.clear_local_serialized
   end
 
-  task :load_opps => :load_session do 
+  task :load_opps, [:login] => :login do |t, args|
+    $CURRENT_LOGIN = args.login
     @opps = @session.query('Opportunity')
   end
   
-  task :update_opp => :load_opps do 
+  task :update_opp, [:login] => :load_opps do |t, args|
+    $CURRENT_LOGIN = args.login
     opp = @opps.first
     update_opp_hash = TestData.get_opportunity_updated(opp['opportunityid'], "No Answer")
     @session.update('Opportunity', update_opp_hash)
   end
 
-  task :create_and_update_activity => [:load_session, :load_opps] do 
+  task :create_and_update_activity, [:login] => [:login, :load_opps] do |t, args|
+    $CURRENT_LOGIN = args.login
     raise "no opps created" unless @opps
     opp = @opps.first
     create_hash = TestData.create_phone_call(opp['opportunityid'], opp['contact_id'], "Left Message", 'Open', 'Open')
@@ -34,7 +38,8 @@ namespace :client do
   end
   
   
-  task :script => [:load_session, :load_opps] do 
+  task :script, [:login] => [:login, :load_opps] do |t, args|
+    $CURRENT_LOGIN = args.login
     raise "no opps created" unless @opps
     @session.start_test
     2.times do
@@ -53,7 +58,7 @@ namespace :client do
     @session.show_stats
   end
   
-  task :stats => [:load_session] do
+  task :stats => [:login] do
     @session.show_stats
   end
   

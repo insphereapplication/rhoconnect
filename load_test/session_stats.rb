@@ -27,11 +27,15 @@ class SessionStats
   
   def show
     ap @stats
-    puts "Total time: #{total_time}"
-    puts "Total requests: #{@stats.size}"
-    puts "Max time: #{max_time}"
-    puts "Min time: #{min_time}"
-    puts "Requests per second: #{requests_per_sec}"
+    puts %Q{ 
+      ********************************
+      Total time: #{total_time}
+      Total requests: #{@stats.size}
+      Max time: #{max_time}
+      Min time: #{min_time}
+      Requests per second: #{requests_per_sec}
+      ********************************
+    }
   end
   
   def add(request)

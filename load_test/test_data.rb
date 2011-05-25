@@ -85,6 +85,7 @@ module TestData
       {
           "cssi_lastactivitydate" => "2011-04-21 10:55:37",
                              "id" => opportunity_id,
+                    "statuscode" => "No Contact Made",
                "cssi_fromrhosync" => "true",
               "cssi_statusdetail" => disposition #"Left Message"/"Contact Made"/"No Answer"
       }

@@ -7,36 +7,42 @@ require 'session_stats'
 class RhosyncSession 
   attr_accessor :client_id
   attr_accessor :base_url
-  SERIALIZED_FILENAME = ".session_yml"
+  attr_accessor :login
   DATA_SIZE = 2000
   
-  def self.load_or_create(*args)
-    puts 
-    if File.exist?(File.expand_path(SERIALIZED_FILENAME))
-      puts "Loading persisted session from #{File.expand_path(SERIALIZED_FILENAME)}"
-      load
+  def self.load_or_create(base_url, login, password, force_reload=false)
+    if File.exist?(serialized_filename(login)) && !force_reload
+      puts "Loading persisted session from #{serialized_filename(login)}"
+      load(login)
     else
-      session = new(*args)
+      puts "Creating new session for #{login}/#{password}..."
+      session = new(base_url, login, password)
+      puts "Session created, persisting..."
       session.persist_local
       session
     end
   end
   
-  def self.load
-    YAML::load(File.read(SERIALIZED_FILENAME)) 
+  def self.serialized_filename(login)
+    File.expand_path(".#{login}.session")
+  end
+  
+  def self.load(login)
+    YAML::load(File.read(serialized_filename(login))) 
   end
   
   def self.clear_local_serialized
-    File.delete(SERIALIZED_FILENAME) if File.exist?(SERIALIZED_FILENAME)
+    `rm -f *_session`
   end
   
   def persist_local
-    File.open(SERIALIZED_FILENAME, 'w+') {|f| f.write(YAML::dump(self)) }
+    File.open(RhosyncSession.serialized_filename(@login), 'w+') {|f| f.write(YAML::dump(self)) }
   end
   
   def initialize(base_url, login, password)
     @base_url = base_url
     @request_stats = SessionStats.new
+    @login = login
     puts "Logging into #{base_url}/clientlogin..."
     res = RestClient.post "#{base_url}/clientlogin", {:login => login, :password => password}, :content_type => :json
     res.cookies['rhosync_session'] = CGI.escape(res.cookies['rhosync_session'])  
@@ -69,10 +75,17 @@ class RhosyncSession
   end
   
   def get(args_hash={})
+    puts "Calling get for #{base_url}?#{url_args(args_hash)}"
+    puts "Headers:"
+    ap headers
     RestClient.get "#{base_url}?#{url_args(args_hash)}", headers
   end
   
   def post(args_hash)
+    puts "Calling post for #{base_url}, with body:"
+    ap post_args(args_hash)
+    puts "Headers:"
+    ap post_headers
     start = Time.now
     res = RestClient.post(base_url, post_args(args_hash), post_headers)
     @request_stats.add({:action => "post", :time => Time.now - start})
@@ -101,13 +114,16 @@ class RhosyncSession
     # first post the create
     puts "Creating new #{model}..."
     post({:source_name => model}.merge({:create => create_hash}))
-
+    puts "Getting #{model} links hash..."
     # next get the links hash from a query call -- the links has the new guid from the last create action
     res = get({'source_name' => model})
-
     # get the token for acking
     last_result = JSON.parse(res)
     ack_token = last_result[1]['token']
+    raise "Create error raised: #{last_result[5]['create-error'].map{|k,v| v['message'] if k='message'}.first}" if last_result[5]['create-error']
+    raise "No ack token given after #{model} create for #{login}" unless ack_token
+    raise "No links given after #{model} create for #{login}" unless last_result[5]['links']
+    
     model_id = last_result[5]['links'].values.first['l']
     puts "New #{model} id: #{model_id}"
 
@@ -128,9 +144,13 @@ class RhosyncSession
     puts "Querying #{model}..."
     raw = get({'source_name' => model} )
     result = JSON.parse(raw)
+    insert_array = result.select{|hsh| hsh.keys.include?('insert') }
     puts "Parsed query result, building hash..."
-    ap result
-    opps = result.select{|hsh| hsh.keys.include?('insert') }.first['insert'].values
+    unless insert_array.size > 0
+      puts "No #{model}(s) returned from query"
+      return
+    end
+    opps = insert_array.first['insert'].values
     puts "Done query"
     opps
   end
