@@ -31,6 +31,10 @@ class Opportunity < SourceAdapter
   end
  
   def query(params=nil)
+    InsiteLogger.info "OPPPORTUNITY QUERY FOR #{current_user}"
+    InsiteLogger.info @initialized_key
+    InsiteLogger.info Store.get_value(@initialized_key)
+    
     ExceptionUtil.rescue_and_reraise do
       ExceptionUtil.context(:current_user => current_user.login )
       unless Store.get_value(@initialized_key) == 'true'   
