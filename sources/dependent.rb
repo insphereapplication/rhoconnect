@@ -96,8 +96,6 @@ class Dependent < SourceAdapter
            :attributes => mapped_hash.to_json}
       ).body
       
-      #TODO: Delete from redis?
-      
       InsiteLogger.info result
       ExceptionUtil.context(:result => result)
     end

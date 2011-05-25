@@ -305,6 +305,16 @@ def create_dependent(server,credential,identity,contact_id)
   dependent_id  
 end
 
+def delete_dependent(server,credential,identity,dependent_id)
+  dependent_data = { 'cssi_dependentsid' => dependent_id };
+  
+  delete_result = RestClient.post("#{server}/dependents/delete",credential.to_hash.merge(:attributes => dependent_data.to_json)).body
+  
+  ap "Delete dependent id result = " + delete_result
+  
+  delete_result
+end
+
 def create_phonecall(server,credential,opportunity_id,additional_attributes=nil)
 	phonecall_data = get_fake_phonecall_data(opportunity_id)
 	phonecall_data.merge!(additional_attributes) unless additional_attributes.nil?
@@ -453,21 +463,6 @@ def update_policy_primary_insured(server,credential,indenity,policy_id,primary_i
    ap update_id
   
    policy_id
-
-  # policy_data = get_fake_policy_data(identity)
-  #  ap policy_data
-  #  policy_id = RestClient.post("#{server}/policy/create", credential.to_hash.merge(:attributes => policy_data.to_json)).body
-  #  ap policy_id
-  # 
-  #  policy_update = {
-  #    "cssi_policyid" => "#{policy_id}",
-  #    'cssi_contactid' => {'type' => 'contact', 'id' => contact_id}
-  #  };
-  # 
-  #  update_id = RestClient.post("#{server}/policy/update", credential.to_hash.merge(:attributes => policy_update.to_json)).body
-  #  ap update_id
-  # 
-  #  policy_id
 end
 
 #-----------------------
@@ -505,6 +500,11 @@ def generate_new_dependents_for_contact(server,credential,identity,dependent_cou
   end
   
   created_dependent_ids
+end
+
+def delete_dependent_by_id(server,credential,identity,dependent_id)
+  puts "Deleteing #{dependent_id}"
+  delete_dependent(server,credential,identity,dependent_id)
 end
 
 def generate_followup_leads(server,credential,identity,lead_count,due_seconds=nil,create_notes=false)

@@ -67,6 +67,12 @@ namespace :proxy do
 	  contact_id = args[:contact_id]
 	  generate_new_dependents_for_contact(@proxy_url,@credential,@identity,dependent_count,contact_id)
   end
+  
+  desc "Deletes dependent with id [dependent_id]"
+  task :delete_dependentid, [:dependent_id] => [:setup, :set_identity] do |t,args|
+    dependent_id = args[:dependent_id]
+    delete_dependent_by_id(@proxy_url,@credential,@identity,dependent_id)
+  end
 	
 	desc "Generates a full dataset, with [lead_count] leads in each bin (today, future, etc.) of each category (new leads, follow ups, appointments)"
 	task :populate_full_dataset, [:lead_count] => [:setup, :set_identity] do |t,args|
