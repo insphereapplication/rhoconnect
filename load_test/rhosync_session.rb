@@ -129,6 +129,7 @@ class RhosyncSession
     raw = get({'source_name' => model} )
     result = JSON.parse(raw)
     puts "Parsed query result, building hash..."
+    ap result
     opps = result.select{|hsh| hsh.keys.include?('insert') }.first['insert'].values
     puts "Done query"
     opps
