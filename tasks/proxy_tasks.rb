@@ -61,6 +61,13 @@ namespace :proxy do
 		generate_new_leads_for_contact(@proxy_url,@credential,@identity,lead_count,contact_id,age_seconds)
 	end
 	
+	desc "Generates [dependent_count] new dependents and associates them to contact with id [contact_id]"
+	task :populate_newdependents_forcontact, [:dependent_count,:contact_id] => [:setup, :set_identity] do |t,args|
+	  dependent_count = args[:dependent_count].nil? ? 1 : args[:dependent_count].to_i
+	  contact_id = args[:contact_id]
+	  generate_new_dependents_for_contact(@proxy_url,@credential,@identity,dependent_count,contact_id)
+  end
+	
 	desc "Generates a full dataset, with [lead_count] leads in each bin (today, future, etc.) of each category (new leads, follow ups, appointments)"
 	task :populate_full_dataset, [:lead_count] => [:setup, :set_identity] do |t,args|
 		lead_count = args[:lead_count].nil? ? 1 : args[:lead_count].to_i
