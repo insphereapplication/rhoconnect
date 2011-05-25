@@ -42,7 +42,7 @@ local_crm_proxy: http://192.168.51.128/ # Change this if you're running locally 
   :app_info:
     :min_required_version: 1.1.1 # This MUST be 3 groups of numbers, in the form x.x.x, or there is a risk of tossing an exception when checking for an upgrade
     :apple_force_upgrade_url: 'itms-services://?action=download-manifest&amp;url=http://m.dev.insphereis.net/Documents/InSite_Mobile.plist'
-    :android_force_upgrade_url: 'market://details?id=com.rhomobile.insitemobile'
+    :android_force_upgrade_url: 'market://details?id=com.insphere.insite'
     
 # The following sections inherit from the global section and will override any values duplicated from global (:ssl:, etc.)
 # The :env: value above determines which of these sections is used by the Rhosync environment.
