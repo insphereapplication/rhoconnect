@@ -4,7 +4,7 @@ require 'logger'
 # Set environment to test
 ENV['RHO_ENV'] = 'test'
 ROOT_PATH = File.expand_path(File.join(File.dirname(__FILE__),'..'))
-
+require "#{ROOT_PATH}/util/config_file"
 
 
 # Try to load vendor-ed rhosync, otherwise load the gem
