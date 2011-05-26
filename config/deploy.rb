@@ -84,7 +84,8 @@ namespace :deploy do
   
   desc "Sets the environment of settings/settings.yml to use the environment defined in 'env'"
   task :settings do 
-    run("sed -e 's/^\:env:.*/:env: #{env}/g' settings.yml > tmp; mv tmp settings.yml")
+    settings_path = "#{current_release}/settings/settings.yml"
+    run("sed -e 's/^\:env:.*/:env: #{env}/g' #{settings_path} > #{current_release}/settings.tmp; mv #{current_release}/settings.tmp #{settings_path}")
   end
 end
 
