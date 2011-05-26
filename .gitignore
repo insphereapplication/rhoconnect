@@ -21,4 +21,4 @@ log
 
 
 .proxy_credential
-load_test/.session_yml
+load_test/*.session
