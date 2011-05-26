@@ -28,7 +28,8 @@ class Application < Rhosync::Base
     end
     
     def initializer(path)
-      admin = User.is_exist?('rhoadmin') ? User.load('rhoadmin') : User.create({:login => 'rhoadmin', :admin => 1})
+      admin = User.load('rhoadmin') 
+      raise "No admin initialized" unless admin
       admin.password = CONFIG[:rhoadmin_password] || ''
       admin.create_token
       super
