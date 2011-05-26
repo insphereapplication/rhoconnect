@@ -64,6 +64,7 @@ NameVirtualHost *:<%= web_port %>
   ServerName <%= server_name %>
   DocumentRoot <%= document_root %>
 	PassengerMaxPoolSize <%= passenger_max_pool_size %>
+	PassengerMinInstances <%= passenger_min_instances >
 	PassengerPoolIdleTime <%= passenger_pool_idle_time %>
 	PassengerLogLevel <%= passenger_log_level %>
   <directory "<%= document_root %>">
