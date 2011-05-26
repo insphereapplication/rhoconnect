@@ -28,9 +28,9 @@ class Application < Rhosync::Base
     end
     
     def initializer(path)
+      super
       admin = User.is_exist?('rhoadmin') ? User.load('rhoadmin') : User.create({:login => 'rhoadmin', :admin => 1})
       admin.password = CONFIG[:rhoadmin_password] || ''
-      super
     end
     
     def store_blob(object,field_name,blob)
