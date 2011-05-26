@@ -84,10 +84,7 @@ namespace :deploy do
   
   desc "Sets the environment of settings/settings.yml to use the environment defined in 'env'"
   task :settings do 
-    settings_path = File.expand_path(File.dirname(__FILE__)) + "/../settings/settings.yml"
-    settings = File.readlines(settings_path)
-    settings.map!{|l| l =~ /^:env:/ ? ":env: #{env}\n"  : l }
-    put(settings.join, "#{current_release}/settings/settings.yml")
+    run("sed -e 's/^\:env:.*/:env: #{env}/g' settings.yml > tmp; mv tmp settings.yml")
   end
 end
 
