@@ -3,4 +3,4 @@ set :env, :onsite_model
 # target servers 
 role :app, "nrhrho201", "nrhrho202"
 set :server_name, "https://rhosync.model.insphereis.net"
-set :branch,      "master"
+set :branch,      "insite_mobile_1_1"
