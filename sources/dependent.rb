@@ -41,7 +41,6 @@ class Dependent < SourceAdapter
         Store.put_value(@initialized_key, 'true')
       end
     end
-    super
   end
  
   def create(create_hash,blob=nil)
