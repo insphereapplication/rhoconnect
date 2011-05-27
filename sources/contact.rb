@@ -48,7 +48,21 @@ class Contact < SourceAdapter
   end
  
   def create(create_hash,blob=nil)
-    
+    ExceptionUtil.rescue_and_reraise do
+      InsiteLogger.info "CREATE CONTACT"
+      ExceptionUtil.context(:current_user => current_user.login)
+      
+      mapped_hash = ContactMapper.map_data_from_client(update_hash.clone)
+      
+      result = RestClient.post("#{@contact_url}/create",
+          {:username => @username,
+           :password => @password,
+           :attributes => mapped_hash.to_json}
+      ).body
+      
+      InsiteLogger.info result
+      result
+    end
   end
   
   def update(update_hash)

@@ -45,25 +45,63 @@ class Dependent < SourceAdapter
   end
  
   def create(create_hash,blob=nil)
-    # TODO: Create a new record in your backend data source
-    # If your rhodes rhom object contains image/binary data 
-    # (has the image_uri attribute), then a blob will be provided
-    raise "Please provide some code to create a single record in the backend data source using the create_hash"
+    ExceptionUtil.rescue_and_reraise do
+      InsiteLogger.info "CREATE DEPENDENT"
+      ExceptionUtil.context(:current_user => current_user.login)
+      
+      mapped_hash = DependentMapper.map_data_from_client(update_hash.clone)
+      
+      result = RestClient.post("#{@dependent_url}/create",
+          {:username => @username,
+           :password => @password,
+           :attributes => mapped_hash.to_json}
+      ).body
+      
+      InsiteLogger.info result
+      result
+    end
   end
  
   def update(update_hash)
-    # TODO: Update an existing record in your backend data source
-    raise "Please provide some code to update a single record in the backend data source using the update_hash"
+    ExceptionUtil.rescue_and_reraise do
+      InsiteLogger.info "UPDATE DEPENDENT"
+      ExceptionUtil.context(:current_user => current_user.login )
+      
+      mapped_hash = DependentMapper.map_data_from_client(update_hash.clone)
+      
+      result = RestClient.post("#{@dependent_url}/update", 
+          {:username => @username, 
+          :password => @password,
+          :attributes => mapped_hash.to_json}
+      ).body
+      
+      UpdateUtil.push_objects(@source, update_hash)
+      
+      InsiteLogger.info result
+      ExceptionUtil.context(:result => result )
+      result
+    end
   end
  
   def delete(delete_hash)
-    # TODO: write some code here if applicable
-    # be sure to have a hash key and value for "object"
-    # for now, we'll say that its OK to not have a delete operation
-    # raise "Please provide some code to delete a single object in the backend application using the object_id"
+    ExceptionUtil.rescue_and_reraise do
+      InsiteLogger.info "DELETE DEPENDENT"
+      ExceptionUtil.context(:current_user => current_user.login)
+      
+      mapped_hash = DependentMapper.map_data_from_client(update_hash.clone)
+      
+      result = RestClient.post("#{@dependent_url}/delete",
+          {:username => @username,
+           :password => @password,
+           :attributes => mapped_hash.to_json}
+      ).body
+      
+      InsiteLogger.info result
+      ExceptionUtil.context(:result => result)
+    end
   end
  
   def logoff
-    # TODO: Logout from the data source if necessary
+    
   end
 end
