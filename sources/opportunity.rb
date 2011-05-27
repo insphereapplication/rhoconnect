@@ -79,7 +79,7 @@ class Opportunity < SourceAdapter
       InsiteLogger.info update_hash
       
       # check for conflicts between the client's requested update and updates that occurred elsewhere
-      ConflictManagementUtil.manage_opportunity_conflicts(update_hash, current_user)
+      update_hash = ConflictManagementUtil.manage_opportunity_conflicts(update_hash, current_user)
       
       # unless conflict management completely rejected the update
       unless update_hash.length == 0
