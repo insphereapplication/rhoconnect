@@ -4,7 +4,7 @@ module InsiteLogger
     output_host_name
     ap message  
     message = message.kind_of?(Array) ? message.join("\n") : message.inspect
-    insite_logger.info("#{host_name} -- #{message}") if insite_logger
+    insite_logger.info("#{host_name}:#{release_dir} -- #{message}") if insite_logger
   end
   
   def self.insite_logger
