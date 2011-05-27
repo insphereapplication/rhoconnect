@@ -17,6 +17,14 @@ class DependentMapper < Mapper
   end
   
   def self.map_data_from_client(data)
+    data.merge!({
+      "cssi_contactdependentsid" => {
+        "id" => data['contact_id'], 
+        "type"=>"contact"
+      }
+    })
+    data.reject!{|k,v| ['cssi_dependentsid', 'contact_id', 'cssi_usetobacco'].include?(k)}
+    
     data
   end
 end
