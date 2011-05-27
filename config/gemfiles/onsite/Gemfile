@@ -1,0 +1,13 @@
+# This Gemfile is for deploying to onsite -- we have to require rhosync 2.1.3 in the onsite environment, but in Rhohub 
+# you can't explicitly require Rhosync
+
+source "http://rubygems.org"
+gem "faker"
+gem "awesome_print"
+gem "exceptional"
+gem "resque-scheduler"
+gem "SystemTimer"
+gem "crypt"
+gem "rack-ssl-enforcer"
+gem "awesome_print"
+gem "rhosync", '2.1.6', :require => "rhosync/server"

@@ -25,10 +25,10 @@ LoadModule log_config_module  modules/mod_log_config.so
 	MaxRequestsPerChild  4000
 </IfModule>
 
-User  apache
-Group apache
+User  <%= apache_user %>
+Group <%= apache_group %>
 
-ServerAdmin admin@insphereis.net
+ServerAdmin <%= admin_email %>
 DocumentRoot "<%= document_root %>"
 
 # The following lines prevent .htaccess and .htpasswd files from being 
@@ -63,9 +63,9 @@ NameVirtualHost *:<%= web_port %>
 <VirtualHost *:<%= web_port %>>
   ServerName <%= server_name %>
   DocumentRoot <%= document_root %>
+	PassengerMaxPoolSize <%= passenger_max_pool_size %>
+	PassengerMinInstances <%= passenger_min_instances %>
 	PassengerPoolIdleTime <%= passenger_pool_idle_time %>
-	PassengerMinInstances <%= min_rhosync_processes %>
-	PassengerMaxPoolSize <%= max_rhosync_processes %>
 	PassengerLogLevel <%= passenger_log_level %>
   <directory "<%= document_root %>">
     Options FollowSymLinks
@@ -75,4 +75,4 @@ NameVirtualHost *:<%= web_port %>
   </directory>
 </VirtualHost>
 
-PassengerPreStart <%= server_name %>
+PassengerSpawnMethod conservative
