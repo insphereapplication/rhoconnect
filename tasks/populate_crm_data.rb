@@ -98,6 +98,14 @@ end
 
 #-----------------------
 
+def calculate_age(in_dob)
+  dob = Time.parse(in_dob)
+  now = Time.now.utc
+  now.year - dob.year - ((now.month > dob.month || (now.month == dob.month && now.day >= dob.day)) ? 0 : 1)
+end
+
+#-----------------------
+
 def get_fake_contact_data(identity)
 	preferred_phone = ['Home','Mobile','Business'][rand(3)]
 
@@ -172,6 +180,25 @@ def get_fake_opportunity_data(contact_id, identity)
 	fake_data
 end
 
+def get_fake_dependent_data(contact_id)
+  dob = "#{rand_year}/#{rand_month}/#{rand_day}"
+  age = calculate_age(dob)
+  fake_data = {
+    "cssi_contactdependentsid" => {'id' => contact_id, 'type' => 'contact'},
+    'cssi_dateofbirth' => dob,
+    'cssi_age' => age,
+    'cssi_gender' => rand_gender,
+    'cssi_heightft' => rand_height_feet,
+    'cssi_heightin' => rand_height_inches,
+    'cssi_lastname' => Faker::Name.last_name,
+    'cssi_name' => Faker::Name.first_name,
+    'cssi_usetobacco' => rand_tf,
+    'cssi_weight' => rand_weight
+    };
+  
+  fake_data
+end
+
 def get_fake_phonecall_data(opportunity_id)
 	fake_data = {
 		'regardingobjectid' => {'type' => 'opportunity', 'id' => opportunity_id},
@@ -186,7 +213,7 @@ def get_fake_appointment_data(opportunity_id, due_offset_hours=1)
 	offset_seconds = (due_offset_hours.to_f * 60 * 60)
 	length_seconds = (60 * 30)
 	fake_data = {
-		'regardingobjectid' => {'type' => 'opportunity', 'id' => opportunity_id},
+  	'regardingobjectid' => {'type' => 'opportunity', 'id' => opportunity_id},
 		'subject' => 'Test Appointment',
 		'scheduledstart' => format_date_time(Time.now + offset_seconds),
 		'scheduledend' => format_date_time(Time.now + offset_seconds + length_seconds),
@@ -265,6 +292,27 @@ def create_opportunity(server,credential,contact_id,identity,additional_attribut
 	id = RestClient.post("#{server}/opportunity/create", credential.to_hash.merge(:attributes => opportunity_data.to_json)).body
 	ap id
 	id
+end
+
+def create_dependent(server,credential,identity,contact_id)
+  ap "Getting fake dependent data"
+  dependent_data = get_fake_dependent_data(contact_id)
+  ap "New dependent data = " + dependent_data.to_json
+  
+  dependent_id = RestClient.post("#{server}/dependents/create",credential.to_hash.merge(:attributes => dependent_data.to_json)).body
+  ap "New dependent id = " + dependent_id
+  
+  dependent_id  
+end
+
+def delete_dependent(server,credential,identity,dependent_id)
+  dependent_data = { 'cssi_dependentsid' => dependent_id };
+  
+  delete_result = RestClient.post("#{server}/dependents/delete",credential.to_hash.merge(:attributes => dependent_data.to_json)).body
+  
+  ap "Delete dependent id result = " + delete_result
+  
+  delete_result
 end
 
 def create_phonecall(server,credential,opportunity_id,additional_attributes=nil)
@@ -415,21 +463,6 @@ def update_policy_primary_insured(server,credential,indenity,policy_id,primary_i
    ap update_id
   
    policy_id
-
-  # policy_data = get_fake_policy_data(identity)
-  #  ap policy_data
-  #  policy_id = RestClient.post("#{server}/policy/create", credential.to_hash.merge(:attributes => policy_data.to_json)).body
-  #  ap policy_id
-  # 
-  #  policy_update = {
-  #    "cssi_policyid" => "#{policy_id}",
-  #    'cssi_contactid' => {'type' => 'contact', 'id' => contact_id}
-  #  };
-  # 
-  #  update_id = RestClient.post("#{server}/policy/update", credential.to_hash.merge(:attributes => policy_update.to_json)).body
-  #  ap update_id
-  # 
-  #  policy_id
 end
 
 #-----------------------
@@ -455,6 +488,23 @@ def generate_new_leads_for_contact(server,credential,identity,lead_count,contact
 	end
 	generate_new_notes(server,credential,created_opportunity_ids,'opportunity') if create_notes
 	created_opportunity_ids
+end
+
+def generate_new_dependents_for_contact(server,credential,identity,dependent_count,contact_id)
+  puts "Generating #{dependent_count} new dependents for contact #{contact_id}"
+  created_dependent_ids = []
+  
+  for i in 1..dependent_count
+    ap "Calling create_dependent"
+    created_dependent_ids.push(create_dependent(server,credential,identity,contact_id))
+  end
+  
+  created_dependent_ids
+end
+
+def delete_dependent_by_id(server,credential,identity,dependent_id)
+  puts "Deleteing #{dependent_id}"
+  delete_dependent(server,credential,identity,dependent_id)
 end
 
 def generate_followup_leads(server,credential,identity,lead_count,due_seconds=nil,create_notes=false)
