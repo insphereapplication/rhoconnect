@@ -8,7 +8,7 @@ class Opportunity < SourceAdapter
        PingJob.perform(
          'user_id' => user_id,
          'message' => 'You have new Opportunities',
-         'vibrate' => '2000',
+         'vibrate' => '500',
          'sound' => 'hello.mp3'
        )
      end
