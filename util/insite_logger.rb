@@ -22,12 +22,21 @@ module InsiteLogger
   end
   
   def self.output_host_name
-    print "#{host_name} -- "
+    print "#{host_name}:#{release_dir} -- "
   end
   
   def self.host_name
     @host_name ||= `echo $HOSTNAME`.strip
   rescue
-    ""
+    "hostname unavailable"
+  end
+  
+  def self.release_dir
+    @release_dir ||= lambda {
+      release_dir = File.expand_path(File.dirname(__FILE__) + '/../..')
+      release_dir.match(/[^\/]*?$/).to_s
+    }.call
+  rescue
+    "release_dir unavailable"
   end
 end
