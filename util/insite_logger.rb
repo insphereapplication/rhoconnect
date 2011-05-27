@@ -1,3 +1,5 @@
+require 'socket'
+
 module InsiteLogger  
 
   def self.info(message)
@@ -26,7 +28,7 @@ module InsiteLogger
   end
   
   def self.host_name
-    @host_name ||= `echo $HOSTNAME`.strip
+    @host_name ||= Socket.gethostname
   rescue
     "hostname unavailable"
   end
