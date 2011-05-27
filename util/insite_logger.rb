@@ -33,7 +33,7 @@ module InsiteLogger
   
   def self.release_dir
     @release_dir ||= lambda {
-      release_dir = File.expand_path(File.dirname(__FILE__) + '/../..')
+      release_dir = File.expand_path(File.dirname(__FILE__) + '/..')
       release_dir.match(/[^\/]*?$/).to_s
     }.call
   rescue
