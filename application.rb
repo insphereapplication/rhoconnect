@@ -28,11 +28,10 @@ class Application < Rhosync::Base
     end
     
     def initializer(path)
+      super
       admin = User.load('rhoadmin') 
       raise "No admin initialized" unless admin
       admin.password = CONFIG[:rhoadmin_password] || ''
-      admin.create_token
-      super
     end
     
     def store_blob(object,field_name,blob)
