@@ -19,7 +19,7 @@ class Dependent < SourceAdapter
  
   def query(params=nil)
     ExceptionUtil.rescue_and_reraise do
-      #unless Store.get_value(@initialized_key) == 'true'
+      unless Store.get_value(@initialized_key) == 'true'
         InsiteLogger.info "QUERY FOR DEPENDENTS for #{current_user.login.downcase}"
         ExceptionUtil.context(:current_user => current_user.login)
         res = RestClient.post(@dependent_url, {:username => @username,
@@ -30,7 +30,7 @@ class Dependent < SourceAdapter
         
         ExceptionUtil.context(:result => @result)
         InsiteLogger.info @result
-      #end
+      end
     end
   end
  
@@ -41,7 +41,6 @@ class Dependent < SourceAdapter
         Store.put_value(@initialized_key, 'true')
       end
     end
-    super
   end
  
   def create(create_hash,blob=nil)
@@ -49,7 +48,10 @@ class Dependent < SourceAdapter
       InsiteLogger.info "CREATE DEPENDENT"
       ExceptionUtil.context(:current_user => current_user.login)
       
-      mapped_hash = DependentMapper.map_data_from_client(update_hash.clone)
+      mapped_hash = DependentMapper.map_data_from_client(create_hash.clone)
+      
+      ap "mappped_hash = #{mapped_hash.inspect}"
+      ap "JSON = #{mapped_hash.to_json}"
       
       result = RestClient.post("#{@dependent_url}/create",
           {:username => @username,
