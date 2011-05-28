@@ -90,7 +90,7 @@ class Dependent < SourceAdapter
       InsiteLogger.info "DELETE DEPENDENT"
       ExceptionUtil.context(:current_user => current_user.login)
       
-      mapped_hash = DependentMapper.map_data_from_client(update_hash.clone)
+      mapped_hash = { 'cssi_dependentsid' => delete_hash['cssi_dependentsid'] };
       
       result = RestClient.post("#{@dependent_url}/delete",
           {:username => @username,
