@@ -4,3 +4,9 @@ clean_old_opportunity_data:
   class: CleanOldOpportunityData
   args:
   description: "This job clears out all old opportunities"
+limit_client_exceptions:
+  queue: limit_client_exceptions  
+  cron: "01 3 * * *"
+  class: LimitClientExceptions
+  args:
+  description: "This job limits logged client exceptions to a max of 100"
