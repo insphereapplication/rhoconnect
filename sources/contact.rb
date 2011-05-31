@@ -52,7 +52,7 @@ class Contact < SourceAdapter
       InsiteLogger.info "CREATE CONTACT"
       ExceptionUtil.context(:current_user => current_user.login)
       
-      mapped_hash = ContactMapper.map_data_from_client(update_hash.clone)
+      mapped_hash = ContactMapper.map_data_from_client(create_hash.clone)
       
       result = RestClient.post("#{@contact_url}/create",
           {:username => @username,
