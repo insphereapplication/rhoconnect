@@ -5,7 +5,7 @@ class ConflictManagementUtil
   def self.manage_opportunity_conflicts(updated_opportunity, current_user)
     unless updated_opportunity['cssi_lastactivitydate']
       updated_opportunity.reject!{|key, value| OPPORTUNITY_CONFLICT_FIELDS.include?(key)}
-      return
+      return updated_opportunity
     end
   
     opp_id = updated_opportunity['id']
@@ -17,8 +17,7 @@ class ConflictManagementUtil
     # if the opportunity has been closed already (i.e. on another mobile device or in CRM), reject all fields
     if ['Won', 'Lost'].include?(redis_opp['statecode'])
       InsiteLogger.info "Opportunity is already closed; rejecting all items in the update hash."
-      updated_opportunity.clear
-      return
+      return {}
     end
     
     # don't reject anything if redis doesn't have a last activity date for the updated opportunity
@@ -37,5 +36,7 @@ class ConflictManagementUtil
     else
       InsiteLogger.info "No conflicts found for opp #{opp_id}"
     end
+    
+    updated_opportunity
   end
 end
