@@ -30,7 +30,6 @@ describe ConflictManagementUtil do
     returned.should == {'hey' => 'hey'}
   end
   
-  
   it "should reject all fields and return if the existing opp is won" do
     won_opp = {'statecode' => 'Won'}
     
@@ -79,7 +78,7 @@ describe ConflictManagementUtil do
     returned.should_not == {}
   end
   
-  it "not reject any fields if the redis record has not last_activity_date" do
+  it "should not reject any fields if the redis record has no last_activity_date" do
     no_lad_in_redis = {'fu' => 'bar'}
     
     RedisUtil.stub(:get_model).and_return(no_lad_in_redis)
@@ -123,12 +122,11 @@ describe ConflictManagementUtil do
       result = ConflictManagementUtil.manage_opportunity_conflicts({
         'cssi_lastactivitydate' => client_lad,
         'statuscode' => 'client status',
-        'statecode' => 'client state'
+        'statecode' => 'client state',
+        'hey' => 'what'
       }, current_user)
    
-      result['statuscode'].should be_nil
-      result['statecode'].should be_nil
-      result['cssi_lastactivitydate'].should be_nil
+      result.should == {'hey' => 'what'}
       
     end
 end
