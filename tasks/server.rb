@@ -197,7 +197,6 @@ namespace :server do
       :api_token => @token,
       :user_id => args.user_id,
       :message => 'thusly have you been pinged',
-      :vibrate =>  "2000",
       :sound => 'hello.mp3',
       :sources => args.source || 'Contact',
       :badge => args.badge || nil
@@ -223,7 +222,6 @@ namespace :server do
     ping_params = {
       :api_token => @token,
       :user_id => args.user_id,
-      :vibrate =>  "2000",
       :sound => 'hello.mp3',
       :badge => args.badge_number
     }
