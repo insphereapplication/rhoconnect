@@ -1,19 +1,11 @@
-require 'rhosync'
+require File.expand_path("#{File.dirname(__FILE__)}/../jobs/rhosync_resque_job")
 
 class CleanOldOpportunityData
+  include RhosyncResqueJob
   MAX_OPPORTUNITY_AGE_IN_DAYS = 60
-  
   @queue = :clean_old_opportunity_data
-  @redis = Redis.connect(:url => ENV['REDIS'])
-  
-  Rhosync::Store.db # need to call this to initialize the @db member of Store
   
   class << self
-    def users
-      userkeys = @redis.keys('user:*:rho__id')
-      userkeys.map{|u| @redis.get(u)}
-    end
-    
     def perform
       ExceptionUtil.rescue_and_reraise do
         get_master_docs(users).each do |user, opportunities, activities|
