@@ -260,6 +260,47 @@ namespace :server do
     ap JSON.parse(res)
   end
   
+  def get_md(username, model)
+    res = RestClient.post(
+      "#{$server}api/get_db_doc", 
+      { 
+        :api_token => @token, 
+        :doc => "source:application:#{username}:#{model}:md"
+      }.to_json, 
+      :content_type => :json
+    ).body
+    JSON.parse(res)
+  end
+  
+  desc "check data integrity for user"
+  task :check_integrity, [:user_id] => [:set_token] do |t, args|
+    opps = get_md(args.user_id, 'Opportunity')
+    contacts = get_md(args.user_id, 'Contact')
+    
+    ap "Opportunities: #{opps.count}, contacts: #{contacts.count}"
+    
+    opps.each{|k,v|
+      contact_id = v['contact_id']
+      puts "Opp #{k} has nil contact id" unless contact_id
+      parent_contact = contacts[contact_id]
+      puts "Contact doesn't exist for opp #{k}" unless parent_contact
+    }
+    
+    contact_required_fields = ['firstname','lastname']
+    opp_required_fields = ['contact_id']
+    
+    contacts.each{|k,v|    
+      missing_required_fields = contact_required_fields.reject{|crf| v.include?(crf)}
+      puts "Contact #{k} is missing fields #{missing_required_fields.join(', ')}" unless missing_required_fields.count == 0
+    }
+    
+    # ap "Opportunities:"
+    # ap opps
+    # 
+    # ap "Contacts:"
+    # ap contacts
+  end
+  
   namespace :opportunity do
     desc "Creates <num_contacts> opportunities for <user_id> with generated attributes in the current target server."
     task :create, [:user_id, :first_name, :last_name]  => :set_token do |t, args|
