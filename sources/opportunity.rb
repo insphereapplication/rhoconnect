@@ -7,7 +7,8 @@ class Opportunity < SourceAdapter
        ExceptionUtil.context(:user_id => user_id )
        PingJob.perform(
          'user_id' => user_id,
-         'message' => 'You have new Opportunities'
+         'message' => 'You have new Opportunities',
+         'sound' => 'hello.mp3'
        )
      end
   end
