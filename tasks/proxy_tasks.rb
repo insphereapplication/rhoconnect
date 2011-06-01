@@ -26,6 +26,13 @@ namespace :proxy do
     update_policy_primary_insured(@proxy_url,@credential,@identity,policy_id,primary_insured)
   end
   
+  desc "Resets the DNC status of all numbers on [contact_id] back to allow calls."
+  task :reset_contact_dncstatus, [:contact_id] => [:setup, :set_identity] do |t,args|
+    contact_id = args[:contact_id]
+    
+    reset_contact_dnc_status(@proxy_url,@credential,@identity,contact_id)
+  end
+  
   desc "Generates [lead_count] new leads, [age] days old"
   task :populate_newleads, [:lead_count,:age] => [:setup, :set_identity] do |t,args|
     start = Time.now
