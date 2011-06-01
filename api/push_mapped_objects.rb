@@ -15,7 +15,7 @@ Rhosync::Server.api :push_mapped_objects do |params,user|
     InsiteLogger.info "PARSED OBJECTS:"
     InsiteLogger.info objects
       
-    source_sync.push_objects(objects)
+    source_sync.push_objects(objects, CONFIG[:redis_lock_timeout])
     ""
   end
 end
