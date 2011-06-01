@@ -7,6 +7,7 @@ Rhosync::Server.api :push_mapped_objects do |params,user|
 
     InsiteLogger.info "SOURCE:"
     InsiteLogger.info source
+    InsiteLogger.info "SOURCE USER: #{source.user.inspect}"
     source_sync = SourceSync.new(source)
       
     objects = Mapper.map_source_data(params[:objects], params[:source_id])

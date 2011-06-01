@@ -5,6 +5,7 @@ Rhosync::Server.api :push_objects_notify do |params,user|
 
     source = Source.load(params[:source_id],{:app_id=>APP_NAME,:user_id=>params[:user_id]})
     InsiteLogger.info "SOURCE: #{source.inspect}"
+    InsiteLogger.info "SOURCE USER: #{source.user.inspect}"
     
     source_sync = SourceSync.new(source)
 
