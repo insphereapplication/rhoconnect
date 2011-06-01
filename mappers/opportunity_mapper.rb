@@ -2,7 +2,7 @@
 class OpportunityMapper < Mapper
   OPPORTUNITY_CONFLICT_FIELDS = ['statuscode', 'statecode', 'cssi_lastactivitydate']
   def self.map_data_from_client(data, current_user)
-    if data['cssi_lastactivitydate'] && current_user
+    if data['cssi_lastactivitydate'] && data['id'] && current_user
       opp_id = data['id']
       InsiteLogger.info "Checking for data conflicts on opportunity #{opp_id}"
       redis_opp = RedisUtil.get_model('Opportunity', current_user.login, opp_id)

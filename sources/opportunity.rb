@@ -65,10 +65,18 @@ class Opportunity < SourceAdapter
   end
  
   def create(create_hash,blob=nil)
-    # TODO: Create a new record in your backend data source
-    # If your rhodes rhom object contains image/binary data 
-    # (has the image_uri attribute), then a blob will be provided
-    raise "Please provide some code to create a single record in the backend data source using the create_hash"
+    ExceptionUtil.rescue_and_reraise do
+      InsiteLogger.info "CREATE OPPORTUNITY"
+      ExceptionUtil.context(:current_user => current_user.login)      
+      mapped_hash = OpportunityMapper.map_data_from_client(create_hash.clone, current_user)
+      result = RestClient.post("#{@opportunity_url}/create",
+          {:username => @username,
+           :password => @password,
+           :attributes => mapped_hash.to_json}
+      ).body      
+      InsiteLogger.info result
+      result
+    end    
   end
  
   def update(update_hash)

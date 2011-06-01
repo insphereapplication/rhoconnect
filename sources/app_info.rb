@@ -9,7 +9,7 @@ class AppInfo < SourceAdapter
  
   def query(params=nil)
     settings = YAML::load_file('settings/settings.yml')
-    ap "*** Settings file = #{settings[:app_info].inspect}"
+    ap "*** Settings file = #{settings[:global][:app_info].inspect}"
     mrv = settings[:global][:app_info][:min_required_version]
     apple_url = settings[:global][:app_info][:apple_force_upgrade_url]
     android_url = settings[:global][:app_info][:android_force_upgrade_url]
