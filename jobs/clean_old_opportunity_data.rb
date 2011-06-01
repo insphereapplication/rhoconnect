@@ -7,19 +7,24 @@ class CleanOldOpportunityData
   
   class << self
     def perform
+      InsiteLogger.info "Initiating resque job CleanOldOpportunityData..."
       ExceptionUtil.rescue_and_reraise do
         get_master_docs(users).each do |user, opportunities, activities, contacts|
           # find the expired Opportunities
           old_opportunities = get_expired_opportunities(opportunities)  
           old_opp_keys = old_opportunities.keys
-      
+          InsiteLogger.info "Deleting old opportunities, activities, contacts for user #{user}"
+          InsiteLogger.info "Old opps are: #{old_opp_keys.inspect}"
+          
           # now find the activities that are owned by the expired Opportunties
           old_activities = get_expired_activities(old_opp_keys, activities)
+          InsiteLogger.info "Old activities are: #{old_activities.keys.inspect}"
           
           # get a set of the remaining opportunities so we don't reject a contact that may be related to more than one opportunity
           current_opportunities = opportunities.reject{|k,v| old_opp_keys.include?(k) }
           old_contacts = get_expired_contacts(old_opportunities, current_opportunities, contacts)
-      
+          InsiteLogger.info "Old contacts are: #{old_contacts.keys.inspect}"
+          
           # delete expired records for both models
           Rhosync::Store.delete_data("source:application:#{user}:Activity:md", old_activities)
           Rhosync::Store.delete_data("source:application:#{user}:Opportunity:md", old_opportunities)
