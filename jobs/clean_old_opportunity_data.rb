@@ -8,17 +8,22 @@ class CleanOldOpportunityData
   class << self
     def perform
       ExceptionUtil.rescue_and_reraise do
-        get_master_docs(users).each do |user, opportunities, activities|
+        get_master_docs(users).each do |user, opportunities, activities, contacts|
           # find the expired Opportunities
           old_opportunities = get_expired_opportunities(opportunities)  
-          old_opp_keys = old_opportunities.map{|k,v| k }
+          old_opp_keys = old_opportunities.keys
       
           # now find the activities that are owned by the expired Opportunties
           old_activities = get_expired_activities(old_opp_keys, activities)
+          
+          # get a set of the remaining opportunities so we don't reject a contact that may be related to more than one opportunity
+          current_opportunities = opportunities.reject{|k,v| old_opp_keys.include?(k) }
+          old_contacts = get_expired_contacts(old_opportunities, current_opportunities, contacts)
       
           # delete expired records for both models
           Rhosync::Store.delete_data("source:application:#{user}:Activity:md", old_activities)
           Rhosync::Store.delete_data("source:application:#{user}:Opportunity:md", old_opportunities)
+          Rhosync::Store.delete_data("source:application:#{user}:Contact:md", old_contacts)
         end
       end
     end 
@@ -26,6 +31,14 @@ class CleanOldOpportunityData
     def get_expired_activities(old_opp_keys, activities)
       activities.select do |key, activity|
          activity['parent_type'] == 'opportunity' && old_opp_keys.include?(activity['parent_id'])
+      end
+    end
+    
+    def get_expired_contacts(old_opportunities, current_opportunities, contacts)
+      opportunity_contact_ids = old_opportunities.map{|a| a['contact_id']}
+      current_opportunities_contact_ids = current_opportunities.map{|a| a['contact_id']}
+      contacts.select do |key, contact|
+        opportunity_contact_ids.include?(key) && !current_opportunities_contact_ids.include?(key)
       end
     end
     
@@ -45,7 +58,8 @@ class CleanOldOpportunityData
         [ 
           user, 
           Rhosync::Store.get_data("source:application:#{user}:Opportunity:md"),
-          Rhosync::Store.get_data("source:application:#{user}:Activity:md")
+          Rhosync::Store.get_data("source:application:#{user}:Activity:md"),
+          Rhosync::Store.get_date("source:application:#{user}:Contact:md")
         ]
       end
     end
