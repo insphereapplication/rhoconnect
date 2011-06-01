@@ -467,6 +467,27 @@ end
 
 #-----------------------
 
+def reset_contact_dnc_status(server,credential,identity,contact_id)
+  puts "Resetting all DNC status attributes for contact #{contact_id}"
+  
+  contact_update = {
+      "contactid" => "#{contact_id}",
+      "cssi_allowcallsalternatephone" => "True",
+      "cssi_allowcallsbusinessphone" => "True",
+      "cssi_allowcallshomephone" => "True",
+      "cssi_allowcallsmobilephone" => "True",
+      "cssi_companydncalternatephone" => "False",
+      "cssi_companydncbusinessphone" => "False",
+      "cssi_companydnchomephone" => "False",
+      "cssi_companydncmobilephone" => "False"
+    };
+    
+    update_id = RestClient.post("#{server}/contact/update", credential.to_hash.merge(:attributes => contact_update.to_json)).body
+    ap "Updated DNC status for contact #{update_id}."
+    
+    update_id
+end
+
 def generate_new_leads(server,credential,identity,lead_count,created_seconds_ago=nil,create_notes=false)
 	puts "Generating #{lead_count} new leads, created #{created_seconds_ago} seconds ago"
 	override_created_on = created_seconds_ago.nil? ? {} : {
