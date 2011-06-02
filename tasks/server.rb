@@ -272,33 +272,44 @@ namespace :server do
     JSON.parse(res)
   end
   
-  desc "check data integrity for user"
-  task :check_integrity, [:user_id] => [:set_token] do |t, args|
-    opps = get_md(args.user_id, 'Opportunity')
-    contacts = get_md(args.user_id, 'Contact')
+  def get_users
+    res = RestClient.post(
+      "#{$server}api/list_users", 
+      { 
+        :api_token => @token
+      }.to_json, 
+      :content_type => :json
+    ).body
+    JSON.parse(res)
+  end
+  
+  desc "check data integrity for all users matching regex pattern <user_pattern> (i.e. use 'check_integrity[.]' to check all users)"
+  task :check_integrity, [:user_pattern] => [:set_token] do |t, args|
+    #get all users from RhoSync, filter based on pattern given
+    filtered_users = get_users.reject{|user| user[Regexp.new(args.user_pattern)].nil?}
     
-    ap "Opportunities: #{opps.count}, contacts: #{contacts.count}"
+    filtered_users.each{|user|
+      opps = get_md(user, 'Opportunity')
+      contacts = get_md(user, 'Contact')
+      
+      ap "Checking data integrity for user #{user}"
+      ap "Opportunities: #{opps.count}, contacts: #{contacts.count}"
     
-    opps.each{|k,v|
-      contact_id = v['contact_id']
-      puts "Opp #{k} has nil contact id" unless contact_id
-      parent_contact = contacts[contact_id]
-      puts "Contact doesn't exist for opp #{k}" unless parent_contact
+      opps.each{|k,v|
+        contact_id = v['contact_id']
+        puts "Opp #{k} has nil contact id" unless contact_id
+        parent_contact = contacts[contact_id]
+        puts "Contact doesn't exist for opp #{k}" unless parent_contact
+      }
+    
+      contact_required_fields = ['firstname','lastname']
+      opp_required_fields = ['contact_id']
+    
+      contacts.each{|k,v|    
+        missing_required_fields = contact_required_fields.reject{|crf| v.include?(crf)}
+        puts "Contact #{k} is missing fields #{missing_required_fields.join(', ')}" unless missing_required_fields.count == 0
+      }
     }
-    
-    contact_required_fields = ['firstname','lastname']
-    opp_required_fields = ['contact_id']
-    
-    contacts.each{|k,v|    
-      missing_required_fields = contact_required_fields.reject{|crf| v.include?(crf)}
-      puts "Contact #{k} is missing fields #{missing_required_fields.join(', ')}" unless missing_required_fields.count == 0
-    }
-    
-    # ap "Opportunities:"
-    # ap opps
-    # 
-    # ap "Contacts:"
-    # ap contacts
   end
   
   namespace :opportunity do
