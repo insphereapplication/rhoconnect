@@ -16,6 +16,8 @@
     :poll_interval: 1
   Dependent: 
     :poll_interval: 1
+  StaticEntity: 
+    :poll_interval: 1
     
 # !!! env defines the global context for the server !!!
 :env: development
