@@ -11,7 +11,7 @@ Rhosync::Server.api :push_objects_notify do |params,user|
 
     objects = Mapper.map_source_data(params[:objects], params[:source_id])
     InsiteLogger.info "OBJECTS: #{objects}"
-    source_sync.push_objects(objects, CONFIG[:redis_lock_timeout])
+    source_sync.push_objects(objects, CONFIG[:redis_lock_timeout], raise_on_expire=true)
 
     InsiteLogger.info "push_objects_notify called, notifying observer for #{params[:source_id]}"
     klass = Object.const_get(params[:source_id].capitalize)
