@@ -18,6 +18,12 @@ $policy_statuses = ['Active','Pending'] # 'Terminated' is an option in CRM, but 
 
 $status_reasons = ['App Received','Delivery Receipt Outstanding','App Ready To Submit (Sent to Field Office)','Application Needs Info (On Hold)','Submitted to Carrier','App Received By Carrier','Issued','Re-instated','Suspended','Replacement Conversion']
 
+$status_reasons_pending = ['App Received','Delivery Receipt Outstanding','App Ready To Submit (Sent to Field Office)','Application Needs Info (On Hold)','Submitted to Carrier','App Received By Carrier','Issued','Re-instated','Suspended','Replacement Conversion']
+
+$status_reasons_active = ['InForce']
+
+$status_reasons_terminated = ['Withdrawn','Decline','Term After Issue', 'Closed (Incomplete)','Cancelled by Customer']
+
 $insured_types = ['Individual','Small Group']
 
 $carrier_ids = ['99aa3815-80a4-df11-bb36-0050568d2fb2','98aa3815-80a4-df11-bb36-0050568d2fb2','8caa3815-80a4-df11-bb36-0050568d2fb2','94aa3815-80a4-df11-bb36-0050568d2fb2']
@@ -80,8 +86,15 @@ def rand_policy_status
   rand_array_item($policy_statuses)
 end
 
-def rand_status_reason
-  rand_array_item($status_reasons)
+def rand_status_reason(policy_status)
+  if(policy_status =='Active')
+    rand_array_item($status_reasons_active)
+  elsif(policy_status == 'Terminated')
+    rand_array_item($status_reasons_terminated)
+  else
+    rand_array_item($status_reasons_pending)
+  end
+
 end
 
 def rand_insured_type
@@ -146,7 +159,14 @@ def get_fake_contact_data(identity)
 	fake_data
 end
 
-def get_fake_policy_data(identity)
+def get_fake_policy_data(identity, policy_status)
+  if (policy_status.nil?)
+    status_code = 'Active' 
+  else
+    status_code = policy_status
+  end
+  status_reason = rand_status_reason(policy_status)
+  
   fake_data = {
     'cssi_applicationdate' => "#{rand_year}/#{rand_month}/#{rand_day}",
     'cssi_paymentmode' => rand_payment_mode,
@@ -157,10 +177,10 @@ def get_fake_policy_data(identity)
     'cssi_applicationnumber' => Faker::Base.numerify('#########'),
     'cssi_carrierid' => {'type' => 'cssi_carrier', 'id' => rand_carrier_id},
     'cssi_productid' => {'type' => 'cssi_product', 'id' => rand_product_id},
-    'statuscode' => 'Active',
+    'statuscode' => status_code,
     'cssi_primaryinsured' => Faker::Name.name,
     'cssi_carrierstatusvalue' => 'Active and paying',
-    'cssi_statusreason' => 'InForce',
+    'cssi_statusreason' => status_reason,
     'cssi_insuredtype' => rand_insured_type,
     'cssi_annualpremium' => Faker::Base.numerify('####.##')
   };
@@ -268,8 +288,8 @@ def create_contact(server,credential,identity,additional_attributes=nil)
 	id
 end
 
-def create_policy(server,credential,identity,contact_id)
-  policy_data = get_fake_policy_data(identity)
+def create_policy(server,credential,identity,contact_id,policy_status)
+  policy_data = get_fake_policy_data(identity,policy_status)
   ap policy_data
   policy_id = RestClient.post("#{server}/policy/create", credential.to_hash.merge(:attributes => policy_data.to_json)).body
   ap policy_id
@@ -380,13 +400,13 @@ def generate_new_contacts(server,credential,identity,contact_count,additional_at
 	created_contact_ids
 end
 
-def generate_new_policies(server,credential,identity,contact_ids)
+def generate_new_policies(server,credential,identity,contact_ids,policy_status)
   puts "Generating #{contact_ids.count} new policies"
   created_policy_ids = []
   
   contact_ids.each { |contact_id|
     puts "Using contact_id #{contact_id}"
-    created_policy_ids.push(create_policy(server,credential,identity,contact_id))
+    created_policy_ids.push(create_policy(server,credential,identity,contact_id,policy_status))
   }
   
   created_policy_ids
@@ -444,10 +464,10 @@ end
 
 #-----------------------
 
-def populate_new_policies(server,credential,identity,policy_count)
+def populate_new_policies(server,credential,identity,policy_count,policy_status)
   puts "Generating #{policy_count} new policies"
   created_contact_ids = generate_new_contacts(server,credential,identity,policy_count,nil,false)
-  created_policy_ids = generate_new_policies(server,credential,identity,created_contact_ids)
+  created_policy_ids = generate_new_policies(server,credential,identity,created_contact_ids,policy_status)
   created_policy_ids
 end
 

@@ -12,13 +12,16 @@ $environments = {'local' => 'http://192.168.51.128',
   'production-external' => 'https://mobileproxy.insphereis.net'}
 
 namespace :proxy do
-  desc "Generates [policy_count] new policies and contacts"
-  task :populate_newpolicies, [:policy_count] => [:setup, :set_identity] do |t,args|
+  desc "Generates [policy_count] new policies and contacts.  If status is passed in, it will use the status; otherwise active"
+  task :populate_newpolicies, [:policy_count,:status] => [:setup, :set_identity] do |t,args|
     policy_count = args[:policy_count].nil? ? 1 : args[:policy_count].to_i
-    populate_new_policies(@proxy_url,@credential,@identity,policy_count)
+    policy_status = args[:status].nil? ? 'Active' : args[:status]
+    populate_new_policies(@proxy_url,@credential,@identity,policy_count,policy_status)
   end
   
-  desc "Updates the [primary_insured] name of policy # [policy_id]"
+
+  
+desc "Updates the [primary_insured] name of policy # [policy_id]"
   task :update_policy_primaryinsured, [:policy_id, :primary_insured] => [:setup, :set_identity] do |t,args|
     policy_id = args[:policy_id]
     primary_insured = args[:primary_insured]
