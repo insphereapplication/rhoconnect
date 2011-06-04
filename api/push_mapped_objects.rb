@@ -19,7 +19,7 @@ Rhosync::Server.api :push_mapped_objects do |params,user|
       source_sync.push_objects(objects, CONFIG[:redis_lock_timeout], true)
     rescue StoreLockException
       # reset sync status for user in params[:user_id]
-      InsiteLogger.info "Got StoreLockException for user #{params[:user_id], resetting sync status.}"
+      InsiteLogger.info "Got StoreLockException for user #{params[:user_id]}, resetting sync status."
       user_key_pattern = "username:#{params[:user_id]}:[^:]*:initialized"
       Store.flash_data(user_key_pattern)
       InsiteLogger.info "Reset sync status for keys matching pattern #{user_key_pattern}"
