@@ -25,6 +25,7 @@
 # use one of the following keys for the :crm_proxy: value in the environment sections below to determine which crm deployment Rhosync will use, i.e., ':crm_proxy: model_crm_proxy'
 model_crm_proxy: https://mobileproxy.model.insphereis.net/
 dev_crm_proxy: https://devmobileproxy.insphereis.net/
+dev_integrated_crm_proxy: https://services.dev.insphereis.net/crm/ActivityCenter/MobileProxy/
 prod_crm_proxy: https://mobileproxy.insphereis.net/
 local_crm_proxy: http://192.168.51.128/ # Change this if you're running locally and use below
 
@@ -122,7 +123,7 @@ local_crm_proxy: http://192.168.51.128/ # Change this if you're running locally 
 :onsite_model: 
   :bundler: true
   :redis_boot: true
-  :crm_proxy: dev_crm_proxy
+  :crm_proxy: dev_integrated_crm_proxy
   :iphonecertfile: settings/apple_push_cert_sandbox.pem
   :redis: nrhrho203:6379
   :iphonepassphrase: Pariveda1
