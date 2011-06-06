@@ -150,6 +150,18 @@ namespace :server do
     ap res
   end
   
+  task :get_log => [:set_token] do
+    res = RestClient.post(
+      "#{$server}api/get_log",
+      {
+        :api_token => @token
+      }.to_json,
+      :content_type => :json
+    ).body
+    
+    puts res
+  end
+  
   desc "pushes objects and invokes the notify method associated with the sources" 
   task :push_objects_notify => [:set_token] do |t, args|
     res = RestClient.post(
@@ -186,7 +198,6 @@ namespace :server do
       :api_token => @token,
       :user_id => args.user_id,
       :message => 'thusly have you been pinged',
-      :vibrate =>  "2000",
       :sound => 'hello.mp3',
       :sources => args.source || 'Contact',
       :badge => args.badge || nil
@@ -212,7 +223,6 @@ namespace :server do
     ping_params = {
       :api_token => @token,
       :user_id => args.user_id,
-      :vibrate =>  "2000",
       :sound => 'hello.mp3',
       :badge => args.badge_number
     }
@@ -249,6 +259,58 @@ namespace :server do
       :content_type => :json
     ).body
     ap JSON.parse(res)
+  end
+  
+  def get_md(username, model)
+    res = RestClient.post(
+      "#{$server}api/get_db_doc", 
+      { 
+        :api_token => @token, 
+        :doc => "source:application:#{username}:#{model}:md"
+      }.to_json, 
+      :content_type => :json
+    ).body
+    JSON.parse(res)
+  end
+  
+  def get_users
+    res = RestClient.post(
+      "#{$server}api/list_users", 
+      { 
+        :api_token => @token
+      }.to_json, 
+      :content_type => :json
+    ).body
+    JSON.parse(res)
+  end
+  
+  desc "check data integrity for all users matching regex pattern <user_pattern> (i.e. use 'check_integrity[.]' to check all users)"
+  task :check_integrity, [:user_pattern] => [:set_token] do |t, args|
+    #get all users from RhoSync, filter based on pattern given
+    filtered_users = get_users.reject{|user| user[Regexp.new(args.user_pattern)].nil?}
+    
+    filtered_users.each{|user|
+      opps = get_md(user, 'Opportunity')
+      contacts = get_md(user, 'Contact')
+      
+      ap "Checking data integrity for user #{user}"
+      ap "Opportunities: #{opps.count}, contacts: #{contacts.count}"
+    
+      opps.each{|k,v|
+        contact_id = v['contact_id']
+        puts "Opp #{k} has nil contact id" unless contact_id
+        parent_contact = contacts[contact_id]
+        puts "Contact doesn't exist for opp #{k}" unless parent_contact
+      }
+    
+      contact_required_fields = ['firstname','lastname']
+      opp_required_fields = ['contact_id']
+    
+      contacts.each{|k,v|    
+        missing_required_fields = contact_required_fields.reject{|crf| v.include?(crf)}
+        puts "Contact #{k} is missing fields #{missing_required_fields.join(', ')}" unless missing_required_fields.count == 0
+      }
+    }
   end
   
   namespace :opportunity do

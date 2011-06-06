@@ -8,6 +8,6 @@ class UpdateUtil
     ap redis_hash
     
     source_sync = SourceSync.new(source)
-    source_sync.push_objects(redis_hash)
+    source_sync.push_objects(redis_hash, CONFIG[:redis_lock_timeout], true)
   end
 end

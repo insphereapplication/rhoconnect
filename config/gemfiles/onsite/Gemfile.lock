@@ -10,7 +10,7 @@ GEM
     extlib (0.9.15)
     faker (0.9.5)
       i18n (~> 0.4)
-    highline (1.6.1)
+    highline (1.6.2)
     i18n (0.5.0)
     json (1.4.6)
     mime-types (1.16)
@@ -31,7 +31,7 @@ GEM
       rufus-scheduler
     rest-client (1.6.1)
       mime-types (>= 1.16)
-    rhosync (2.1.6)
+    rhosync (2.1.7)
       json (~> 1.4.2)
       rake (>= 0.8.7)
       redis (~> 2.1.1)
@@ -70,4 +70,4 @@ DEPENDENCIES
   faker
   rack-ssl-enforcer
   resque-scheduler
-  rhosync (= 2.1.6)
+  rhosync (= 2.1.7)

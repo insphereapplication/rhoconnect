@@ -6,7 +6,6 @@ class Opportunity < SourceAdapter
        PingJob.perform(
          'user_id' => user_id,
          'message' => 'You have new Opportunities',
-         'vibrate' => '2000',
          'sound' => 'hello.mp3'
        )
      end
@@ -82,23 +81,35 @@ class Opportunity < SourceAdapter
   def update(update_hash)
     ExceptionUtil.rescue_and_reraise do
       InsiteLogger.info "UPDATE OPPORTUNITY"
+      
+      # mark this update so the plugin won't unnecessarily push it back
       update_hash['cssi_fromrhosync'] = 'true'
+      
       ExceptionUtil.context(:current_user => current_user.inspect, :update_hash => update_hash)
       InsiteLogger.info update_hash
-
-      mapped_hash = OpportunityMapper.map_data_from_client(update_hash.clone, current_user)
-
-      start = Time.now
-      result = RestClient.post("#{@opportunity_url}/update", 
-          {:username => @username, 
-          :password => @password,
-          :attributes => mapped_hash.to_json}
-        ).body
-      InsiteLogger.info "OPPORTUNITY PROXY UPDATE IN : #{Time.now - start} Seconds"
-      UpdateUtil.push_objects(@source, update_hash)
+      
+      # check for conflicts between the client's requested update and updates that occurred elsewhere
+      update_hash = ConflictManagementUtil.manage_opportunity_conflicts(update_hash, current_user)
+      
+      # unless conflict management completely rejected the update
+      unless update_hash.length == 0
+        mapped_hash = OpportunityMapper.map_data_from_client(update_hash.clone)
         
-      ExceptionUtil.context(:result => result)
-      InsiteLogger.info result
+        # update CRM by calling update in Proxy
+        start = Time.now
+        result = RestClient.post("#{@opportunity_url}/update", 
+            {:username => @username, 
+            :password => @password,
+            :attributes => mapped_hash.to_json}
+          ).body
+        InsiteLogger.info "OPPORTUNITY PROXY UPDATE IN : #{Time.now - start} Seconds"
+      
+        #persist the updated data in redis
+        UpdateUtil.push_objects(@source, update_hash)
+        
+        ExceptionUtil.context(:result => result)
+        InsiteLogger.info result
+      end
     end
   end
   

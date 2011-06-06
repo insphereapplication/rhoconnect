@@ -46,9 +46,10 @@ local_crm_proxy: http://192.168.51.128/ # Change this if you're running locally 
     :num_archived_logs: 10
     :mode: stdout # logging defaults to stdout only; set mode to 'file' to turn on file logging to log:path (above)
   :app_info:
-    :min_required_version: 1.1.1 # This MUST be 3 groups of numbers, in the form x.x.x, or there is a risk of tossing an exception when checking for an upgrade
-    :apple_force_upgrade_url: http://www.apple.com/
-    :android_force_upgrade_url: http://www.google.com/
+    :min_required_version: 1.2.7 # This MUST be 3 groups of numbers, in the form x.x.x, or there is a risk of tossing an exception when checking for an upgrade
+    :apple_force_upgrade_url: 'itms-services://?action=download-manifest&amp;url=http://m.insphereis.net/InSiteMobile/Documents/InSite_Mobile.plist'
+    :android_force_upgrade_url: 'market://details?id=com.insphere.insite'
+  :redis_lock_timeout: 60
     
 # The following sections inherit from the global section and will override any values duplicated from global (:ssl:, etc.)
 # The :env: value above determines which of these sections is used by the Rhosync environment.
@@ -62,7 +63,7 @@ local_crm_proxy: http://192.168.51.128/ # Change this if you're running locally 
   :ssl: false
   :fork_resque: false
   :log:
-     :mode: 'file'
+    :mode: 'file'
 :production: 
   :crm_proxy: prod_crm_proxy
   :iphonecertfile: settings/apple_push_cert.pem
@@ -85,6 +86,8 @@ local_crm_proxy: http://192.168.51.128/ # Change this if you're running locally 
   :syncserver: https://rhohub-insphere-c3d43885.heroku.com/application/
   :authtoken: 'DQAAAN4AAABMr5gOJS_7EvXDtx6gyJAk2xHHmkV_RybjlOgPQWOKv5Bjr6ylRnTHt8ogtQcOCAm_j-LjqFQ3f0OHLExbmeRCxOKcRqBY2drlhkMPJL3CW679Dadnwg5VNnufZUEFdHl4SUIwd7dGJK-AtjnDSRC_pPYlP7N0Ldjn2vessXN9Yk4v-k9CGNtKcuFRG2LGeLwRfHco8d5aHpMI4kKbDrOPjRHSKn6jEalsmLmv9Gq6tRxVRkxoN8EiUv6bg638U2nOOHHgr_wF0hcmg9WuYmtlPE41Hm2GlPhrV-nh9Mhu6w'
   :rhoadmin_password: U5PgMPngu27j
+  :log:
+    :mode: 'file'
 :development: 
   :crm_proxy: dev_crm_proxy
   :iphonecertfile: settings/apple_push_cert.pem
@@ -96,10 +99,12 @@ local_crm_proxy: http://192.168.51.128/ # Change this if you're running locally 
   :syncserver: https://rhohub-insphere-a06075d6.heroku.com/application/
   :authtoken: 'DQAAAN4AAABMr5gOJS_7EvXDtx6gyJAk2xHHmkV_RybjlOgPQWOKv5Bjr6ylRnTHt8ogtQcOCAm_j-LjqFQ3f0OHLExbmeRCxOKcRqBY2drlhkMPJL3CW679Dadnwg5VNnufZUEFdHl4SUIwd7dGJK-AtjnDSRC_pPYlP7N0Ldjn2vessXN9Yk4v-k9CGNtKcuFRG2LGeLwRfHco8d5aHpMI4kKbDrOPjRHSKn6jEalsmLmv9Gq6tRxVRkxoN8EiUv6bg638U2nOOHHgr_wF0hcmg9WuYmtlPE41Hm2GlPhrV-nh9Mhu6w'
   :rhoadmin_password: iGyz5rk6JVYA
+  :log:
+    :mode: 'file'
 :onsite: 
   :bundler: true
   :redis_boot: true
-  :crm_proxy: model_crm_proxy
+  :crm_proxy: prod_crm_proxy
   :iphonecertfile: settings/apple_push_cert.pem
   :redis: nrhrho103:6379
   :iphonepassphrase: Pariveda1
@@ -108,11 +113,11 @@ local_crm_proxy: http://192.168.51.128/ # Change this if you're running locally 
   :iphoneport: 2195
   :syncserver: http://nrhrho101/application/
   :authtoken: 'DQAAAN4AAABMr5gOJS_7EvXDtx6gyJAk2xHHmkV_RybjlOgPQWOKv5Bjr6ylRnTHt8ogtQcOCAm_j-LjqFQ3f0OHLExbmeRCxOKcRqBY2drlhkMPJL3CW679Dadnwg5VNnufZUEFdHl4SUIwd7dGJK-AtjnDSRC_pPYlP7N0Ldjn2vessXN9Yk4v-k9CGNtKcuFRG2LGeLwRfHco8d5aHpMI4kKbDrOPjRHSKn6jEalsmLmv9Gq6tRxVRkxoN8EiUv6bg638U2nOOHHgr_wF0hcmg9WuYmtlPE41Hm2GlPhrV-nh9Mhu6w'
-  :rhoadmin_password: iGyz5rk6JVYA
+  :rhoadmin_password: aW9wVhyU84Sj
   :ssl: false
   :fork_resque: false
   :log:
-     :mode: 'file'
+    :mode: 'file'
 :onsite_model: 
   :bundler: true
   :redis_boot: true
@@ -121,7 +126,7 @@ local_crm_proxy: http://192.168.51.128/ # Change this if you're running locally 
   :redis: nrhrho203:6379
   :iphonepassphrase: Pariveda1
   :licensefile: settings/license.key
-  :iphoneserver: gateway.sandbox.push.apple.com
+  :iphoneserver: gateway.push.apple.com
   :iphoneport: 2195
   :syncserver: https://rhosync.model.insphereis.net/application/
   :authtoken: 'DQAAAN4AAABMr5gOJS_7EvXDtx6gyJAk2xHHmkV_RybjlOgPQWOKv5Bjr6ylRnTHt8ogtQcOCAm_j-LjqFQ3f0OHLExbmeRCxOKcRqBY2drlhkMPJL3CW679Dadnwg5VNnufZUEFdHl4SUIwd7dGJK-AtjnDSRC_pPYlP7N0Ldjn2vessXN9Yk4v-k9CGNtKcuFRG2LGeLwRfHco8d5aHpMI4kKbDrOPjRHSKn6jEalsmLmv9Gq6tRxVRkxoN8EiUv6bg638U2nOOHHgr_wF0hcmg9WuYmtlPE41Hm2GlPhrV-nh9Mhu6w'
