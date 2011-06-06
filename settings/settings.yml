@@ -134,5 +134,6 @@ local_crm_proxy: http://192.168.51.128/ # Change this if you're running locally 
   :rhoadmin_password: U5PgMPngu27j
   :ssl: false
   :fork_resque: false
+  :redis_lock_timeout: 1
   :log:
     :mode: 'file'
