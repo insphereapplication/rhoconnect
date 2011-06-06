@@ -67,7 +67,7 @@ class Opportunity < SourceAdapter
     ExceptionUtil.rescue_and_reraise do
       InsiteLogger.info "CREATE OPPORTUNITY"
       ExceptionUtil.context(:current_user => current_user.login)      
-      mapped_hash = OpportunityMapper.map_data_from_client(create_hash.clone, current_user)
+      mapped_hash = OpportunityMapper.map_data_from_client(create_hash.clone)
       result = RestClient.post("#{@opportunity_url}/create",
           {:username => @username,
            :password => @password,
