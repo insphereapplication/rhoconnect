@@ -5,7 +5,7 @@ API_KEY = 'b8788d7b2ae404c9661f40215f5d9258aede9c83'
 $settings_file = 'settings/settings.yml'
 $config = YAML::load_file($settings_file)
 $app_path = File.expand_path(File.dirname(__FILE__))
-$target = :onsite
+$target = :development
 $server = ($config[$target] ? $config[$target][:syncserver] : "").sub('/application', '')
 $password = ($config[$target] ? $config[$target][:rhoadmin_password] : "")
 
@@ -249,7 +249,7 @@ namespace :server do
   end
   
   desc "Gets the db_doc for the given user and model"
-  task :get_db_doc, :user_id, :model, :needs => [:set_token] do |t, args|
+  task :get_db_doc, [:user_id, :model] => [:set_token] do |t, args|
     res = RestClient.post(
       "#{$server}api/get_db_doc", 
       { 
@@ -381,7 +381,7 @@ namespace :server do
 
   namespace :contact do 
     desc "Gives the number of contacts for the given user"
-    task :count, :user_id, :needs => [:set_token] do |t,args|
+    task :count, [:user_id] => [:set_token] do |t,args|
       res = RestClient.post(
         "#{$server}api/get_db_doc", 
         { 
