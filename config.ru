@@ -11,6 +11,9 @@ if CONFIG[:redis_boot]
   ENV['REDIS'] = "redis://#{CONFIG[:redis]}"
 end
 
+# This line specifies the section from which the RhoSync framework will load its settings.
+ENV['RHO_ENV'] = CONFIG[:env].to_s
+
 # Try to load vendor-ed rhosync, otherwise load the gem
 begin
   require 'vendor/rhosync/lib/rhosync/server'
@@ -35,7 +38,11 @@ ROOT_PATH = File.expand_path(File.dirname(__FILE__))
 Rhosync::Server.disable :run
 Rhosync::Server.disable :clean_trace
 Rhosync::Server.enable  :raise_errors
+
+# This line preemptively sets the environment, but is overwritten by the bootstrapper in RhoSync bootstrap method in rhosync.rb. 
+# ENV['RHO_ENV'] is the authoritative source for specifying the environemnt for framework-level RhoSync settings (set above).
 Rhosync::Server.set     :environment, CONFIG[:env]
+
 Rhosync::Server.set     :secret,      '8b885f195f8561e9738cec8f1e280af467722366a28128af0a61310eeeb23d5e1c59b1726711ca2e87ebc744781a4e7c47c7b52697f6d80c52f49a8152b0a7ab'
 Rhosync::Server.set     :root,        ROOT_PATH
 Rhosync::Server.use     Rack::Static, :urls => ["/data"], :root => Rhosync::Server.root
