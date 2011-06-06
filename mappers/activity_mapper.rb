@@ -53,6 +53,7 @@ class ActivityMapper < Mapper
       data.reject!{|k,v| k == 'parent_contact_id'}
     end
     
+    data.reject!{|k,v| ['temp_id'].include?(k)}
     data
   end
   

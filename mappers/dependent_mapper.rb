@@ -23,7 +23,7 @@ class DependentMapper < Mapper
         "type"=>"contact"
       }
     })
-    data.reject!{|k,v| ['cssi_dependentsid', 'contact_id'].include?(k)}
+    data.reject!{|k,v| ['cssi_dependentsid', 'contact_id', 'temp_id'].include?(k)}
     
     data
   end

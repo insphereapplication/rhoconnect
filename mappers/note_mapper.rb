@@ -19,6 +19,6 @@ class NoteMapper < Mapper
           'id' => data['parent_id']
         }
       })
-    data.reject!{|k,v| ['modifiedon', 'createdon','parent_id', 'parent_type'].include?(k)}
+    data.reject!{|k,v| ['modifiedon', 'createdon','parent_id', 'parent_type', 'temp_id'].include?(k)}
   end
 end

@@ -29,6 +29,7 @@ class PolicyMapper < Mapper
   end
   
   def self.map_data_from_client(data)
+    data.reject!{|k,v| ['temp_id'].include?(k)}
     data
   end
 end
