@@ -4,9 +4,9 @@ class UpdateUtil
   def self.push_objects(source, object_hash, reraise_lock_exception=false)
     begin
       redis_hash = {object_hash['id'] => object_hash.reject{ |k,v| k == 'id'}}
-      puts "*"*80
-      puts "Committing to redis for user #{source.user_id}:"
-      ap redis_hash
+      InsiteLogger.info "*"*80
+      InsiteLogger.info "Committing to redis for user #{source.user_id}:"
+      InsiteLogger.info redis_hash
     
       source_sync = SourceSync.new(source)
       source_sync.push_objects(redis_hash, CONFIG[:redis_lock_timeout], true)
