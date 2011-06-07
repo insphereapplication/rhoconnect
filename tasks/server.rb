@@ -249,7 +249,7 @@ namespace :server do
   end
   
   desc "Gets the db_doc for the given user and model"
-  task :get_db_doc, :user_id, :model, :needs => [:set_token] do |t, args|
+  task :get_db_doc, [:user_id, :model] => [:set_token] do |t, args|
     res = RestClient.post(
       "#{$server}api/get_db_doc", 
       { 
@@ -381,7 +381,7 @@ namespace :server do
 
   namespace :contact do 
     desc "Gives the number of contacts for the given user"
-    task :count, :user_id, :needs => [:set_token] do |t,args|
+    task :count, [:user_id] => [:set_token] do |t,args|
       res = RestClient.post(
         "#{$server}api/get_db_doc", 
         { 
