@@ -6,9 +6,9 @@ $states = ["AL","AK","AZ","AR","CA","CO","CT","DE","FL","GA","HI","ID","IL","IN"
 
 $lead_sources = ['Internet','Direct Mail','E-Mail','Newspaper','Other','PDL','Radio','Referral']
 
-$lead_vendors = ['AllWeb','Humana','Insphere','InsureMe','iPipeline','Most Choice']
+$lead_vendors = ['AllWeb','Humana','InsureMe','iPipeline','Most Choice']
 
-$lead_types = ['Agent Website','Banner','Classified','Mobile Website','Other','Search']
+$lead_types = ['Agent Website','Banner','Classified','Other','Search']
 
 #----------------------- Policy arrays
 
