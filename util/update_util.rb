@@ -10,11 +10,10 @@ class UpdateUtil
       source_sync.push_objects(redis_hash, CONFIG[:redis_lock_timeout], true)
     rescue StoreLockException
       # reset sync status for user
-      InsiteLogger.info "Got StoreLockException for user #{source.user_id} in update util; resetting sync status."
       user_key_pattern = "username:#{source.user_id}:[^:]*:initialized"
+      InsiteLogger.info "Got StoreLockException for user #{source.user_id} in update util; resetting sync status for pattern #{user_key_pattern}."
       Store.flash_data(user_key_pattern)
-      InsiteLogger.info "Reset sync status for keys matching pattern #{user_key_pattern}"
-      raise if reraise_lock_exception
+      reraise_lock_exception ? raise : InsiteLogger.info(:format_and_join => ["Not re-raising, call stack: ",caller])
     end
   end
 end
