@@ -3,9 +3,9 @@ require 'socket'
 module InsiteLogger  
 
   def self.info(message)
+    message = message.kind_of?(String) ? message : message.awesome_inspect(:multiline => false)
     output_host_name
-    ap message  
-    message = message.kind_of?(Array) ? message.join("\n") : message.inspect
+    puts message
     insite_logger.info("#{host_name}:#{release_dir} -- #{message}") if insite_logger
   end
   

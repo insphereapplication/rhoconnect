@@ -60,4 +60,4 @@ run Rack::URLMap.new \
 	"/console"  => RhosyncConsole::Server.new # If you don't want rhosync frontend, disable it here
 	
 InsiteLogger.info "Rhosync.environment after bootstrap: #{Rhosync.environment}"
-InsiteLogger.info "CONFIG: #{CONFIG.inspect}"
+InsiteLogger.info "CONFIG: #{CONFIG.awesome_inspect(:multiline => false)}"
