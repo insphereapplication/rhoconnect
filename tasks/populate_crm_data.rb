@@ -6,9 +6,9 @@ $states = ["AL","AK","AZ","AR","CA","CO","CT","DE","FL","GA","HI","ID","IL","IN"
 
 $lead_sources = ['Internet','Direct Mail','E-Mail','Newspaper','Other','PDL','Radio','Referral']
 
-$lead_vendors = ['AllWeb','Humana','Insphere','InsureMe','iPipeline','Most Choice']
+$lead_vendors = ['AllWeb','Humana','InsureMe','iPipeline','Most Choice']
 
-$lead_types = ['Agent Website','Banner','Classified','Mobile Website','Other','Search']
+$lead_types = ['Agent Website','Banner','Classified','Other','Search']
 
 #----------------------- Policy arrays
 
@@ -175,8 +175,6 @@ def get_fake_policy_data(identity, policy_status)
     'ownerid' => {'type' => 'systemuser', 'id' => identity['id']},
     'cssi_effectivedate' => "#{rand_year}/#{rand_month}/#{rand_day}",
     'cssi_applicationnumber' => Faker::Base.numerify('#########'),
-    'cssi_carrierid' => {'type' => 'cssi_carrier', 'id' => rand_carrier_id},
-    'cssi_productid' => {'type' => 'cssi_product', 'id' => rand_product_id},
     'statuscode' => status_code,
     'cssi_primaryinsured' => Faker::Name.name,
     'cssi_carrierstatusvalue' => 'Active and paying',
