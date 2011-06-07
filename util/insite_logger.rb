@@ -1,12 +1,29 @@
 require 'socket'
 
 module InsiteLogger  
+  
+  # If input is a string, return the string; otherwise, format using awesome_print
+  def self.format_for_logging(input)
+    input.kind_of?(String) ? input : input.awesome_inspect(:multiline => false)
+  end
 
-  def self.info(message)
-    message = message.kind_of?(String) ? message : message.awesome_inspect(:multiline => false)
+  # Log at the info level
+  # Set format_and_join_array=true when you want to print a one-liner with the formatted and joined form of the array given by message
+  # i.e. 
+  #   self.info(["Test beginning",{:a => "a", :b => "B"},"test end."],true)
+  # will print 
+  #   Test beginning { :a => "a", :b => "B" } test end.
+  def self.info(input)
+    if input.kind_of?(Hash) && input.count == 1 && input[:format_and_join].kind_of?(Array)
+      # Format each element in the array and join
+      input = (input[:format_and_join].map{|value| format_for_logging(value)}).join('')
+    else
+      # Format 
+      input = format_for_logging(input)
+    end
     output_host_name
-    puts message
-    insite_logger.info("#{host_name}:#{release_dir} -- #{message}") if insite_logger
+    puts input
+    insite_logger.info("#{host_name}:#{release_dir} -- #{input}") if insite_logger
   end
   
   def self.insite_logger
