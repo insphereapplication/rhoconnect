@@ -9,7 +9,8 @@ $environments = {'local' => 'http://192.168.51.128',
   'dev-internal' => 'http://nrhwwwd401.insp.dom:5000', 
   'dev-external' => 'https://devmobileproxy.insphereis.net', 
   'model-external' => 'https://mobileproxy.model.insphereis.net',
-  'production-external' => 'https://mobileproxy.insphereis.net'}
+  'production-external' => 'https://mobileproxy.insphereis.net',
+  'dev-integrated' => 'http://nrhwwwd403.insp.dom:2195/crm/ActivityCenter/MobileProxy'}
 
 namespace :proxy do
   desc "Generates [policy_count] new policies and contacts.  If status is passed in, it will use the status; otherwise active"
@@ -123,6 +124,7 @@ desc "Updates the [primary_insured] name of policy # [policy_id]"
 		end
 	end
 	
+	desc "Override the identity that is used to talk to CRM; this allows you to create data on another user's behalf"
 	task :override_identity, [:login_username,:login_password] => :setup do |t,args|
 		abort "Error: username & password must be specified" if (args[:login_username].nil? or args[:login_password].nil?)
 		username = args[:login_username]

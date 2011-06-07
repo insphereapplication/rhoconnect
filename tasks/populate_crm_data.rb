@@ -175,8 +175,6 @@ def get_fake_policy_data(identity, policy_status)
     'ownerid' => {'type' => 'systemuser', 'id' => identity['id']},
     'cssi_effectivedate' => "#{rand_year}/#{rand_month}/#{rand_day}",
     'cssi_applicationnumber' => Faker::Base.numerify('#########'),
-    'cssi_carrierid' => {'type' => 'cssi_carrier', 'id' => rand_carrier_id},
-    'cssi_productid' => {'type' => 'cssi_product', 'id' => rand_product_id},
     'statuscode' => status_code,
     'cssi_primaryinsured' => Faker::Name.name,
     'cssi_carrierstatusvalue' => 'Active and paying',
