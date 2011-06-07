@@ -90,10 +90,16 @@ namespace :deploy do
   end
 end
 
-desc "Stream the rhosync log from all target servers in a single terminal"
-namespace :util do   
+namespace :util do  
+  desc "Stream the rhosync log from all target servers in a single terminal" 
   task :stream_logs, :roles => :app do
     stream "tail -F #{shared_path}/log/insite_mobile.log"
+  end
+  
+  desc "Grep the current logs for a given pattern.\nCall as follows: cap util:grep_logs -s pattern=\"<grep_pattern>\""
+  task :grep_logs do
+    abort "Please provide the \"pattern\" option when calling grep_logs (i.e. cap util:grep_logs -s pattern=<grep_pattern>)" unless exists?(:pattern)
+    run("grep \"#{pattern}\" #{shared_path}/log/insite_mobile.log; true") #'true' is needed at the end so that capsitrano won't report an empty grep result as a failure
   end
 end
 
