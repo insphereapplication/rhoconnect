@@ -88,6 +88,16 @@ namespace :deploy do
     temp = "#{current_release}/settings.tmp"
     run("sed -e 's/^\:env:.*/:env: #{env}/g' #{settings} > #{temp}; mv #{temp} #{settings}")
   end
+  
+  task :logrotate_config, :roles => :app do
+    require 'erb'
+    abort "Please provide a user w/ sudo to run this command as (i.e. cap deploy:logrotate_config -s runas=<username>)" unless exists?(:runas)
+    template = ERB.new(File.read('config/templates/passenger.logrotate.erb'), nil, '<>')
+    result = template.result(binding)
+    temp_path = "#{shared_path}/logrotate_passenger_config"
+    put(result, temp_path)
+    run("#{sudo :as => runas} cp #{temp_path} /etc/logrotate.d/passenger")
+  end
 end
 
 namespace :util do  
