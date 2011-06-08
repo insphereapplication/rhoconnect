@@ -1,6 +1,7 @@
 set :stages, %w(model prod)
 set :default_stage, 'model'
 require 'capistrano/ext/multistage'
+require 'ap'
 
 set :application, "InsiteMobile"
 set :domain,      "rhosync.insphereis.net"
@@ -89,14 +90,34 @@ namespace :deploy do
     run("sed -e 's/^\:env:.*/:env: #{env}/g' #{settings} > #{temp}; mv #{temp} #{settings}")
   end
   
+  def run_as_user_send_password(user, command)
+    @response_hash = {}
+    password = fetch(:root_password, Capistrano::CLI.password_prompt("password for #{user}: "))
+    run("su - #{user} -c '#{command}'", {:pty => true}) do |channel, stream, output|
+      if output[/Password: /] or output[/\[sudo\] password/]
+        puts "Got output #{output}, sending password"
+        channel.send_data("#{password}\n") 
+        @response_hash[channel[:host]] = ''
+      else
+        @response_hash[channel[:host]] ||= ''
+        @response_hash[channel[:host]] += output
+      end
+    end
+    @response_hash.each{|host,response| 
+      puts "Response from #{host}:"
+      puts response
+    }
+  end
+  
   task :logrotate_config, :roles => :app do
     require 'erb'
     abort "Please provide a user w/ sudo to run this command as (i.e. cap deploy:logrotate_config -s runas=<username>)" unless exists?(:runas)
     template = ERB.new(File.read('config/templates/passenger.logrotate.erb'), nil, '<>')
     result = template.result(binding)
-    temp_path = "#{shared_path}/logrotate_passenger_config"
-    put(result, temp_path)
-    run("#{sudo :as => runas} cp #{temp_path} /etc/logrotate.d/passenger")
+    temp_logrotate_path = "#{shared_path}/passenger.logrotate.temp"
+    put(result, temp_logrotate_path)
+    run_as_user_send_password(runas, "sudo cp #{temp_logrotate_path} /etc/logrotate.d/passenger")
+    run("rm #{temp_logrotate_path}")
   end
 end
 
