@@ -125,15 +125,15 @@ namespace :server do
   desc "Reset the user's sync flag to force a full query on the next login"
   task :reset_sync_status, [:user_pattern] => [:set_token] do |t, args|
     abort "User pattern must be specified" unless args[:user_pattern]
-    res = RestClient.post(
+    res = JSON.parse(RestClient.post(
       "#{$server}api/reset_sync_status", 
       { 
         :api_token => @token, 
         :user_pattern => args[:user_pattern]
       }.to_json, 
       :content_type => :json
-    ).body
-    ap res
+    ).body)
+    ap res.sort
   end
   
   task :get_sync_status, [:user_pattern] => [:set_token] do |t, args|
@@ -147,7 +147,7 @@ namespace :server do
       }.to_json, 
       :content_type => :json
     ).body)
-    ap res
+    ap res.sort
   end
   
   task :get_log => [:set_token] do
