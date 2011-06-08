@@ -68,7 +68,7 @@ class Note < SourceAdapter
           :attributes => attributes.to_json}
         ).body)
 
-      UpdateUtil.push_objects(@source, update_hash)
+      UpdateUtil.push_update(@source, update_hash)
     end
   end
  
