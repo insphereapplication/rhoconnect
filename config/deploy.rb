@@ -119,6 +119,11 @@ namespace :deploy do
     run_as_user_send_password(runas, "sudo cp #{temp_logrotate_path} /etc/logrotate.d/passenger")
     run("rm #{temp_logrotate_path}")
   end
+  
+  task :passenger_status, :roles => :app do
+    abort "Please provide a user w/ sudo to run this command as (i.e. cap deploy:passenger_status -s runas=<username>)" unless exists?(:runas)
+    run_as_user_send_password(runas, "sudo passenger-status")
+  end
 end
 
 namespace :util do  
