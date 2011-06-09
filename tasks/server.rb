@@ -284,6 +284,29 @@ namespace :server do
     JSON.parse(res)
   end
   
+  def get_clients(user_id)
+    res = RestClient.post("#{$server}api/list_clients", 
+      { 
+        :api_token => @token, 
+        :user_id => user_id 
+      }.to_json, 
+     :content_type => :json
+    ).body
+    JSON.parse(res)
+  end
+  
+  def get_client_params(client_id)
+    res = RestClient.post(
+      "#{$server}api/get_client_params", 
+      { 
+        :api_token => @token, 
+        :client_id => client_id 
+      }.to_json, 
+      :content_type => :json
+    ).body
+    JSON.parse(res)
+  end
+  
   desc "check data integrity for all users matching regex pattern <user_pattern> (i.e. use 'check_integrity[.]' to check all users)"
   task :check_integrity, [:user_pattern] => [:set_token] do |t, args|
     #get all users from RhoSync, filter based on pattern given
@@ -310,6 +333,34 @@ namespace :server do
         missing_required_fields = contact_required_fields.reject{|crf| v.include?(crf)}
         puts "Contact #{k} is missing fields #{missing_required_fields.join(', ')}" unless missing_required_fields.count == 0
       }
+    }
+  end
+  
+  def client_has_pin?(client_params_hash)
+    client_params_hash.each{|value|
+      return true if (value['name'] == 'device_pin') && value['value'] && (value['value'].length > 0)
+    }
+    
+    false
+  end
+  
+  task :check_push_pins, [:user_pattern] => [:set_token] do |t, args|
+    #get all users from RhoSync, filter based on pattern given
+    filtered_users = get_users.reject{|user| user[Regexp.new(args.user_pattern)].nil?}
+    
+    # get clients & params for users
+    user_client_params = filtered_users.reduce({}){|sum,user_id|
+      user_clients = get_clients(user_id)
+      sum[user_id] = user_clients.reduce({}){|sum2,client_id| 
+        sum2[client_id] = get_client_params(client_id)
+        sum2
+      }
+      sum
+    }
+    
+    user_client_params.each{|user,clients| 
+      pinless_clients = clients.reject{|client_id,client_params| client_has_pin?(client_params)}
+      puts "#{pinless_clients.count} of #{clients.count} clients for user #{user} have no push pins: #{pinless_clients.keys.awesome_inspect(:multiline => false)}" unless pinless_clients.count == 0
     }
   end
   
