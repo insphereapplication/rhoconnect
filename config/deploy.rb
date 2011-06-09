@@ -150,18 +150,20 @@ namespace :util do
       host_responses[channel[:host]] += output
     end
     
-    host_responses.each{|host,result| 
-      count = result.split('\n').count
-      count += 1 if count > 0 #Fence posts
-    
+    host_responses.each{|host,result|
+      # sum socket counts as we go along
+      total_socket_count = 0
+      
       # Determine the number of sockets in each of the following states and put into a hash mapping states to their respective count
       socket_state_counts = ["ESTABLISHED", "CLOSE_WAIT", "FIN_WAIT", "CLOSED"].reduce({}){|sum,socket_state|
-        sum[socket_state] = result.scan(Regexp.new(socket_state,true)).length
+        state_count = result.scan(Regexp.new(socket_state,true)).length
+        total_socket_count += state_count
+        sum[socket_state] = state_count
         sum
       }
       
       puts "#{'*'*10} Results from #{host}: #{'*'*10}"
-      puts "Total redis socket count: #{count}"
+      puts "Total redis socket count: #{total_socket_count}"
       puts "State counts:"
       ap socket_state_counts
       puts "Raw results:"
