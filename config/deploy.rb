@@ -35,6 +35,27 @@ after "deploy:update", "deploy:set_license"
 after "deploy:update", "deploy:httpd_conf"
 after "deploy:update", "deploy:gemfile"
 
+
+
+def run_as_user_send_password(user, command)
+  @response_hash = {}
+  password = fetch(:root_password, Capistrano::CLI.password_prompt("password for #{user}: "))
+  run("su - #{user} -c '#{command}'", {:pty => true}) do |channel, stream, output|
+    if output[/Password: /] or output[/\[sudo\] password/]
+      puts "Got output #{output}, sending password"
+      channel.send_data("#{password}\n") 
+      @response_hash[channel[:host]] = ''
+    else
+      @response_hash[channel[:host]] ||= ''
+      @response_hash[channel[:host]] += output
+    end
+  end
+  @response_hash.each{|host,response| 
+    puts "Response from #{host}:"
+    puts response
+  }
+end
+
 namespace :deploy do
   task :start, :roles => :app do
     run "touch #{current_release}/tmp/restart.txt"
@@ -76,7 +97,7 @@ namespace :deploy do
   # To restart Apache, on all target machines: sudo apachectl -k graceful.
   #
   desc "Generate the apache httpd.conf file from the config/templates/httpd.conf.template"
-  task :httpd_conf do
+  task :httpd_conf, :roles => :app do
     require 'erb'
     template = ERB.new(File.read('config/templates/httpd.conf.erb'), nil, '<>')
     result = template.result(binding)
@@ -84,29 +105,10 @@ namespace :deploy do
   end
   
   desc "Sets the environment of settings/settings.yml to use the environment defined in 'env'"
-  task :settings do 
+  task :settings, :roles => :app do 
     settings = "#{current_release}/settings/settings.yml"
     temp = "#{current_release}/settings.tmp"
     run("sed -e 's/^\:env:.*/:env: #{env}/g' #{settings} > #{temp}; mv #{temp} #{settings}")
-  end
-  
-  def run_as_user_send_password(user, command)
-    @response_hash = {}
-    password = fetch(:root_password, Capistrano::CLI.password_prompt("password for #{user}: "))
-    run("su - #{user} -c '#{command}'", {:pty => true}) do |channel, stream, output|
-      if output[/Password: /] or output[/\[sudo\] password/]
-        puts "Got output #{output}, sending password"
-        channel.send_data("#{password}\n") 
-        @response_hash[channel[:host]] = ''
-      else
-        @response_hash[channel[:host]] ||= ''
-        @response_hash[channel[:host]] += output
-      end
-    end
-    @response_hash.each{|host,response| 
-      puts "Response from #{host}:"
-      puts response
-    }
   end
   
   task :logrotate_config, :roles => :app do
@@ -118,11 +120,6 @@ namespace :deploy do
     put(result, temp_logrotate_path)
     run_as_user_send_password(runas, "sudo cp #{temp_logrotate_path} /etc/logrotate.d/passenger")
     run("rm #{temp_logrotate_path}")
-  end
-  
-  task :passenger_status, :roles => :app do
-    abort "Please provide a user w/ sudo to run this command as (i.e. cap deploy:passenger_status -s runas=<username>)" unless exists?(:runas)
-    run_as_user_send_password(runas, "sudo passenger-status")
   end
 end
 
@@ -136,6 +133,40 @@ namespace :util do
   task :grep_logs do
     abort "Please provide the \"pattern\" option when calling grep_logs (i.e. cap util:grep_logs -s pattern=<grep_pattern>)" unless exists?(:pattern)
     run("grep \"#{pattern}\" #{shared_path}/log/insite_mobile.log; true") #'true' is needed at the end so that capsitrano won't report an empty grep result as a failure
+  end
+  
+  desc "Shows results of calling passenger-status as sudo on all app servers"
+  task :passenger_status, :roles => :app do
+    abort "Please provide a user w/ sudo to run this command as (i.e. cap deploy:passenger_status -s runas=<username>)" unless exists?(:runas)
+    run_as_user_send_password(runas, "sudo passenger-status")
+  end
+  
+  task :show_redis_sockets, :roles => :app do
+    host_responses = {}
+    
+    # run netstat & gather responses from servers in a hash mapping server hostname => response
+    run('netstat -a | grep ":6379[^0-9]"; true') do |channel, stream, output|
+      host_responses[channel[:host]] ||= ''
+      host_responses[channel[:host]] += output
+    end
+    
+    host_responses.each{|host,result| 
+      count = result.split('\n').count
+      count += 1 if count > 0 #Fence posts
+    
+      # Determine the number of sockets in each of the following states and put into a hash mapping states to their respective count
+      socket_state_counts = ["ESTABLISHED", "CLOSE_WAIT", "FIN_WAIT", "CLOSED"].reduce({}){|sum,socket_state|
+        sum[socket_state] = result.scan(Regexp.new(socket_state,true)).length
+        sum
+      }
+      
+      puts "#{'*'*10} Results from #{host}: #{'*'*10}"
+      puts "Total redis socket count: #{count}"
+      puts "State counts:"
+      ap socket_state_counts
+      puts "Raw results:"
+      puts result
+    }
   end
 end
 
