@@ -111,6 +111,7 @@ namespace :deploy do
     run("sed -e 's/^\:env:.*/:env: #{env}/g' #{settings} > #{temp}; mv #{temp} #{settings}")
   end
   
+  desc "Deploys the logrotate config to each app server. Requires sudo, so call like this: \"cap deploy:logrotate_config -s runas=<username>\""
   task :logrotate_config, :roles => :app do
     require 'erb'
     abort "Please provide a user w/ sudo to run this command as (i.e. cap deploy:logrotate_config -s runas=<username>)" unless exists?(:runas)
@@ -141,6 +142,7 @@ namespace :util do
     run_as_user_send_password(runas, "sudo passenger-status")
   end
   
+  desc "Shows statistics on sockets established from each app server to redis"
   task :show_redis_sockets, :roles => :app do
     host_responses = {}
     

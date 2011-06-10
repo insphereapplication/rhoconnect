@@ -344,6 +344,7 @@ namespace :server do
     false
   end
   
+  desc "shows all users matching regex pattern <user_pattern> that do not have a push pin for at least one of their devices"
   task :check_push_pins, [:user_pattern] => [:set_token] do |t, args|
     #get all users from RhoSync, filter based on pattern given
     filtered_users = get_users.reject{|user| user[Regexp.new(args.user_pattern)].nil?}
