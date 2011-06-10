@@ -309,6 +309,7 @@ namespace :server do
   
   desc "check data integrity for all users matching regex pattern <user_pattern> (i.e. use 'check_integrity[.]' to check all users)"
   task :check_integrity, [:user_pattern] => [:set_token] do |t, args|
+    abort "!!! User regex pattern must be specified (i.e. 'rake server:check_integrity[\"a[0-9]\"]' to check integrity for all users that match the agent code pattern)" unless args[:user_pattern]
     #get all users from RhoSync, filter based on pattern given
     filtered_users = get_users.reject{|user| user[Regexp.new(args.user_pattern)].nil?}
     
@@ -378,6 +379,7 @@ namespace :server do
   
   desc "shows all users matching regex pattern <user_pattern> that do not have a push pin for at least one of their devices"
   task :check_push_pins, [:user_pattern] => [:set_token] do |t, args|
+    abort "!!! User regex pattern must be specified (i.e. 'server:check_push_pins[\"a[0-9]\"]' to check the push pins for all users that match the agent code pattern)" unless args[:user_pattern]
     #get all users from RhoSync, filter based on pattern given
     filtered_users = get_users.reject{|user| user[Regexp.new(args.user_pattern)].nil?}
     
@@ -412,6 +414,7 @@ namespace :server do
   
   desc "shows platform breakdowns for devices associated with users matching the given pattern <user_pattern> (i.e. 'rake server:gather_device_stats[\"a[0-9]\"]' to show device stats for agents only)"
   task :gather_device_stats, [:user_pattern] => [:set_token] do |t, args|
+    abort "!!! User regex pattern must be specified (i.e. 'server:check_device_pins[\"a[0-9]\"]' to gather device stats for all users that match the agent code pattern)" unless args[:user_pattern]
     #get all users from RhoSync, filter based on pattern given
     filtered_users = get_users.reject{|user| user[Regexp.new(args.user_pattern)].nil?}
     
@@ -435,7 +438,9 @@ namespace :server do
       }
     }
     
-    ap platform_counts
+    puts "\nTotal device count: #{platform_counts.values.reduce(0){|sum,value| sum += value}}"
+    puts "Platform breakdown:"
+    ap(platform_counts,:plain => true)
   end
   
   namespace :opportunity do
