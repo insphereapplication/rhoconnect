@@ -142,7 +142,7 @@ namespace :util do
     run_as_user_send_password(runas, "sudo passenger-status")
   end
   
-  desc "Shows statistics on sockets established from each app server to redis"
+  desc "Shows statistics on sockets established from each app server to redis (include flag '-s raw_netstat' to see the raw netstat output)"
   task :show_redis_sockets, :roles => :app do
     host_responses = {}
     
@@ -167,9 +167,11 @@ namespace :util do
       puts "#{'*'*10} Results from #{host}: #{'*'*10}"
       puts "Total redis socket count: #{total_socket_count}"
       puts "State counts:"
-      ap socket_state_counts
-      puts "Raw results:"
-      puts result
+      ap(socket_state_counts,:plain => true)
+      if exists?(:raw_netstat)
+        puts "Raw results:"
+        puts result
+      end
     }
   end
 end

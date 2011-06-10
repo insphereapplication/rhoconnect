@@ -312,18 +312,19 @@ namespace :server do
     #get all users from RhoSync, filter based on pattern given
     filtered_users = get_users.reject{|user| user[Regexp.new(args.user_pattern)].nil?}
     
-    filtered_users.each{|user|
+    integrity_check_results = filtered_users.reduce([]){|sum,user|
       opps = get_md(user, 'Opportunity')
       contacts = get_md(user, 'Contact')
       
-      ap "Checking data integrity for user #{user}"
-      ap "Opportunities: #{opps.count}, contacts: #{contacts.count}"
+      opp_contact_relational_check_failed = false
+      contact_field_check_failed = false
     
       opps.each{|k,v|
         contact_id = v['contact_id']
-        puts "Opp #{k} has nil contact id" unless contact_id
+        opp_contact_relational_check_failed = true unless contact_id
         parent_contact = contacts[contact_id]
-        puts "Contact doesn't exist for opp #{k}" unless parent_contact
+        opp_contact_relational_check_failed = true unless parent_contact
+        break if opp_contact_relational_check_failed
       }
     
       contact_required_fields = ['firstname','lastname']
@@ -331,9 +332,32 @@ namespace :server do
     
       contacts.each{|k,v|    
         missing_required_fields = contact_required_fields.reject{|crf| v.include?(crf)}
-        puts "Contact #{k} is missing fields #{missing_required_fields.join(', ')}" unless missing_required_fields.count == 0
+        contact_field_check_failed = true unless missing_required_fields.count == 0
+        break if contact_field_check_failed
       }
+      
+      failures = []
+      failures << "Opportunity->contact relational check" if opp_contact_relational_check_failed
+      failures << "Contact required field check" if contact_field_check_failed
+      
+      sum << {:user => user, :failures => failures, :opp_count => opps.count, :contact_count => contacts.count }
     }
+    
+    integrity_check_results.sort!{|x,y|
+      failure_count_comp = y[:failures].count <=> x[:failures].count
+      user_comp = x[:user] <=> y[:user]
+      
+      failure_count_comp == 0 ? user_comp : failure_count_comp
+    }
+    
+    integrity_check_results.each{|result|
+      has_failures = result[:failures].count > 0
+      prepend = has_failures ? ' !!!  ' : '      '
+      print "#{prepend}Integrity check #{has_failures ? 'failed' : 'passed'} for user #{result[:user]}; "
+      puts " checked #{result[:opp_count]} opportunities and #{result[:contact_count]} contacts."
+      puts "\tFailed checks: #{result[:failures].awesome_inspect(:multiline => false)}" if has_failures
+    }
+    
   end
   
   def client_has_pin?(client_params_hash)
