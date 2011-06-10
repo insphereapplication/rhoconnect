@@ -360,6 +360,14 @@ namespace :server do
     
   end
   
+  def get_client_param_value(client_params_hash, param_name)
+    client_params_hash.each{|value|
+      return value['value'] if value['name'] == param_name
+    } if client_params_hash
+    
+    nil
+  end
+  
   def client_has_pin?(client_params_hash)
     client_params_hash.each{|value|
       return true if (value['name'] == 'device_pin') && value['value'] && (value['value'].length > 0)
@@ -400,6 +408,34 @@ namespace :server do
       prepend = val[:pinless_clients].count > 0 ? ' !!!  ' : '      '
       puts "#{prepend}#{val[:pinless_clients].count} of #{val[:clients].count} clients for user #{val[:user_id]} have no push pins: #{val[:pinless_clients].keys.awesome_inspect(:multiline => false)}"
     }
+  end
+  
+  desc "shows platform breakdowns for devices associated with users matching the given pattern <user_pattern> (i.e. 'rake server:gather_device_stats[\"a[0-9]\"]' to show device stats for agents only)"
+  task :gather_device_stats, [:user_pattern] => [:set_token] do |t, args|
+    #get all users from RhoSync, filter based on pattern given
+    filtered_users = get_users.reject{|user| user[Regexp.new(args.user_pattern)].nil?}
+    
+    # get clients & params for users
+    user_client_params = filtered_users.reduce({}){|sum,user_id|
+      user_clients = get_clients(user_id)
+      sum[user_id] = user_clients.reduce({}){|sum2,client_id| 
+        sum2[client_id] = get_client_params(client_id)
+        sum2
+      }
+      sum
+    }
+    
+    platform_counts = {}
+    
+    user_client_params.values.each{|clients|
+      clients.values.each{|client_params|        
+        device_type = get_client_param_value(client_params, 'device_type')
+        platform_counts[device_type] ||= 0
+        platform_counts[device_type] += 1
+      }
+    }
+    
+    ap platform_counts
   end
   
   namespace :opportunity do

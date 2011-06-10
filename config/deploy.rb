@@ -36,7 +36,7 @@ after "deploy:update", "deploy:httpd_conf"
 after "deploy:update", "deploy:gemfile"
 
 
-
+# Runs the given command as the given user. Prompts for the user's password then passes that as a response to any password prompts
 def run_as_user_send_password(user, command)
   @response_hash = {}
   password = fetch(:root_password, Capistrano::CLI.password_prompt("password for #{user}: "))
@@ -124,16 +124,40 @@ namespace :deploy do
   end
 end
 
+# Enhanced utilization of capistrano's run() method, but keeps the output from each server distinct by maintaining a hash mapping the server's hostname to its response
+def run_and_gather_responses(command)
+  host_responses = {}
+  
+  # run the given command & gather responses from servers in a hash mapping server hostname => response
+  run(command) do |channel, stream, output|
+    host_responses[channel[:host]] ||= ''
+    host_responses[channel[:host]] += output
+  end
+  
+  host_responses
+end
+
 namespace :util do  
   desc "Stream the rhosync log from all target servers in a single terminal" 
   task :stream_logs, :roles => :app do
     stream "tail -F #{shared_path}/log/insite_mobile.log"
   end
   
-  desc "Grep the current logs for a given pattern.\nCall as follows: cap util:grep_logs -s pattern=\"<grep_pattern>\""
+  desc %Q{
+    Grep the current app logs for a given pattern.
+    Call as follows: cap util:grep_logs -s pattern="<grep_pattern>"
+
+    This can also be used to grep other files on each app server: provide the grep_path option (i.e. to grep apache error logs run: 'cap util:grep_logs -s pattern=<pattern> -s grep_path="/var/log/httpd/error_log"')
+  }
   task :grep_logs do
     abort "Please provide the \"pattern\" option when calling grep_logs (i.e. cap util:grep_logs -s pattern=<grep_pattern>)" unless exists?(:pattern)
-    run("grep \"#{pattern}\" #{shared_path}/log/insite_mobile.log; true") #'true' is needed at the end so that capsitrano won't report an empty grep result as a failure
+    path_to_grep = exists?(:grep_path) ? grep_path : "#{shared_path}/log/insite_mobile.log"
+    results = run_and_gather_responses("grep \"#{pattern}\" \"#{path_to_grep}\"; true") #'true' is needed at the end so that capsitrano won't report an empty grep result as a failure
+    results.each{|host,response| 
+      marker = "="*20
+      puts "\n\n#{marker} Response from #{host}: #{marker}\n\n"
+      puts response
+    }
   end
   
   desc "Shows results of calling passenger-status as sudo on all app servers"
@@ -144,15 +168,8 @@ namespace :util do
   
   desc "Shows statistics on sockets established from each app server to redis (include flag '-s raw_netstat' to see the raw netstat output)"
   task :show_redis_sockets, :roles => :app do
-    host_responses = {}
-    
     # run netstat & gather responses from servers in a hash mapping server hostname => response
-    run('netstat -a | grep ":6379[^0-9]"; true') do |channel, stream, output|
-      host_responses[channel[:host]] ||= ''
-      host_responses[channel[:host]] += output
-    end
-    
-    host_responses.each{|host,result|
+    run_and_gather_responses('netstat -a | grep ":6379[^0-9]"; true').each{|host,result|
       # sum socket counts as we go along
       total_socket_count = 0
       
