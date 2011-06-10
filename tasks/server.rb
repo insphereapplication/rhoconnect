@@ -359,9 +359,22 @@ namespace :server do
       sum
     }
     
-    user_client_params.each{|user,clients| 
+    user_pin_params = user_client_params.reduce([]){|sum,(user,clients)| 
       pinless_clients = clients.reject{|client_id,client_params| client_has_pin?(client_params)}
-      puts "#{pinless_clients.count} of #{clients.count} clients for user #{user} have no push pins: #{pinless_clients.keys.awesome_inspect(:multiline => false)}" unless pinless_clients.count == 0
+      sum << {:user_id => user, :clients => clients, :pinless_clients => pinless_clients}
+      sum
+    }
+    
+    user_pin_params.sort!{|x,y|
+      count_comp = y[:pinless_clients].count <=> x[:pinless_clients].count
+      user_id_comp = x[:user_id] <=> y[:user_id]
+      
+      count_comp == 0 ? user_id_comp : count_comp
+    }
+    
+    user_pin_params.each{|val| 
+      prepend = val[:pinless_clients].count > 0 ? ' !!!  ' : '      '
+      puts "#{prepend}#{val[:pinless_clients].count} of #{val[:clients].count} clients for user #{val[:user_id]} have no push pins: #{val[:pinless_clients].keys.awesome_inspect(:multiline => false)}"
     }
   end
   
