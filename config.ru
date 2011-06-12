@@ -59,5 +59,4 @@ run Rack::URLMap.new \
 	"/resque"   => Resque::Server.new, # If you don't want resque frontend, disable it here
 	"/console"  => RhosyncConsole::Server.new # If you don't want rhosync frontend, disable it here
 	
-InsiteLogger.info "Rhosync.environment after bootstrap: #{Rhosync.environment}"
-InsiteLogger.info "CONFIG: #{CONFIG.inspect}"
+InsiteLogger.info(:format_and_join => ["Rhosync.environment after bootstrap: #{Rhosync.environment}, CONFIG: ",CONFIG])

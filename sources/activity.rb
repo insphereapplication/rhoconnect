@@ -104,7 +104,7 @@ class Activity < SourceAdapter
         :attributes => mapped_hash.to_json}
         ).body
       InsiteLogger.info "ACTIVITY PROXY UPDATE IN : #{Time.now - start} Seconds"
-      UpdateUtil.push_objects(@source, update_hash)
+      UpdateUtil.push_update(@source, update_hash)
       
       InsiteLogger.info result
     end

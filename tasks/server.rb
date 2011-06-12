@@ -125,15 +125,15 @@ namespace :server do
   desc "Reset the user's sync flag to force a full query on the next login"
   task :reset_sync_status, [:user_pattern] => [:set_token] do |t, args|
     abort "User pattern must be specified" unless args[:user_pattern]
-    res = RestClient.post(
+    res = JSON.parse(RestClient.post(
       "#{$server}api/reset_sync_status", 
       { 
         :api_token => @token, 
         :user_pattern => args[:user_pattern]
       }.to_json, 
       :content_type => :json
-    ).body
-    ap res
+    ).body)
+    ap res.sort
   end
   
   task :get_sync_status, [:user_pattern] => [:set_token] do |t, args|
@@ -147,7 +147,7 @@ namespace :server do
       }.to_json, 
       :content_type => :json
     ).body)
-    ap res
+    ap res.sort
   end
   
   task :get_log => [:set_token] do
@@ -284,23 +284,48 @@ namespace :server do
     JSON.parse(res)
   end
   
+  def get_clients(user_id)
+    res = RestClient.post("#{$server}api/list_clients", 
+      { 
+        :api_token => @token, 
+        :user_id => user_id 
+      }.to_json, 
+     :content_type => :json
+    ).body
+    JSON.parse(res)
+  end
+  
+  def get_client_params(client_id)
+    res = RestClient.post(
+      "#{$server}api/get_client_params", 
+      { 
+        :api_token => @token, 
+        :client_id => client_id 
+      }.to_json, 
+      :content_type => :json
+    ).body
+    JSON.parse(res)
+  end
+  
   desc "check data integrity for all users matching regex pattern <user_pattern> (i.e. use 'check_integrity[.]' to check all users)"
   task :check_integrity, [:user_pattern] => [:set_token] do |t, args|
+    abort "!!! User regex pattern must be specified (i.e. 'rake server:check_integrity[\"a[0-9]\"]' to check integrity for all users that match the agent code pattern)" unless args[:user_pattern]
     #get all users from RhoSync, filter based on pattern given
     filtered_users = get_users.reject{|user| user[Regexp.new(args.user_pattern)].nil?}
     
-    filtered_users.each{|user|
+    integrity_check_results = filtered_users.reduce([]){|sum,user|
       opps = get_md(user, 'Opportunity')
       contacts = get_md(user, 'Contact')
       
-      ap "Checking data integrity for user #{user}"
-      ap "Opportunities: #{opps.count}, contacts: #{contacts.count}"
+      opp_contact_relational_check_failed = false
+      contact_field_check_failed = false
     
       opps.each{|k,v|
         contact_id = v['contact_id']
-        puts "Opp #{k} has nil contact id" unless contact_id
+        opp_contact_relational_check_failed = true unless contact_id
         parent_contact = contacts[contact_id]
-        puts "Contact doesn't exist for opp #{k}" unless parent_contact
+        opp_contact_relational_check_failed = true unless parent_contact
+        break if opp_contact_relational_check_failed
       }
     
       contact_required_fields = ['firstname','lastname']
@@ -308,9 +333,114 @@ namespace :server do
     
       contacts.each{|k,v|    
         missing_required_fields = contact_required_fields.reject{|crf| v.include?(crf)}
-        puts "Contact #{k} is missing fields #{missing_required_fields.join(', ')}" unless missing_required_fields.count == 0
+        contact_field_check_failed = true unless missing_required_fields.count == 0
+        break if contact_field_check_failed
+      }
+      
+      failures = []
+      failures << "Opportunity->contact relational check" if opp_contact_relational_check_failed
+      failures << "Contact required field check" if contact_field_check_failed
+      
+      sum << {:user => user, :failures => failures, :opp_count => opps.count, :contact_count => contacts.count }
+    }
+    
+    integrity_check_results.sort!{|x,y|
+      failure_count_comp = y[:failures].count <=> x[:failures].count
+      user_comp = x[:user] <=> y[:user]
+      
+      failure_count_comp == 0 ? user_comp : failure_count_comp
+    }
+    
+    integrity_check_results.each{|result|
+      has_failures = result[:failures].count > 0
+      prepend = has_failures ? ' !!!  ' : '      '
+      print "#{prepend}Integrity check #{has_failures ? 'failed' : 'passed'} for user #{result[:user]}; "
+      puts " checked #{result[:opp_count]} opportunities and #{result[:contact_count]} contacts."
+      puts "\tFailed checks: #{result[:failures].awesome_inspect(:multiline => false)}" if has_failures
+    }
+    
+  end
+  
+  def get_client_param_value(client_params_hash, param_name)
+    client_params_hash.each{|value|
+      return value['value'] if value['name'] == param_name
+    } if client_params_hash
+    
+    nil
+  end
+  
+  def client_has_pin?(client_params_hash)
+    client_params_hash.each{|value|
+      return true if (value['name'] == 'device_pin') && value['value'] && (value['value'].length > 0)
+    }
+    
+    false
+  end
+  
+  desc "shows all users matching regex pattern <user_pattern> that do not have a push pin for at least one of their devices"
+  task :check_push_pins, [:user_pattern] => [:set_token] do |t, args|
+    abort "!!! User regex pattern must be specified (i.e. 'server:check_push_pins[\"a[0-9]\"]' to check the push pins for all users that match the agent code pattern)" unless args[:user_pattern]
+    #get all users from RhoSync, filter based on pattern given
+    filtered_users = get_users.reject{|user| user[Regexp.new(args.user_pattern)].nil?}
+    
+    # get clients & params for users
+    user_client_params = filtered_users.reduce({}){|sum,user_id|
+      user_clients = get_clients(user_id)
+      sum[user_id] = user_clients.reduce({}){|sum2,client_id| 
+        sum2[client_id] = get_client_params(client_id)
+        sum2
+      }
+      sum
+    }
+    
+    user_pin_params = user_client_params.reduce([]){|sum,(user,clients)| 
+      pinless_clients = clients.reject{|client_id,client_params| client_has_pin?(client_params)}
+      sum << {:user_id => user, :clients => clients, :pinless_clients => pinless_clients}
+      sum
+    }
+    
+    user_pin_params.sort!{|x,y|
+      count_comp = y[:pinless_clients].count <=> x[:pinless_clients].count
+      user_id_comp = x[:user_id] <=> y[:user_id]
+      
+      count_comp == 0 ? user_id_comp : count_comp
+    }
+    
+    user_pin_params.each{|val| 
+      prepend = val[:pinless_clients].count > 0 ? ' !!!  ' : '      '
+      puts "#{prepend}#{val[:pinless_clients].count} of #{val[:clients].count} clients for user #{val[:user_id]} have no push pins: #{val[:pinless_clients].keys.awesome_inspect(:multiline => false)}"
+    }
+  end
+  
+  desc "shows platform breakdowns for devices associated with users matching the given pattern <user_pattern> (i.e. 'rake server:gather_device_stats[\"a[0-9]\"]' to show device stats for agents only)"
+  task :gather_device_stats, [:user_pattern] => [:set_token] do |t, args|
+    abort "!!! User regex pattern must be specified (i.e. 'server:check_device_pins[\"a[0-9]\"]' to gather device stats for all users that match the agent code pattern)" unless args[:user_pattern]
+    #get all users from RhoSync, filter based on pattern given
+    filtered_users = get_users.reject{|user| user[Regexp.new(args.user_pattern)].nil?}
+    
+    # get clients & params for users
+    user_client_params = filtered_users.reduce({}){|sum,user_id|
+      user_clients = get_clients(user_id)
+      sum[user_id] = user_clients.reduce({}){|sum2,client_id| 
+        sum2[client_id] = get_client_params(client_id)
+        sum2
+      }
+      sum
+    }
+    
+    platform_counts = {}
+    
+    user_client_params.values.each{|clients|
+      clients.values.each{|client_params|        
+        device_type = get_client_param_value(client_params, 'device_type')
+        platform_counts[device_type] ||= 0
+        platform_counts[device_type] += 1
       }
     }
+    
+    puts "\nTotal device count: #{platform_counts.values.reduce(0){|sum,value| sum += value}}"
+    puts "Platform breakdown:"
+    ap(platform_counts,:plain => true)
   end
   
   namespace :opportunity do

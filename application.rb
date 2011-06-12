@@ -41,6 +41,12 @@ end
 
 Application.initializer(ROOT_PATH)
 if CONFIG[:redis_boot]
+  if defined?(Store.db.client)
+    InsiteLogger.info "Store.db.client is defined, connected?=#{Store.db.client.connected?}. Disconnecting."
+    Store.db.client.disconnect
+  else
+    InsiteLogger.info "Store.db.client isn't defined"
+  end
   Store.db = Redis.new(:thread_safe => true, :host => CONFIG[:redis_url], :port => CONFIG[:redis_port], :timeout => CONFIG[:redis_timeout])
 end
 

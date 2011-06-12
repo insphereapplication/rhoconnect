@@ -105,7 +105,7 @@ class Opportunity < SourceAdapter
         InsiteLogger.info "OPPORTUNITY PROXY UPDATE IN : #{Time.now - start} Seconds"
       
         #persist the updated data in redis
-        UpdateUtil.push_objects(@source, update_hash)
+        UpdateUtil.push_update(@source, update_hash)
         
         ExceptionUtil.context(:result => result)
         InsiteLogger.info result
