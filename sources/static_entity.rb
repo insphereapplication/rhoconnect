@@ -44,25 +44,40 @@ class StaticEntity < SourceAdapter
       lob_res.each do |lob|
         lobs << lob << "||"
       end               
+
+      ap "LOB Entity options: #{lobs}"                               
+
+      rawlead_lob_res = JSON.parse(RestClient.post("#{@staticentity_url}/getattributeoptions",
+                                                          {:username => @username,
+                                                           :password => @password,
+                                                           :entityname => "cssi_rawlead",
+                                                           :attributename => "cssi_lineofbusiness"},
+                                                           :content_type => :json))
+                                                    
+      rawlead_lobs = ""
+      rawlead_lob_res.each do |lob|
+        rawlead_lobs << lob << "||"
+      end
       
-      ap "LOBs: #{lobs}"                               
-      
+      ap "Raw Lead LOB picklist options: #{rawlead_lobs}"                               
+
       lead_source_res = JSON.parse(RestClient.post(@staticentity_url, {:username => @username,
                                                                        :password => @password,
                                                                        :entityname => "cssi_leadsource"},
                                                                        :content_type => :json))
-                                                            
+                                                                       
       lead_sources = ""
       lead_source_res.each do |lead_source|
         lead_sources << lead_source << "||"
       end             
-      
+            
       ap "Lead sources: #{lead_sources}"                 
       
       ExceptionUtil.context(:result => @result)          
       
       @result = { "carriers" => {"names" => carriers},
                   "line_of_business" => {"names" => lobs},
+                  "rawlead_lineofbusiness" => {"names" => rawlead_lobs},
                   "lead_source" => {"names" => lead_sources}
                 }
       
