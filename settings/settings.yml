@@ -49,7 +49,7 @@ local_crm_proxy: http://192.168.51.128/ # Change this if you're running locally 
   :app_info:
     :min_required_version: 2.0.2 # This MUST be 3 groups of numbers, in the form x.x.x, or there is a risk of tossing an exception when checking for an upgrade
     :apple_force_upgrade_url: 'itms-services://?action=download-manifest&amp;url=http://m.insphereis.net/InSiteMobile/Documents/InSite_Mobile.plist'
-    :android_force_upgrade_url: 'http://dl.dropbox.com/u/21320552/InSite_signed.apk'
+    :android_force_upgrade_url: 'market://details?id=com.insphere.insite'
   :redis_lock_timeout: 60
     
 # The following sections inherit from the global section and will override any values duplicated from global (:ssl:, etc.)
