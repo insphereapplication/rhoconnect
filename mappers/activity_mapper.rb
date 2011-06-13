@@ -4,15 +4,16 @@ class ActivityMapper < Mapper
     activity_array.map! do |value| 
       parentprops = value['regardingobjectid'] 
       unless parentprops.nil?
-        value.reject!{|k,v| k == 'regardingobjectid'}
+        #value.reject!{|k,v| k == 'regardingobjectid'}
+        value.reject!{|k,v|  ['regardingobjectid', 'torecipients', 'actualstart', 'prioritycode', 'sender', 'actualend', ].include?(k) }
         value.merge!({'parent_id' => parentprops['id'], 'parent_type' => Mapper.convert_type_name(parentprops['type'])}) unless parentprops.blank?
       end
       
-      email_to_value = value['to']
-      unless email_to_value.nil?
-        value.delete('to')
-        value['email_to'] = email_to_value
-      end
+      # email_to_value = value['to']
+      # unless email_to_value.nil?
+      #   value.delete('to')
+      #   value['email_to'] = email_to_value
+      # end
       
       # email_from_value = value['from']
       # unless email_from_value.nil?
@@ -29,7 +30,7 @@ class ActivityMapper < Mapper
       
       #always filter out attributes that are only set in RhoSync (avoids problems with fixed schema)
       #these fields are not modified from rhodes and should only be injected in map_data_from_client as needed
-      value.reject!{|k,v|  ['cssi_skipdispositionworkflow','organizer','from','cssi_fromrhosync'].include?(k) }
+      value.reject!{|k,v|  ['cssi_skipdispositionworkflow','organizer','from','cssi_fromrhosync', 'ownerid', 'to', 'bcc', 'cc', 'from'].include?(k) }
       value
     end
     activity_array.reduce({}){|sum, value| sum[value["activityid"]] = value if value; sum }
@@ -51,11 +52,11 @@ class ActivityMapper < Mapper
       data.reject!{|k,v| ['parent_id', 'parent_type'].include?(k)}
     end
     
-    email_to_value = data['email_to']
-    unless email_to_value.nil?
-      data.delete('email_to')
-      data['to'] = email_to_value
-    end
+    # email_to_value = data['email_to']
+    # unless email_to_value.nil?
+    #   data.delete('email_to')
+    #   data['to'] = email_to_value
+    # end
     
     # email_from_value = data['email_from']
     # unless email_from_value.nil?

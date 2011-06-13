@@ -15,7 +15,7 @@ class OpportunityMapper < Mapper
       
       # for 2.0 Iteration 1 only!
       # Greg Norz - 2011-06-13 - Leaving this commented in here for now in case we need it for iteration 2. It listed as a merge conflict.
-      # value.reject!{|k,v|  ['opportunityratingcode', 'actualclosedate'].include?(k) }
+      value.reject!{|k,v|  ['opportunityratingcode', 'actualclosedate'].include?(k) }
 
       value
     end
