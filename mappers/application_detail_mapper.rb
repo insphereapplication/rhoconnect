@@ -32,7 +32,7 @@ class ApplicationDetailMapper < Mapper
         value.reject!{|k,v|  ['ownerid', 'temp_id'].include?(k) }
         value
       end
-      app_detail_mapper.reduce({}){|sum, value| sum[value["applicationid"]] = value if value; sum }
+      app_detail_mapper.reduce({}){|sum, value| sum[value["cssi_applicationid"]] = value if value; sum }
     end
 
 
