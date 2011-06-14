@@ -11,7 +11,7 @@ class ApplicationDetail < SourceAdapter
       encryptedPassword = Store.get_value("username:#{current_user.login.downcase}:password")
       @password = Crypto.decrypt( encryptedPassword )
       
-      @initialized_key = "username:#{current_user.login.downcase}:activity:initialized"
+      @initialized_key = "username:#{current_user.login.downcase}:application_detail:initialized"
       @user_id_key = "username:#{current_user.login.downcase}:crm_user_id"
     end
   end
