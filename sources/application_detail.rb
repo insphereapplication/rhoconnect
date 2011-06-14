@@ -69,6 +69,9 @@ class ApplicationDetail < SourceAdapter
       InsiteLogger.info "UPDATE APPLICATION DETAIL"
       ExceptionUtil.context(:current_user => current_user.login )
       
+      # mark this update so the plugin won't unnecessarily push it back
+      update_hash['cssi_fromrhosync'] = 'true'
+      
       mapped_hash = ApplicationDetailMapper.map_data_from_client(update_hash.clone)
       
       result = RestClient.post("#{@application_detail_url}/update", 
