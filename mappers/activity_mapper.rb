@@ -5,21 +5,21 @@ class ActivityMapper < Mapper
       parentprops = value['regardingobjectid'] 
       unless parentprops.nil?
         #value.reject!{|k,v| k == 'regardingobjectid'}
-        value.reject!{|k,v|  ['regardingobjectid', 'torecipients', 'actualstart', 'prioritycode', 'sender', 'actualend', ].include?(k) }
+        value.reject!{|k,v|  ['regardingobjectid'].include?(k) }
         value.merge!({'parent_id' => parentprops['id'], 'parent_type' => Mapper.convert_type_name(parentprops['type'])}) unless parentprops.blank?
       end
       
-      # email_to_value = value['to']
-      # unless email_to_value.nil?
-      #   value.delete('to')
-      #   value['email_to'] = email_to_value
-      # end
+      email_to_value = value['to']
+      unless email_to_value.nil?
+        value.delete('to')
+        value['email_to'] = email_to_value
+      end
       
-      # email_from_value = value['from']
-      # unless email_from_value.nil?
-      #   value.delete('from')
-      #   value['email_from'] = email_from_value
-      # end
+      email_from_value = value['from']
+      unless email_from_value.nil?
+        value.delete('from')
+        value['email_from'] = email_from_value
+      end
       
       recipient_field_name = ActivityMapper.get_recipient_field_name(value['type'])
       recipient_value = value[recipient_field_name]
@@ -52,17 +52,17 @@ class ActivityMapper < Mapper
       data.reject!{|k,v| ['parent_id', 'parent_type'].include?(k)}
     end
     
-    # email_to_value = data['email_to']
-    # unless email_to_value.nil?
-    #   data.delete('email_to')
-    #   data['to'] = email_to_value
-    # end
+    email_to_value = data['email_to']
+    unless email_to_value.nil?
+      data.delete('email_to')
+      data['to'] = email_to_value
+    end
     
-    # email_from_value = data['email_from']
-    # unless email_from_value.nil?
-    #   data.delete('email_from')
-    #   data['from'] = email_from_value
-    # end
+    email_from_value = data['email_from']
+    unless email_from_value.nil?
+      data.delete('email_from')
+      data['from'] = email_from_value
+    end
     
     data.merge!({
       'cssi_skipdispositionworkflow' => 'true'
