@@ -10,7 +10,7 @@ class Mapper
   
   def self.load(source_name)
     begin 
-      Object.const_get("#{source_name.capitalize}Mapper").new
+      Object.const_get("#{source_name}Mapper").new
     rescue
       return Mapper.new(source_name)
     end
