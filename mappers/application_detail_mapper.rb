@@ -2,7 +2,33 @@
 class ApplicationDetailMapper < Mapper
 
   def self.map_data_from_client(data)
-    data.reject!{|k,v| ['temp_id'].include?(k)}
+    
+    if data['lineofbusiness_id'] || data['lineofbusiness_name']
+      data.merge!({
+        "cssi_lineofbusinessid" => {
+          "id" => data['lineofbusiness_id'], 
+          "type"=>"cssi_lineofbusiness"
+        }
+      })
+    end
+
+    if data['carrier_id'] || data['carrier_name']
+      data.merge!({
+        "cssi_carrierid" => {
+          "id" => data['carrier_id'], 
+          "type"=>"cssi_carrier"
+        }
+      })
+    end
+
+    data.merge!({
+      "cssi_opportunityid" => {
+        "id" => data['opportunity_id'], 
+        "type"=>"opportunity"
+      }
+    })
+    
+    data.reject!{|k,v| ['opportunity_id','carrier_id','carrier_name','lineofbusiness_id','lineofbusiness_name','temp_id'].include?(k)}
     data  
   end
   
