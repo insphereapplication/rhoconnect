@@ -20,7 +20,7 @@ class ApplicationDetailMapper < Mapper
   def map_from_source_hash(app_detail_mapper)
     app_detail_mapper.map! do |value|    
       opportunity_id = value['cssi_opportunityid']
-      unless carrier_id.nil?
+      if opportunity_id
         value.reject!{|k,v| k == 'cssi_opportunityid'}
         value.merge!({'opportunity_id' => opportunity_id['id']}) unless opportunity_id.blank?
       end    
