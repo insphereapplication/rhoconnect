@@ -11,7 +11,7 @@ class UpdateUtil
       InsiteLogger.info(:format_and_join => ["*"*10 + "Committing to redis for user #{source.user_id}: ", objects])
     
       source_sync = SourceSync.new(source)
-      source_sync.push_objects(objects, CONFIG[:redis_lock_timeout], true)
+      source_sync.push_objects(objects)
     rescue StoreLockException
       # reset sync status for user
       user_key_pattern = "username:#{source.user_id}:[^:]*:initialized"
