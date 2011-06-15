@@ -75,10 +75,11 @@ class StaticEntity < SourceAdapter
       
       ExceptionUtil.context(:result => @result)          
       
-      @result = { "carriers" => {"names" => carriers},
-                  "line_of_business" => {"names" => lobs},
-                  "rawlead_lineofbusiness" => {"names" => rawlead_lobs},
-                  "lead_source" => {"names" => lead_sources}
+      @result = {
+                  "1" => {"names" => carriers, "type" => "carriers"},
+                  "2" => {"names" => lobs, "type" => "line_of_business"},
+                  "3" => {"names" => rawlead_lobs, "type" => "rawlead_lineofbusiness"},
+                  "4" => {"names" => lead_sources, "type" => "lead_source"}
                 }
       
       ap "@result = #{@result.inspect}"
