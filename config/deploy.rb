@@ -149,7 +149,7 @@ namespace :util do
 
     This can also be used to grep other files on each app server: provide the grep_path option (i.e. to grep apache error logs run: 'cap util:grep_logs -s pattern=<pattern> -s grep_path="/var/log/httpd/error_log"')
   }
-  task :grep_logs do
+  task :grep_logs, :roles => :app do
     abort "Please provide the \"pattern\" option when calling grep_logs (i.e. cap util:grep_logs -s pattern=<grep_pattern>)" unless exists?(:pattern)
     path_to_grep = exists?(:grep_path) ? grep_path : "#{shared_path}/log/insite_mobile.log"
     results = run_and_gather_responses("grep \"#{pattern}\" \"#{path_to_grep}\"; true") #'true' is needed at the end so that capsitrano won't report an empty grep result as a failure
@@ -158,6 +158,39 @@ namespace :util do
       puts "\n\n#{marker} Response from #{host}: #{marker}\n\n"
       puts response
     }
+  end
+  
+  task :download_logs, :roles => :app do
+    time_now_formatted = Time.now.strftime("%Y%m%d%H%M%S")
+    log_file_path = "#{shared_path}/log"
+    dump_file_name = "#{time_now_formatted}_log_dump.tgz"
+    
+    #tar logs on each server
+    run("cd #{log_file_path}; tar -cvjf #{dump_file_name} *.log*")
+    
+    #download logs from each server
+    base_log_dump_path = "log_dumps"
+    Dir.mkdir(base_log_dump_path) unless File.exists?(base_log_dump_path + "/")
+    timestamped_dump_path = "#{base_log_dump_path}/#{time_now_formatted}"
+    Dir.mkdir(timestamped_dump_path) unless File.exists?(timestamped_dump_path + "/")
+    download("#{log_file_path}/#{dump_file_name}", "#{timestamped_dump_path}/$CAPISTRANO:HOST$.tgz")
+    
+    #clean up temp tar from each server
+    run("rm #{log_file_path}/#{dump_file_name}")
+    
+    #untar locally & gunzip archived logs to make them greppable
+    Dir.foreach(timestamped_dump_path) do |item|
+      next if item == '.' or item == '..'
+      
+      server_name = item.gsub(/\.tgz/,'')
+      tar_path = "#{timestamped_dump_path}/#{item}"
+      untar_dir = "#{timestamped_dump_path}/#{server_name}"
+      Dir.mkdir(untar_dir)
+      `mv #{tar_path} #{untar_dir}/`
+      `cd #{untar_dir}; tar -xvjf #{item}; rm #{item}; gunzip *.gz`
+    end
+    
+    puts "Downloaded log files to #{timestamped_dump_path}"
   end
   
   desc "Shows results of calling passenger-status as sudo on all app servers"
