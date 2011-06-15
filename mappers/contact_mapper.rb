@@ -10,7 +10,7 @@ class ContactMapper < Mapper
     contact_array.reduce({}){|sum, value| sum[value["contactid"]] = value if value; sum }
   end
   
-  def self.map_data_from_client(data)
+  def map_data_from_client(data, mapper_context={})
     data.reject!{|k,v| ['temp_id'].include?(k)}
     data
   end

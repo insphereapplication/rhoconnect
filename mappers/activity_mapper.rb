@@ -21,7 +21,7 @@ class ActivityMapper < Mapper
         value['email_from'] = email_from_value
       end
       
-      recipient_field_name = ActivityMapper.get_recipient_field_name(value['type'])
+      recipient_field_name = get_recipient_field_name(value['type'])
       recipient_value = value[recipient_field_name]
       unless recipient_value.nil?
         value.merge!({'parent_contact_id' => recipient_value[0]['id']}) unless recipient_value.blank?
@@ -38,10 +38,10 @@ class ActivityMapper < Mapper
   
   REJECT_FIELDS = ['createdon']
   
-  def self.map_data_from_client(data)
+  def map_data_from_client(data, mapper_context={})
     #reject fields that shouldn't be sent to the proxy. these are read-only from CRM and should not be ever be included in a create/update message
     data.reject!{|key, value| REJECT_FIELDS.include?(key.to_s)}
-    
+        
     if data['parent_type'] || data['parent_id']
       data.merge!({
         'regardingobjectid' => {
@@ -78,11 +78,22 @@ class ActivityMapper < Mapper
       data.reject!{|k,v| k == 'parent_contact_id'}
     end
     
+    # If mapper context is given, add organizer/from attribute for appointment/phonecall create, respectively
+    if mapper_context[:user_id]
+      if data['type'].downcase == 'appointment'
+        data['organizer'] = [{:type => 'systemuser', :id => mapper_context[:user_id]}]
+      elsif data['type'].downcase == 'phonecall'
+        data['from'] = [{:type => 'systemuser', :id => mapper_context[:user_id]}]
+      end
+    end
+    
+    data['cssi_fromrhosync'] = 'true'
+    
     data.reject!{|k,v| ['temp_id'].include?(k)}
     data
   end
   
-  def self.get_recipient_field_name(type)
+  def get_recipient_field_name(type)
     (type.downcase == 'phonecall') ? 'to' : 'requiredattendees' unless type.blank?
   end
 end

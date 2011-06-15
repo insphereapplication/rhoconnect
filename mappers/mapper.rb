@@ -4,8 +4,9 @@ class Mapper
     mapper.map_source_data(data)
   end
   
-  def initialize(source_name=nil)
-    @source_name = source_name
+  def self.map_data_from_client(data, source_name)
+    mapper = load(source_name)
+    mapper.map_data_from_client(data)
   end
   
   def self.load(source_name)
@@ -20,6 +21,10 @@ class Mapper
     type.downcase == 'phonecall' ? 'PhoneCall' : type.capitalize
   end
   
+  def initialize(source_name=nil)
+    @source_name = source_name
+  end
+  
   def map_source_data(data)
     data_hash = data.kind_of?(Array) ? data : JSON.parse(data)
     map_from_source_hash(data_hash)
@@ -27,6 +32,10 @@ class Mapper
   
   def map_from_source_hash(data_hash)
     data_hash.reduce({}){|sum, value| sum[value["#{@source_name.downcase}id"]] = value; sum }
+  end
+  
+  def map_data_from_client(data, mapper_context={})
+    data
   end
   
 end

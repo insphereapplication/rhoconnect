@@ -1,7 +1,14 @@
 class Dependent < SourceAdapter
+
+  # proxy util mixin
+  include ProxyUtil
+  
   def initialize(source,credential)
     ExceptionUtil.rescue_and_reraise do
       @dependent_url = "#{CONFIG[:crm_path]}dependents"
+      @proxy_update_url = "#{@dependent_url}/update"
+      @proxy_create_url = "#{@dependent_url}/create"
+      @proxy_delete_url = "#{@dependent_url}/delete"
       super(source,credential)
     end
   end
@@ -46,18 +53,9 @@ class Dependent < SourceAdapter
   def create(create_hash,blob=nil)
     ExceptionUtil.rescue_and_reraise do
       InsiteLogger.info "CREATE DEPENDENT"
-      ExceptionUtil.context(:current_user => current_user.login)
+      ExceptionUtil.context(:current_user => current_user.login, :create_hash => create_hash)
       
-      mapped_hash = DependentMapper.map_data_from_client(create_hash.clone)
-      
-      ap "mappped_hash = #{mapped_hash.inspect}"
-      ap "JSON = #{mapped_hash.to_json}"
-      
-      result = RestClient.post("#{@dependent_url}/create",
-          {:username => @username,
-           :password => @password,
-           :attributes => mapped_hash.to_json}
-      ).body
+      result = proxy_create(create_hash)
       
       InsiteLogger.info result
       result
@@ -67,17 +65,9 @@ class Dependent < SourceAdapter
   def update(update_hash)
     ExceptionUtil.rescue_and_reraise do
       InsiteLogger.info "UPDATE DEPENDENT"
-      ExceptionUtil.context(:current_user => current_user.login )
-      
-      mapped_hash = DependentMapper.map_data_from_client(update_hash.clone)
-      
-      result = RestClient.post("#{@dependent_url}/update", 
-          {:username => @username, 
-          :password => @password,
-          :attributes => mapped_hash.to_json}
-      ).body
-      
-      UpdateUtil.push_update(@source, update_hash)
+      ExceptionUtil.context(:current_user => current_user.login, :update_hash => update_hash )
+            
+      result = proxy_update(update_hash)
       
       InsiteLogger.info result
       ExceptionUtil.context(:result => result )
@@ -88,15 +78,11 @@ class Dependent < SourceAdapter
   def delete(delete_hash)
     ExceptionUtil.rescue_and_reraise do
       InsiteLogger.info "DELETE DEPENDENT"
-      ExceptionUtil.context(:current_user => current_user.login)
+      ExceptionUtil.context(:current_user => current_user.login, :delete_hash => delete_hash)
       
       mapped_hash = { 'cssi_dependentsid' => delete_hash['cssi_dependentsid'] };
       
-      result = RestClient.post("#{@dependent_url}/delete",
-          {:username => @username,
-           :password => @password,
-           :attributes => mapped_hash.to_json}
-      ).body
+      result = proxy_delete(mapped_hash)
       
       InsiteLogger.info result
       ExceptionUtil.context(:result => result)

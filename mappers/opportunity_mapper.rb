@@ -1,8 +1,9 @@
 
 class OpportunityMapper < Mapper
 
-  def self.map_data_from_client(data)
+  def map_data_from_client(data, mapper_context={})
     data.reject!{|k,v| ['temp_id'].include?(k)}
+    data['cssi_fromrhosync'] = 'true'
     data  
   end
   

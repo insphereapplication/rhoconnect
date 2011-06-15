@@ -12,7 +12,7 @@ class NoteMapper < Mapper
     notes_array.reduce({}) { |sum, note| sum[note["annotationid"]] = note if note; sum }
   end 
   
-  def self.map_data_from_client(data)
+  def map_data_from_client(data, mapper_context={})
     data.merge!({
       'objecttypecode' => data['parent_type'].downcase,
       'objectid' => {

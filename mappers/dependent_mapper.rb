@@ -16,7 +16,7 @@ class DependentMapper < Mapper
     dependent_array.reduce({}){|sum, value| sum[value["cssi_dependentsid"]] = value if value; sum }
   end
   
-  def self.map_data_from_client(data)
+  def map_data_from_client(data, mapper_context={})
     data.merge!({
       "cssi_contactdependentsid" => {
         "id" => data['contact_id'], 

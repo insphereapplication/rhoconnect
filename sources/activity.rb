@@ -1,6 +1,12 @@
 class Activity < SourceAdapter
+
+  # proxy util mixin
+  include ProxyUtil
+  
   def initialize(source,credential)
     @activity_url = "#{CONFIG[:crm_path]}activity"
+    @proxy_update_url = "#{@activity_url}/update"
+    @proxy_create_url = "#{@activity_url}/create"
     super(source,credential)
   end
  
@@ -51,30 +57,14 @@ class Activity < SourceAdapter
   def create(create_hash,blob=nil)
     ExceptionUtil.rescue_and_reraise do
       InsiteLogger.info "CREATE ACTIVITY"
-      InsiteLogger.info create_hash
-      
-      #calling clone on the following line is EXTREMELY important - create_hash is passed by reference and is what is going to be committed to the DB
-      mapped_hash = ActivityMapper.map_data_from_client(create_hash.clone)
     
-      ExceptionUtil.context(:current_user => current_user.login, :mapped_activity_hash => mapped_hash )
+      ExceptionUtil.context(:current_user => current_user.login, :create_hash => create_hash )
       
-      # TODO: why isn't this rule in the mapper?
-      if mapped_hash['type'].downcase == 'appointment'
-        mapped_hash['organizer'] = [{:type => 'systemuser', :id => Store.get_value(@user_id_key)}]
-      else #phone call
-        mapped_hash['from'] = [{:type => 'systemuser', :id => Store.get_value(@user_id_key)}]
-      end
-    
-      mapped_hash['cssi_fromrhosync'] = 'true'
-      ExceptionUtil.context(:current_user => current_user.login, :mapped_activity_hash => mapped_hash )
+      # Get data needed by mapper
+      @mapper_context = {:user_id => Store.get_value(@user_id_key)}
       
-      InsiteLogger.info mapped_hash
       start_proxy = Time.now
-      result = RestClient.post("#{@activity_url}/create", 
-          {:username => @username, 
-          :password => @password,
-          :attributes => mapped_hash.to_json}
-        ).body
+      result = proxy_create(create_hash)
       InsiteLogger.info "ACTIVITY PROXY CREATE IN : #{Time.now - start_proxy} Seconds"
       InsiteLogger.info "Activity Create Result: #{result}"
       result
@@ -84,27 +74,19 @@ class Activity < SourceAdapter
   def update(update_hash)
     ExceptionUtil.rescue_and_reraise do
       InsiteLogger.info "UPDATE ACTIVITY"
-      InsiteLogger.info update_hash
+      
+      # Fetch the activity's type from redis so that the proxy will know which type it's interacting with
+      # This has to be done because the differential update sent to the proxy will only include the activity type if it has changed, which should never be the case
       activity = RedisUtil.get_model('Activity', current_user.login, update_hash['id'])
-      InsiteLogger.info activity
-    
-      #calling clone on the following line is EXTREMELY important - update_hash is passed by reference and is what is going to be committed to the DB
-      mapped_hash = ActivityMapper.map_data_from_client(update_hash.clone)
-    
-      mapped_hash['type'] = activity['type']
-      mapped_hash['cssi_fromrhosync'] = 'true'
-    
-      InsiteLogger.info mapped_hash
-      ExceptionUtil.context(:current_user => current_user.login, :mapped_activity_hash => mapped_hash )
+      update_hash['type'] = activity['type']
+      
+      ExceptionUtil.context(:current_user => current_user.login, :update_hash => update_hash )
+      
+      @mapper_context = {}
       
       start = Time.now
-      result = RestClient.post("#{@activity_url}/update", 
-        {:username => @username, 
-        :password => @password,
-        :attributes => mapped_hash.to_json}
-        ).body
+      result = proxy_update(update_hash)
       InsiteLogger.info "ACTIVITY PROXY UPDATE IN : #{Time.now - start} Seconds"
-      UpdateUtil.push_update(@source, update_hash)
       
       InsiteLogger.info result
     end

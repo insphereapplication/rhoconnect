@@ -1,8 +1,13 @@
 class Contact < SourceAdapter
+
+  # proxy util mixin
+  include ProxyUtil
   
   def initialize(source,credential)
     ExceptionUtil.rescue_and_reraise do
       @contact_url = "#{CONFIG[:crm_path]}contact"
+      @proxy_update_url = "#{@contact_url}/update"
+      @proxy_create_url = "#{@contact_url}/create"
       super(source,credential)
     end
   end
@@ -50,15 +55,9 @@ class Contact < SourceAdapter
   def create(create_hash,blob=nil)
     ExceptionUtil.rescue_and_reraise do
       InsiteLogger.info "CREATE CONTACT"
-      ExceptionUtil.context(:current_user => current_user.login)
+      ExceptionUtil.context(:current_user => current_user.login, :create_hash => create_hash)
       
-      mapped_hash = ContactMapper.map_data_from_client(create_hash.clone)
-      
-      result = RestClient.post("#{@contact_url}/create",
-          {:username => @username,
-           :password => @password,
-           :attributes => mapped_hash.to_json}
-      ).body
+      result = proxy_create(create_hash)
       
       InsiteLogger.info result
       result
@@ -68,20 +67,11 @@ class Contact < SourceAdapter
   def update(update_hash)
     ExceptionUtil.rescue_and_reraise do
       InsiteLogger.info "UPDATE CONTACT"
-      ExceptionUtil.context(:current_user => current_user.login )
+      ExceptionUtil.context(:current_user => current_user.login, :update_hash => update_hash )
       
-      mapped_hash = ContactMapper.map_data_from_client(update_hash.clone)
-      
-      result = RestClient.post("#{@contact_url}/update", 
-          {:username => @username, 
-          :password => @password,
-          :attributes => mapped_hash.to_json}
-      ).body
-      
-      UpdateUtil.push_update(@source, update_hash)
+      result = proxy_update(update_hash)
       
       InsiteLogger.info result
-      ExceptionUtil.context(:result => result )
       result
     end
   end

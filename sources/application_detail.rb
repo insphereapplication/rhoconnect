@@ -1,6 +1,13 @@
 class ApplicationDetail < SourceAdapter
+
+  # proxy util mixin
+  include ProxyUtil
+  
   def initialize(source,credential)
     @application_detail_url = "#{CONFIG[:crm_path]}application"
+    @proxy_create_url = "#{@application_detail_url}/create"
+    @proxy_update_url = "#{@application_detail_url}/update"
+    @proxy_delete_url = "#{@application_detail_url}/delete"
     super(source,credential)
   end
  
@@ -46,18 +53,9 @@ class ApplicationDetail < SourceAdapter
   def create(create_hash,blob=nil)
     ExceptionUtil.rescue_and_reraise do
       InsiteLogger.info "CREATE APPLICATION DETAIL"
-      ExceptionUtil.context(:current_user => current_user.login)
+      ExceptionUtil.context(:current_user => current_user.login, :create_hash => create_hash)
       
-      mapped_hash = ApplicationDetailMapper.map_create_data_from_client(create_hash.clone)
-      
-      ap "mappped_hash = #{mapped_hash.inspect}"
-      ap "JSON = #{mapped_hash.to_json}"
-      
-      result = RestClient.post("#{@application_detail_url}/create",
-          {:username => @username,
-           :password => @password,
-           :attributes => mapped_hash.to_json}
-      ).body
+      result = proxy_create(create_hash)
       
       InsiteLogger.info result
       result
@@ -67,23 +65,12 @@ class ApplicationDetail < SourceAdapter
   def update(update_hash)
     ExceptionUtil.rescue_and_reraise do
       InsiteLogger.info "UPDATE APPLICATION DETAIL"
-      ExceptionUtil.context(:current_user => current_user.login )
-      
-      # mark this update so the plugin won't unnecessarily push it back
-      update_hash['cssi_fromrhosync'] = 'true'
-      
-      mapped_hash = ApplicationDetailMapper.map_update_data_from_client(update_hash.clone)
-      
-      result = RestClient.post("#{@application_detail_url}/update", 
-          {:username => @username, 
-          :password => @password,
-          :attributes => mapped_hash.to_json}
-      ).body
-      
-      UpdateUtil.push_update(@source, update_hash)
+
+      ExceptionUtil.context(:current_user => current_user.login, :update_hash => update_hash)
+            
+      result = proxy_update(update_hash)
       
       InsiteLogger.info result
-      ExceptionUtil.context(:result => result )
       result
     end
   end
@@ -91,15 +78,11 @@ class ApplicationDetail < SourceAdapter
   def delete(delete_hash)
     ExceptionUtil.rescue_and_reraise do
       InsiteLogger.info "DELETE APPLICATION DETAIL"
-      ExceptionUtil.context(:current_user => current_user.login)
+      ExceptionUtil.context(:current_user => current_user.login, :delete_hash => delete_hash)
       
       mapped_hash = { 'cssi_applicationid' => delete_hash['cssi_applicationid'] };
       
-      result = RestClient.post("#{@application_detail_url}/delete",
-          {:username => @username,
-           :password => @password,
-           :attributes => mapped_hash.to_json}
-      ).body
+      result = proxy_delete(mapped_hash)
       
       InsiteLogger.info result
       ExceptionUtil.context(:result => result)

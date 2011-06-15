@@ -1,7 +1,13 @@
 class Note < SourceAdapter
+
+  # proxy util mixin
+  include ProxyUtil
+  
   def initialize(source,credential)
     ExceptionUtil.rescue_and_reraise do
       @note_url = "#{CONFIG[:crm_path]}annotation"
+      @proxy_update_url = "#{@note_url}/update"
+      @proxy_create_url = "#{@note_url}/create"
       super(source,credential)
     end
   end
@@ -44,31 +50,25 @@ class Note < SourceAdapter
   def create(create_hash,blob=nil)
     ExceptionUtil.rescue_and_reraise do
       InsiteLogger.info "CREATE NOTE"
-      InsiteLogger.info create_hash
-      InsiteLogger.info "#{@note_url}/create"
-      mapped_hash = NoteMapper.map_data_from_client(create_hash.clone)
-      InsiteLogger.info mapped_hash
-    
-      result = RestClient.post("#{@note_url}/create", 
-          {:username => @username, 
-          :password => @password,
-          :attributes => mapped_hash.to_json}
-        ).body
+      ExceptionUtil.context(:current_user => current_user.login, :create_hash => create_hash)
+      
+      result = proxy_create(create_hash)
+      
       InsiteLogger.info result
-    
       result
     end
   end
  
   def update(update_hash)
     ExceptionUtil.rescue_and_reraise do
-      result = JSON.parse(RestClient.post("#{@note_url}/update", 
-          {:username => @username, 
-          :password => @password,
-          :attributes => attributes.to_json}
-        ).body)
-
-      UpdateUtil.push_update(@source, update_hash)
+      InsiteLogger.info "UPDATE NOTE"
+      ExceptionUtil.context(:current_user => current_user.login, :update_hash => update_hash )
+            
+      result = proxy_update(update_hash)
+      
+      InsiteLogger.info result
+      ExceptionUtil.context(:result => result )
+      result
     end
   end
  

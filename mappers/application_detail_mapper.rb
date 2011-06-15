@@ -1,18 +1,17 @@
 
 class ApplicationDetailMapper < Mapper
 
-  def self.map_create_data_from_client(data)    
+  def map_data_from_client(data, mapper_context={})
     data.merge!({
       "cssi_opportunityid" => {
         "id" => data['opportunity_id'], 
         "type"=>"opportunity"
       }
-    })    
-    data.reject!{|k,v| ['opportunity_id'  ,'temp_id'].include?(k)}
-    data  
-  end
-
-  def self.map_update_data_from_client(data)
+    }) if data['opportunity_id']
+    
+    # mark this update so the plugin won't unnecessarily push it back
+    data['cssi_fromrhosync'] = 'true'
+    
     data.reject!{|k,v| ['opportunity_id'  ,'temp_id'].include?(k)}
     data  
   end

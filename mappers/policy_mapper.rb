@@ -28,7 +28,7 @@ class PolicyMapper < Mapper
     policy_array.reduce({}){|sum, value| sum[value["cssi_policyid"]] = value if value; sum }
   end
   
-  def self.map_data_from_client(data)
+  def map_data_from_client(data, mapper_context={})
     data.reject!{|k,v| ['temp_id'].include?(k)}
     data
   end

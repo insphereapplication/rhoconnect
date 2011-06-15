@@ -1,5 +1,8 @@
 class Opportunity < SourceAdapter
   
+  # proxy util mixin
+  include ProxyUtil
+  
   on_api_push do |user_id|
     ExceptionUtil.rescue_and_reraise do
        ExceptionUtil.context(:user_id => user_id )
@@ -14,6 +17,8 @@ class Opportunity < SourceAdapter
   def initialize(source,credential)
     ExceptionUtil.rescue_and_reraise do
       @opportunity_url = "#{CONFIG[:crm_path]}opportunity"
+      @proxy_update_url = "#{@opportunity_url}/update"
+      @proxy_create_url = "#{@opportunity_url}/create"
       super(source,credential)
     end
   end
@@ -66,13 +71,8 @@ class Opportunity < SourceAdapter
   def create(create_hash,blob=nil)
     ExceptionUtil.rescue_and_reraise do
       InsiteLogger.info "CREATE OPPORTUNITY"
-      ExceptionUtil.context(:current_user => current_user.login)      
-      mapped_hash = OpportunityMapper.map_data_from_client(create_hash.clone)
-      result = RestClient.post("#{@opportunity_url}/create",
-          {:username => @username,
-           :password => @password,
-           :attributes => mapped_hash.to_json}
-      ).body      
+      ExceptionUtil.context(:current_user => current_user.login, :create_hash => create_hash)      
+      result = proxy_create(create_hash)    
       InsiteLogger.info result
       result
     end    
@@ -82,9 +82,6 @@ class Opportunity < SourceAdapter
     ExceptionUtil.rescue_and_reraise do
       InsiteLogger.info "UPDATE OPPORTUNITY"
       
-      # mark this update so the plugin won't unnecessarily push it back
-      update_hash['cssi_fromrhosync'] = 'true'
-      
       ExceptionUtil.context(:current_user => current_user.inspect, :update_hash => update_hash)
       InsiteLogger.info update_hash
       
@@ -93,22 +90,15 @@ class Opportunity < SourceAdapter
       
       # unless conflict management completely rejected the update
       unless update_hash.length == 0
-        mapped_hash = OpportunityMapper.map_data_from_client(update_hash.clone)
         
         # update CRM by calling update in Proxy
         start = Time.now
-        result = RestClient.post("#{@opportunity_url}/update", 
-            {:username => @username, 
-            :password => @password,
-            :attributes => mapped_hash.to_json}
-          ).body
+        result = proxy_update(update_hash)
         InsiteLogger.info "OPPORTUNITY PROXY UPDATE IN : #{Time.now - start} Seconds"
-      
-        #persist the updated data in redis
-        UpdateUtil.push_update(@source, update_hash)
-        
+
         ExceptionUtil.context(:result => result)
         InsiteLogger.info result
+
       end
     end
   end
