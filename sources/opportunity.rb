@@ -34,15 +34,11 @@ class Opportunity < SourceAdapter
     end
   end
  
-  def query(params=nil)
-    InsiteLogger.info "OPPPORTUNITY QUERY FOR #{current_user}"
-    InsiteLogger.info @initialized_key
-    InsiteLogger.info Store.get_value(@initialized_key)
-    
+  def query(params=nil)    
     ExceptionUtil.rescue_and_reraise do
       ExceptionUtil.context(:current_user => current_user.login )
       unless Store.get_value(@initialized_key) == 'true'   
-        InsiteLogger.info "QUERY FOR OPPORTUNITIES"
+        InsiteLogger.info "QUERY FOR OPPORTUNITIES FOR #{current_user.login}"
         
         start = Time.now
         res = RestClient.post(@opportunity_url,
