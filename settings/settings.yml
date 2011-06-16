@@ -20,6 +20,8 @@
     :poll_interval: 3600
   ApplicationDetail:
      :poll_interval: 1
+  SearchContacts:
+     :poll_interval: 0
     
 # !!! env defines the global context for the server !!!
 :env: development
