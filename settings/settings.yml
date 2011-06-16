@@ -13,15 +13,15 @@
   Note: 
     :poll_interval: 1
   Policy:
-    :poll_interval: 1
+    :poll_interval: 43200
   Dependent: 
     :poll_interval: 1
   StaticEntity: 
     :poll_interval: 3600
   ApplicationDetail:
-     :poll_interval: 1
+    :poll_interval: 1
   SearchContacts:
-     :poll_interval: 0
+    :poll_interval: 0
     
 # !!! env defines the global context for the server !!!
 :env: development
@@ -52,7 +52,7 @@ local_crm_proxy: http://192.168.51.128/ # Change this if you're running locally 
     :mode: stdout # logging defaults to stdout only; set mode to 'file' to turn on file logging to log:path (above)
   :app_info:
     :min_required_version: 2.0.2 # This MUST be 3 groups of numbers, in the form x.x.x, or there is a risk of tossing an exception when checking for an upgrade
-    :latest_version: 2.0.3 # This MUST be 3 groups of numbers, in the form x.x.x, or there is a risk of tossing an exception when checking for an upgrade
+    :latest_version: 2.0.2 # This MUST be 3 groups of numbers, in the form x.x.x, or there is a risk of tossing an exception when checking for an upgrade
     :apple_force_upgrade_url: 'itms-services://?action=download-manifest&amp;url=http://m.insphereis.net/InSiteMobile/Documents/InSite_Mobile.plist'
     :apple_soft_upgrade_url: 'itms-services://?action=download-manifest&amp;url=http://m.insphereis.net/InSiteMobile/Documents/InSite_Mobile.plist'
     :android_force_upgrade_url: 'https://m.model.insphereis.net/insitemobile'

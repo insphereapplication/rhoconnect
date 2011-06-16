@@ -6,7 +6,6 @@ class SearchContacts < SourceAdapter
   def initialize(source,credential)
     ExceptionUtil.rescue_and_reraise do
       @search_contact_url = "#{CONFIG[:crm_path]}contact/search"
-      InsiteLogger.info "************************Initializing SearchContacts"
       super(source,credential)
     end
   end
@@ -15,7 +14,7 @@ class SearchContacts < SourceAdapter
     ExceptionUtil.rescue_and_reraise do
       RedisUtil.clear_md('SearchContacts', current_user.login.downcase)
     
-      InsiteLogger.info "************************ Searching"
+      InsiteLogger.info(:format_and_join => ["*"*10 + "Searching contacts for user #{current_user.login}: ",params])
       InsiteLogger.info params
       
       result = RestClient.post(@search_contact_url,

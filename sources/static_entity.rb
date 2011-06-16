@@ -1,6 +1,5 @@
 class StaticEntity < SourceAdapter
   def initialize(source,credential)
-    InsiteLogger.info "******************** Calling initialize from StaticEntity ********************"
     ExceptionUtil.rescue_and_reraise do
       @staticentity_url = "#{CONFIG[:crm_path]}staticentity"
       super(source,credential)
@@ -8,7 +7,6 @@ class StaticEntity < SourceAdapter
   end
  
   def login
-    InsiteLogger.info "******************** Calling login from StaticEntity ********************"
     ExceptionUtil.rescue_and_reraise do
       @username = Store.get_value("username:#{current_user.login.downcase}:username")
       
