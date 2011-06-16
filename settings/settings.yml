@@ -13,15 +13,15 @@
   Note: 
     :poll_interval: 1
   Policy:
-    :poll_interval: 1
+    :poll_interval: 43200
   Dependent: 
     :poll_interval: 1
   StaticEntity: 
     :poll_interval: 3600
   ApplicationDetail:
-     :poll_interval: 1
+    :poll_interval: 1
   SearchContacts:
-     :poll_interval: 0
+    :poll_interval: 0
     
 # !!! env defines the global context for the server !!!
 :env: development
