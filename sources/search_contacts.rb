@@ -10,6 +10,33 @@ class SearchContacts < SourceAdapter
       super(source,credential)
     end
   end
+  
+  def search(params)
+    ExceptionUtil.rescue_and_reraise do
+      RedisUtil.clear_md('SearchContacts', current_user.login.downcase)
+    
+      InsiteLogger.info "************************ Searching"
+      InsiteLogger.info params
+      
+      result = RestClient.post(@search_contact_url,
+          {:username => @username,
+           :password => @password,
+           :attributes => params.to_json},
+           :content_type => :json
+      ).body
+         
+      # hard-coding PK to 1 -- this is basically a singleton object for the user. There 
+      # will be one search results representing the results of the last search term
+      @result = { 1 => {
+          :terms => params.to_json,
+          :results => Mapper.map_source_data(result, 'Contact').to_json
+        }
+      }
+      
+      InsiteLogger.info @result
+      
+    end
+  end
  
   def login
     ExceptionUtil.rescue_and_reraise do
