@@ -5,7 +5,11 @@ require 'rhosync'
 module RedisUtil
   Rhosync::Store.extend(Rhosync)
   Rhosync::Store.db # need to call this to initialize the @db member of Store
-  class << self
+  class << self 
+    
+    def clear_md(model, user)
+      Rhosync::Store.put_data("source:application:#{user}:#{model}:md")
+    end
     
     def get_md(model, user)
       Rhosync::Store.get_data("source:application:#{user}:#{model}:md")
