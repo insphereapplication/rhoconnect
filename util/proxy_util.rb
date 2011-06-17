@@ -12,13 +12,10 @@ module ProxyUtil
         ).body
       
       UpdateUtil.push_update(@source, update_hash)
-    rescue RestClient::Exception => e
-      if e.http_code == 406
-        update_hash = {}
-        return nil
-      else
-        raise
-      end
+    rescue RestClient::NotAcceptable => e
+      InsiteLogger.info(:format_and_join => ["Got 406 not acceptable from proxy, rejecting update: ",e])
+      update_hash = {}
+      return "406 Not Acceptable"
     end
     result
   end
