@@ -31,6 +31,7 @@ class Opportunity < SourceAdapter
       @password = Crypto.decrypt( encryptedPassword )
       
       @initialized_key = "username:#{current_user.login.downcase}:opportunity:initialized"
+      @user_id_key = "username:#{current_user.login.downcase}:crm_user_id"
     end
   end
  
@@ -67,7 +68,11 @@ class Opportunity < SourceAdapter
   def create(create_hash,blob=nil)
     ExceptionUtil.rescue_and_reraise do
       InsiteLogger.info "CREATE OPPORTUNITY"
-      ExceptionUtil.context(:current_user => current_user.login, :create_hash => create_hash)      
+      ExceptionUtil.context(:current_user => current_user.login, :create_hash => create_hash)     
+      
+      # Get data needed by mapper
+      @mapper_context = {:user_id => Store.get_value(@user_id_key)}
+       
       result = proxy_create(create_hash)    
       InsiteLogger.info result
       result

@@ -20,7 +20,7 @@ class Contact < SourceAdapter
       @password = Crypto.decrypt( encryptedPassword )
       
       @initialized_key = "username:#{current_user.login.downcase}:contact:initialized"
-
+      @user_id_key = "username:#{current_user.login.downcase}:crm_user_id"
     end
   end
  
@@ -56,6 +56,9 @@ class Contact < SourceAdapter
     ExceptionUtil.rescue_and_reraise do
       InsiteLogger.info "CREATE CONTACT"
       ExceptionUtil.context(:current_user => current_user.login, :create_hash => create_hash)
+      
+      # Get data needed by mapper
+      @mapper_context = {:user_id => Store.get_value(@user_id_key)}
       
       if (create_hash['contactid'].upcase.match('[A-Z0-9]{8}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{12}'))
         #contact already exists in CRM; do not push to CRM. Only create it on the device.
