@@ -26,7 +26,7 @@ class SearchContacts < SourceAdapter
          
       # hard-coding PK to 1 -- this is basically a singleton object for the user. There 
       # will be one search results representing the results of the last search term
-      @result = { 1 => {
+      @result = { Time.now.to_i => {
           :terms => params.to_json,
           :results => Mapper.map_source_data(result, 'Contact').to_json
         }
@@ -51,6 +51,7 @@ class SearchContacts < SourceAdapter
   end
  
   def sync
+#    super
   end
  
   def create(create_hash,blob=nil)
