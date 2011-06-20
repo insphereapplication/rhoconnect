@@ -69,11 +69,9 @@ class Opportunity < SourceAdapter
     ExceptionUtil.rescue_and_reraise do
       InsiteLogger.info "CREATE OPPORTUNITY"
       ExceptionUtil.context(:current_user => current_user.login, :create_hash => create_hash)     
-      
-      # Get data needed by mapper
-      @mapper_context = {:user_id => Store.get_value(@user_id_key)}
        
-      result = proxy_create(create_hash)    
+      #include user_id context needed by mapper on create
+      result = proxy_create(create_hash,{:user_id => Store.get_value(@user_id_key)})    
       InsiteLogger.info result
       result
     end    
