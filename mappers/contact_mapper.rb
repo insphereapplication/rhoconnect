@@ -12,6 +12,11 @@ class ContactMapper < Mapper
   
   def map_data_from_client(data, mapper_context={})
     data.reject!{|k,v| ['temp_id'].include?(k)}
+    
+    if mapper_context[:user_id]
+      data['ownerid'] = {:type => 'systemuser', :id => mapper_context[:user_id]}
+    end
+    
     data
   end
 end

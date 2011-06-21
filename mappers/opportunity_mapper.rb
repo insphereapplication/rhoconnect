@@ -4,6 +4,11 @@ class OpportunityMapper < Mapper
   def map_data_from_client(data, mapper_context={})
     data.reject!{|k,v| ['temp_id'].include?(k)}
     data['cssi_fromrhosync'] = 'true'
+    
+    if mapper_context[:user_id]
+      data['ownerid'] = {:type => 'systemuser', :id => mapper_context[:user_id]}
+    end
+    
     data  
   end
   
