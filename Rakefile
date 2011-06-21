@@ -24,6 +24,7 @@ begin
     
     task :run_workers do
       Resque::Worker.new('clean_old_opportunity_data').work(1) 
+      Resque::Worker.new('limit_client_exceptions').work(1) 
     end
     
     task :scheduler do
