@@ -41,15 +41,15 @@ def rand_state
 end
 
 def rand_month
-	rand_month = rand(12) + 1
+	rand(12) + 1
 end
 
 def rand_day
-	rand_day = rand(28) + 1
+	rand(28) + 1
 end
 
 def rand_year
-	"19" + rand(100).to_s.rjust(2,'0')
+	(1930 + rand(70)).to_s
 end
 
 def rand_gender
@@ -121,7 +121,11 @@ end
 
 def get_fake_contact_data(identity)
 	preferred_phone = ['Home','Mobile','Business'][rand(3)]
-
+  
+  first_name = Faker::Name.first_name
+  last_name = Faker::Name.last_name
+  email = "#{first_name}.#{last_name}@fakegendatacrm.net"
+  
 	fake_data = {
 		'address1_city' => Faker::Address.city,
 		'address1_line1' => Faker::Address.street_address,
@@ -129,8 +133,9 @@ def get_fake_contact_data(identity)
 		'address2_city' => Faker::Address.city,
 		'address2_line1' => Faker::Address.street_address,
 		'cssi_state1id' => rand_state,
-		'firstname' => Faker::Name.first_name,
-		'lastname' => Faker::Name.last_name,
+		'firstname' => first_name,
+		'lastname' => last_name,
+		'emailaddress1' => email,
 		'birthdate' => "#{rand_year}/#{rand_month}/#{rand_day}",
 		'cssi_preferredphone' => preferred_phone,
 		'mobilephone' => Faker::Base.numerify('(###) ###-####'),
