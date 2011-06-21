@@ -30,7 +30,7 @@ class ActivityMapper < Mapper
       
       #always filter out attributes that are only set in RhoSync (avoids problems with fixed schema)
       #these fields are not modified from rhodes and should only be injected in map_data_from_client as needed
-      value.reject!{|k,v|  ['cssi_skipdispositionworkflow','organizer','from','cssi_fromrhosync', 'ownerid', 'to', 'bcc', 'cc', 'from'].include?(k) }
+      value.reject!{|k,v|  ['cssi_skipdispositionworkflow','organizer','from','cssi_fromrhosync', 'ownerid', 'to', 'bcc', 'cc', 'from', 'scheduleddurationminutes'].include?(k) }
       value
     end
     activity_array.reduce({}){|sum, value| sum[value["activityid"]] = value if value; sum }
