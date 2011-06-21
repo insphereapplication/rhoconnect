@@ -3,7 +3,7 @@
   AppInfo:
     :poll_interval: 1
   Contact: 
-    :poll_interval: 1
+    :poll_interval: 78600
   Opportunity: 
     :poll_interval: 1
   ClientException: 

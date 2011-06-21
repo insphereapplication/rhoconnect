@@ -45,10 +45,7 @@ class Contact < SourceAdapter
  
   def sync
     ExceptionUtil.rescue_and_reraise do
-      unless Store.get_value(@initialized_key) == 'true'
-        super
-        Store.put_value(@initialized_key, 'true')
-      end
+      super
     end
   end
  
