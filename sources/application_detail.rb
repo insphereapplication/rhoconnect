@@ -80,7 +80,7 @@ class ApplicationDetail < SourceAdapter
       InsiteLogger.info "DELETE APPLICATION DETAIL"
       ExceptionUtil.context(:current_user => current_user.login, :delete_hash => delete_hash)
       
-      mapped_hash = { 'cssi_applicationid' => delete_hash['cssi_applicationid'] };
+      mapped_hash = { 'cssi_applicationid' => delete_hash['id'] };
       
       result = proxy_delete(mapped_hash)
       
