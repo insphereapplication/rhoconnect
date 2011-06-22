@@ -153,7 +153,7 @@ namespace :util do
     abort "Please provide the \"pattern\" option when calling grep_logs (i.e. cap util:grep_logs -s pattern=<grep_pattern>)" unless exists?(:pattern)
     path_to_grep = exists?(:grep_path) ? grep_path : "#{shared_path}/log/insite_mobile.log"
     options = exists?(:grep_options) ? " #{grep_options}" : ""
-    results = run_and_gather_responses("grep#{options} \"#{pattern}\" \"#{path_to_grep}\"; true") #'true' is needed at the end so that capsitrano won't report an empty grep result as a failure
+    results = run_and_gather_responses("grep#{options} -E '#{pattern}' \"#{path_to_grep}\"; true") #'true' is needed at the end so that capsitrano won't report an empty grep result as a failure
     results.each{|host,response| 
       marker = "="*20
       puts "\n\n#{marker} Response from #{host}: #{marker}\n\n"
