@@ -5,7 +5,7 @@ API_KEY = 'b8788d7b2ae404c9661f40215f5d9258aede9c83'
 $settings_file = 'settings/settings.yml'
 $config = YAML::load_file($settings_file)
 $app_path = File.expand_path(File.dirname(__FILE__))
-$target = :onsite
+$target = :onsite_model
 $server = ($config[$target] ? $config[$target][:syncserver] : "").sub('/application', '')
 $password = ($config[$target] ? $config[$target][:rhoadmin_password] : "")
 
@@ -134,6 +134,27 @@ namespace :server do
       :content_type => :json
     ).body)
     ap res.sort
+  end
+  
+  task :reset_pollinterval, [:source_name, :user_name] => [:set_token] do |t,args|
+    abort "Source name & user name must be specified" unless args[:source_name] && args[:user_name]
+    puts "Resetting poll interval for #{args[:source_name]} for user #{args[:user_name]}"
+    begin
+      ap RestClient.post(
+        "#{$server}api/set_refresh_time",
+        { 
+          :api_token => @token,
+          :source_name => args[:source_name], 
+          :user_name => args[:user_name], 
+          :refresh_time => 0
+        }.to_json, 
+        :content_type => :json
+      ).body
+    rescue RestClient::Exception => e
+      puts "Got rest exception:"
+      ap e
+    end
+    
   end
   
   task :quick_performance_check => [:set_token] do |t,args|
