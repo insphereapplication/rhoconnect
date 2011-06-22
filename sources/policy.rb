@@ -29,6 +29,21 @@ class Policy < SourceAdapter
       
       ExceptionUtil.context(:result => @result)
       InsiteLogger.info @result
+      
+      # Query for contacts as well to ensure new policies also have their associated contacts (these are not guaranteed to be pushed)
+      InsiteLogger.info "QUERYING FOR CONTACTS FOR #{current_user.login} AS PART OF POLICY QUERY"
+      contact_query_result = RestClient.post(
+        "#{CONFIG[:crm_path]}contact",
+        {
+          :username => @username, 
+          :password => @password
+        },
+        :content_type => :json
+      )
+      # Commit the results of the contact query to redis
+      contacts = Mapper.map_source_data(contact_query_result, 'Contact')
+      contact_source = Source.load('Contact',{:app_id=>APP_NAME,:user_id=>current_user.login})
+      UpdateUtil.push_objects(contact_source, contacts)
     end
   end
  
