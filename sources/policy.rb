@@ -19,7 +19,7 @@ class Policy < SourceAdapter
  
   def query(params=nil)
     ExceptionUtil.rescue_and_reraise do
-      InsiteLogger.info "QUERY FOR POLICIES for #{current_user.login.downcase}"
+      InsiteLogger.info "QUERY FOR POLICIES FOR #{current_user.login}"
       ExceptionUtil.context(:current_user => current_user.login)
       res = RestClient.post(@policy_url, {:username => @username,
                                           :password => @password},

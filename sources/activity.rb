@@ -28,7 +28,7 @@ class Activity < SourceAdapter
        
         ExceptionUtil.context(:current_user => current_user.login )
         
-        InsiteLogger.info "ACTIVITY QUERY"
+        InsiteLogger.info "QUERY FOR ACTIVITIES FOR #{current_user.login}"
         start = Time.now
         res = RestClient.post(@activity_url,
             {:username => @username, 

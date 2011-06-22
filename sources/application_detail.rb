@@ -26,7 +26,7 @@ class ApplicationDetail < SourceAdapter
   def query(params=nil)
     ExceptionUtil.rescue_and_reraise do
       unless Store.get_value(@initialized_key) == 'true'
-        InsiteLogger.info "QUERY FOR APPLICATION DETAILS for #{current_user.login.downcase}"
+        InsiteLogger.info "QUERY FOR APPLICATION DETAILS FOR #{current_user.login}"
         ExceptionUtil.context(:current_user => current_user.login)
         res = RestClient.post(@application_detail_url, 
                                 {:username => @username,

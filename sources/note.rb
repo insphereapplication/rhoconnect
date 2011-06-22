@@ -26,7 +26,7 @@ class Note < SourceAdapter
   def query(params=nil)
     ExceptionUtil.rescue_and_reraise do
       unless Store.get_value(@initialized_key) == 'true'
-        InsiteLogger.info "NOTE QUERY"
+        InsiteLogger.info "QUERY FOR NOTES FOR #{current_user.login}"
         res = RestClient.post(@note_url,
             {:username => @username, 
             :password => @password},

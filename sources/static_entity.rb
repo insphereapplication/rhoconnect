@@ -19,7 +19,7 @@ class StaticEntity < SourceAdapter
  
   def query(params=nil)
     ExceptionUtil.rescue_and_reraise do
-      InsiteLogger.info "QUERY FOR STATICENTITIES for #{current_user.login.downcase}"
+      InsiteLogger.info "QUERY FOR STATICENTITIES FOR #{current_user.login.downcase}"
       
       carrier_res = JSON.parse(RestClient.post(@staticentity_url, {:username => @username,
                                                         :password => @password,

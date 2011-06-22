@@ -27,7 +27,7 @@ class Contact < SourceAdapter
   def query(params=nil)
     ExceptionUtil.rescue_and_reraise do
       unless Store.get_value(@initialized_key) == 'true'
-        InsiteLogger.info "INITIALIZING USER CONTACTS for #{current_user.login.downcase}"
+        InsiteLogger.info "QUERY FOR CONTACTS FOR #{current_user.login}"
         ExceptionUtil.context(:current_user => current_user.login )
         res = RestClient.post(@contact_url,
           {:username => @username, 
