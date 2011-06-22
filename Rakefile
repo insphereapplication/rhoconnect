@@ -12,8 +12,24 @@ end
 
 begin
   require 'resque/tasks'
-  task "resque:setup" do
-    require 'application'
+  require 'resque_scheduler'
+  require 'resque/scheduler'
+  
+  namespace :resque do
+    task :setup do
+      require 'application'
+      Resque.redis = Redis.connect(:url => ENV['REDIS'])
+      Resque.schedule = YAML.load_file(File.join(File.dirname(__FILE__), 'settings/resque_schedule.yml'))
+    end
+    
+    task :run_workers do
+      Resque::Worker.new('clean_old_opportunity_data').work(1) 
+      Resque::Worker.new('limit_client_exceptions').work(1) 
+    end
+    
+    task :scheduler do
+      Resque::Scheduler.run
+    end
   end
 rescue LoadError
   puts "Resque not available. Install it with: "

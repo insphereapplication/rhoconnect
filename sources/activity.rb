@@ -59,12 +59,9 @@ class Activity < SourceAdapter
       InsiteLogger.info "CREATE ACTIVITY"
     
       ExceptionUtil.context(:current_user => current_user.login, :create_hash => create_hash )
-      
-      # Get data needed by mapper
-      @mapper_context = {:user_id => Store.get_value(@user_id_key)}
-      
+            
       start_proxy = Time.now
-      result = proxy_create(create_hash)
+      result = proxy_create(create_hash,{:user_id => Store.get_value(@user_id_key)}) # Include user ID context needed by mapper on creates
       InsiteLogger.info "ACTIVITY PROXY CREATE IN : #{Time.now - start_proxy} Seconds"
       InsiteLogger.info "Activity Create Result: #{result}"
       result
@@ -81,8 +78,6 @@ class Activity < SourceAdapter
       update_hash['type'] = activity['type']
       
       ExceptionUtil.context(:current_user => current_user.login, :update_hash => update_hash )
-      
-      @mapper_context = {}
       
       start = Time.now
       result = proxy_update(update_hash)

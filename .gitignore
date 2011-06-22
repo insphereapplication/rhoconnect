@@ -22,3 +22,6 @@ log
 
 .proxy_credential
 load_test/*.session
+test.html
+test.calltree
+profile.html

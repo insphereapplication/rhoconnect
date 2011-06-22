@@ -136,6 +136,14 @@ desc "Updates the [primary_insured] name of policy # [policy_id]"
 		ap "Got identity: #{identity['id']}"
 	end
 	
+	desc "Override the identity that is used to talk to CRM; this allows you to create data on another user's behalf"
+	task :override_identity_direct, [:username, :user_id] => :setup do |t,args|
+		abort "Error: username & user ID must be specified" if (args[:username].nil? or args[:user_id].nil?)
+		override_identity = {"id" => args[:user_id], "user_name" => args[:username]}
+		persist_to_file($identityfile, override_identity.to_json)
+		ap "Successfully set override identity #{override_identity['id']}"
+	end
+	
 	desc "Clears the overridden identity"
 	task :clear_override_identity do
 		remove_file_if_exists($identityfile)

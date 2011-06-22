@@ -3,7 +3,7 @@ require 'ap'
 class ConflictManagementUtil
   OPPORTUNITY_CONFLICT_FIELDS = ['statuscode', 'statecode', 'cssi_statusdetail', 'cssi_lastactivitydate']
   def self.manage_opportunity_conflicts(updated_opportunity, current_user)
-    unless updated_opportunity['cssi_lastactivitydate']
+    if updated_opportunity['cssi_lastactivitydate'].blank?
       updated_opportunity.reject!{|key, value| OPPORTUNITY_CONFLICT_FIELDS.include?(key)}
       return updated_opportunity
     end
@@ -21,7 +21,7 @@ class ConflictManagementUtil
     end
     
     # don't reject anything if redis doesn't have a last activity date for the updated opportunity
-    return updated_opportunity unless redis_opp['cssi_lastactivitydate']
+    return updated_opportunity if redis_opp['cssi_lastactivitydate'].blank?
     
     redis_last_activity_date = Time.parse(redis_opp['cssi_lastactivitydate'])
   

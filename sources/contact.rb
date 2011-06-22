@@ -20,7 +20,7 @@ class Contact < SourceAdapter
       @password = Crypto.decrypt( encryptedPassword )
       
       @initialized_key = "username:#{current_user.login.downcase}:contact:initialized"
-
+      @user_id_key = "username:#{current_user.login.downcase}:crm_user_id"
     end
   end
  
@@ -45,10 +45,7 @@ class Contact < SourceAdapter
  
   def sync
     ExceptionUtil.rescue_and_reraise do
-      unless Store.get_value(@initialized_key) == 'true'
-        super
-        Store.put_value(@initialized_key, 'true')
-      end
+      super
     end
   end
  
@@ -62,7 +59,8 @@ class Contact < SourceAdapter
         result = create_hash['contactid']
       else  
         #new contact created on the device; call proxy_create to push new contact to CRM
-        result = proxy_create(create_hash)     
+        #include user_id context needed by mapper on create
+        result = proxy_create(create_hash,{:user_id => Store.get_value(@user_id_key)})     
       end
       
       InsiteLogger.info result
