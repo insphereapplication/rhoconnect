@@ -5,7 +5,7 @@ API_KEY = 'b8788d7b2ae404c9661f40215f5d9258aede9c83'
 $settings_file = 'settings/settings.yml'
 $config = YAML::load_file($settings_file)
 $app_path = File.expand_path(File.dirname(__FILE__))
-$target = :development
+$target = :onsite
 $server = ($config[$target] ? $config[$target][:syncserver] : "").sub('/application', '')
 $password = ($config[$target] ? $config[$target][:rhoadmin_password] : "")
 
@@ -136,6 +136,24 @@ namespace :server do
     ap res.sort
   end
   
+  task :quick_performance_check => [:set_token] do |t,args|
+    interval = 20 # Number of seconds between checks
+    
+    loop do
+      timer_start = Time.now
+      res = JSON.parse(RestClient.post(
+        "#{$server}api/get_sync_status", 
+        { 
+          :api_token => @token, 
+          :user_pattern => "*"
+        }.to_json, 
+        :content_type => :json
+      ).body)
+      puts "#{Time.now}: Request took #{Time.now-timer_start} seconds"
+      sleep(interval)
+    end
+  end
+  
   task :get_sync_status, [:user_pattern] => [:set_token] do |t, args|
     abort "User pattern must be specified" unless args[:user_pattern]
     
@@ -147,6 +165,7 @@ namespace :server do
       }.to_json, 
       :content_type => :json
     ).body)
+    
     ap res.sort
   end
   
