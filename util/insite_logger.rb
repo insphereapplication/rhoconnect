@@ -10,7 +10,7 @@ module InsiteLogger
   # Log at the info level
   # Set format_and_join_array=true when you want to print a one-liner with the formatted and joined form of the array given by message
   # i.e. 
-  #   self.info(["Test beginning",{:a => "a", :b => "B"},"test end."],true)
+  #   self.info(:format_and_join => ["Test beginning ",{:a => "a", :b => "B"}," test end."])
   # will print 
   #   Test beginning { :a => "a", :b => "B" } test end.
   def self.info(input)
