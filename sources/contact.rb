@@ -26,20 +26,18 @@ class Contact < SourceAdapter
  
   def query(params=nil)
     ExceptionUtil.rescue_and_reraise do
-      unless Store.get_value(@initialized_key) == 'true'
-        InsiteLogger.info "QUERY FOR CONTACTS FOR #{current_user.login}"
-        ExceptionUtil.context(:current_user => current_user.login )
-        res = RestClient.post(@contact_url,
-          {:username => @username, 
-            :password => @password},
-            :content_type => :json
-        )
-        
-        @result = Mapper.map_source_data(res, 'Contact')
-        
-        ExceptionUtil.context(:result => @result )
-        InsiteLogger.info @result
-      end
+      InsiteLogger.info "QUERY FOR CONTACTS FOR #{current_user.login}"
+      ExceptionUtil.context(:current_user => current_user.login )
+      res = RestClient.post(@contact_url,
+        {:username => @username, 
+          :password => @password},
+          :content_type => :json
+      )
+      
+      @result = Mapper.map_source_data(res, 'Contact')
+      
+      ExceptionUtil.context(:result => @result )
+      InsiteLogger.info @result
     end
   end
  
