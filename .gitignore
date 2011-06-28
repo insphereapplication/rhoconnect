@@ -25,3 +25,4 @@ load_test/*.session
 test.html
 test.calltree
 profile.html
+log_dumps/*

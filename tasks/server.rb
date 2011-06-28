@@ -136,7 +136,8 @@ namespace :server do
     ap res.sort
   end
   
-  task :reset_pollinterval, [:source_name, :user_name] => [:set_token] do |t,args|
+  desc "Reset the time that the given source for the given user will query the backend to now"
+  task :reset_poll_time, [:source_name, :user_name] => [:set_token] do |t,args|
     abort "Source name & user name must be specified" unless args[:source_name] && args[:user_name]
     puts "Resetting poll interval for #{args[:source_name]} for user #{args[:user_name]}"
     begin
@@ -155,6 +156,27 @@ namespace :server do
       ap e
     end
     
+  end
+  
+  desc "Get the time at which the given source for the given user will query the backend"
+  task :get_poll_time, [:source_name, :user_name] => [:set_token] do |t,args|
+    abort "Source name & user name must be specified" unless args[:source_name] && args[:user_name]
+    begin
+      res = RestClient.post(
+        "#{$server}api/get_db_doc", 
+        { 
+          :api_token => @token, 
+          :doc => "read_state:application:#{args[:user_name]}:#{args[:source_name]}:refresh_time",
+          :data_type => "string"
+        }.to_json, 
+        :content_type => :json
+      ).body
+      puts "Got response: #{res}"
+      puts "Parsed to #{Time.at(Integer(res))}"
+    rescue RestClient::Exception => e
+      puts "Got rest exception:"
+      ap e
+    end
   end
   
   task :quick_performance_check => [:set_token] do |t,args|
@@ -300,6 +322,8 @@ namespace :server do
     ).body
     ap JSON.parse(res)
   end
+  
+  
   
   def get_md(username, model)
     res = RestClient.post(
