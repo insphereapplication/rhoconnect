@@ -2,7 +2,8 @@ require File.expand_path("#{File.dirname(__FILE__)}/../jobs/rhosync_resque_job")
 
 class CleanOldOpportunityData
   include RhosyncResqueJob
-  MAX_OPPORTUNITY_AGE_IN_DAYS = 60
+  MAX_OPEN_OPPORTUNITY_AGE_IN_DAYS = 60
+  MAX_WON_OPPORTUNITY_AGE_IN_DAYS = 90
   @queue = :clean_old_opportunity_data
   
   class << self
@@ -51,7 +52,12 @@ class CleanOldOpportunityData
       opportunities.select do |key, opp| 
         begin
           check_date = opp['cssi_lastactivitydate'] || opp['createdon']
-          (Time.now - Time.parse(check_date)).to_days > MAX_OPPORTUNITY_AGE_IN_DAYS 
+          case opp['statecode']
+          when "Won"
+            (Time.now - Time.parse(check_date)).to_days > MAX_WON_OPPORTUNITY_AGE_IN_DAYS
+          else
+            (Time.now - Time.parse(check_date)).to_days > MAX_OPEN_OPPORTUNITY_AGE_IN_DAYS  
+          end           
         rescue 
           true
         end
