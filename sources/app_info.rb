@@ -17,6 +17,7 @@ class AppInfo < SourceAdapter
     
     apple_soft_upgrade_url = settings[:global][:app_info][:apple_soft_upgrade_url]
     android_soft_upgrade_url = settings[:global][:app_info][:android_soft_upgrade_url]
+    mobile_crypt_key = settings[:global][:app_info][:mobile_crypt_key]
     
     ap "*** Minimum required version is #{mrv} ***"
     ap "*** Latest version is #{lv} ***"
@@ -27,7 +28,7 @@ class AppInfo < SourceAdapter
     ap "*** Android Soft Upgrade URL is #{android_soft_upgrade_url} ***"
     
     # For backward compatibility, "apple_upgrade_url" and "android_upgrade_url" are used for the forced upgrade URLs
-    @result = { "1" => { :min_required_version => mrv, :apple_upgrade_url => apple_force_upgrade_url, :android_upgrade_url => android_force_upgrade_url } }
+    @result = { "1" => { :min_required_version => mrv, :apple_upgrade_url => apple_force_upgrade_url, :android_upgrade_url => android_force_upgrade_url, :mobile_crypt_key => mobile_crypt_key } }
     
     # Uncomment this (and delete the above line) when we're ready to deploy soft upgrade
     # @result = { "1" => { :min_required_version => mrv, 
@@ -37,7 +38,8 @@ class AppInfo < SourceAdapter
     #                      :apple_upgrade_url => apple_force_upgrade_url,
     #                      :android_upgrade_url => android_force_upgrade_url,
     #                      :apple_soft_upgrade_url => apple_soft_upgrade_url,
-    #                      :android_soft_upgrade_url => android_soft_upgrade_url } }
+    #                      :android_soft_upgrade_url => android_soft_upgrade_url,
+    #                      :mobile_crypt_key => mobile_crypt_key  } }
   
   end
  
