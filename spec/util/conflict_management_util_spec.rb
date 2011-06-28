@@ -26,7 +26,7 @@ describe ConflictManagementUtil do
       'hey' => 'hey'
     }
     
-    returned = ConflictManagementUtil.manage_opportunity_conflicts(no_lad, "robert.zimmerman")
+    returned = ConflictManagementUtil.manage_opportunity_conflicts(no_lad, FakeUser.new)
     returned.should == {'hey' => 'hey'}
   end
   
@@ -34,6 +34,20 @@ describe ConflictManagementUtil do
     won_opp = {'statecode' => 'Won'}
     
     RedisUtil.stub(:get_model).and_return(won_opp)
+    
+    client_fields = {
+      'statuscode' => 'fu', 
+      'statecode' => 'bar', 
+      'cssi_statusdetail' => 'fu', 
+      'hey' => 'hey',
+      'cssi_lastactivitydate' => "Fri May 27 17:21:53 -0500 2011"
+    }
+    returned = ConflictManagementUtil.manage_opportunity_conflicts(client_fields, FakeUser.new)
+    returned.should == {}
+  end
+  
+  it "should reject all fields and return if the opp does not exist in redis" do    
+    RedisUtil.stub(:get_model).and_raise(RedisUtil::RecordNotFound)
     
     client_fields = {
       'statuscode' => 'fu', 

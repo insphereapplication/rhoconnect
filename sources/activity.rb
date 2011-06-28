@@ -74,7 +74,13 @@ class Activity < SourceAdapter
       
       # Fetch the activity's type from redis so that the proxy will know which type it's interacting with
       # This has to be done because the differential update sent to the proxy will only include the activity type if it has changed, which should never be the case
-      activity = RedisUtil.get_model('Activity', current_user.login, update_hash['id'])
+      begin
+        activity = RedisUtil.get_model('Activity', current_user.login, update_hash['id'])
+      rescue RedisUtil::RecordNotFound
+        # Activity doesn't exist in redis, stop. Activity will be deleted on client after this sync.
+        InsiteLogger.info(:format_and_join => ["Couldn't find existing activity in redis, rejecting update: ", update_hash])
+        return
+      end
       update_hash['type'] = activity['type']
       
       ExceptionUtil.context(:current_user => current_user.login, :update_hash => update_hash )
