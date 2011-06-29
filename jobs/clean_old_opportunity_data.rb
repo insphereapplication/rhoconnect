@@ -44,7 +44,7 @@ class CleanOldOpportunityData
       current_opportunities_contact_ids = current_opportunities.map{|a| a['contact_id']}
       policy_contact_ids = policies.map{|k,v| v['contact_id']}
       contacts.select do |key, contact|
-        !current_opportunities_contact_ids.include?(key) && !policy_contact_ids.include?(key))
+        !current_opportunities_contact_ids.include?(key) && !policy_contact_ids.include?(key)
       end
     end
     
