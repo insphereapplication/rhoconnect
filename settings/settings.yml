@@ -22,6 +22,8 @@
     :poll_interval: 1
   SearchContacts:
     :poll_interval: 0
+  CryptKey: 
+    :poll_interval: 1
     
 # !!! env defines the global context for the server !!!
 :env: development
