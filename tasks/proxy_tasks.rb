@@ -20,9 +20,7 @@ namespace :proxy do
     populate_new_policies(@proxy_url,@credential,@identity,policy_count,policy_status)
   end
   
-
-  
-desc "Updates the [primary_insured] name of policy # [policy_id]"
+  desc "Updates the [primary_insured] name of policy # [policy_id]"
   task :update_policy_primaryinsured, [:policy_id, :primary_insured] => [:setup, :set_identity] do |t,args|
     policy_id = args[:policy_id]
     primary_insured = args[:primary_insured]
@@ -243,6 +241,14 @@ desc "Updates the [primary_insured] name of policy # [policy_id]"
 	task :clear_persisted_environment do
 		remove_file_if_exists($environmentfile)
 	end
+	
+	######### to be changed into a Resque job ########
+	desc "Compares all the data in Rhosync with all the in-scope data in CRM"
+	task :validate_user_data_against_crm, [:username] => [:setup, :set_identity] do |t,args|
+	  puts "\n*************Start validating Redis data against CRM:"
+    validate_user_data_against_crm(@proxy_url,@credential,@identity,args[:username])
+    puts "Done!!!!!!!!!!!!!\n\n"
+  end
 	
 	def persist_to_file(filepath, data)
 		File.open(filepath, 'w') {|f| f.write(data) }
