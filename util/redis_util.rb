@@ -21,6 +21,14 @@ module RedisUtil
       md = get_data(model, user)
       ap md
     end
+    
+    def get_keys(keymask)
+      Rhosync::Store.get_keys("#{keymask}*")
+    end
+    
+    def get_value(key)
+      Rhosync::Store.get_value(key)
+    end
   
     def get_model(model, user, key)
       md = get_md(model, user)

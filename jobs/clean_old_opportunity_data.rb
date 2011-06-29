@@ -10,7 +10,7 @@ class CleanOldOpportunityData
     def perform
       InsiteLogger.info "Initiating resque job CleanOldOpportunityData..."
       ExceptionUtil.rescue_and_reraise do
-        get_master_docs(users).each do |user, opportunities, activities, contacts|
+        get_master_docs(users).each do |user, opportunities, activities, contacts, policies|
           # find the expired Opportunities
           old_opportunities = get_expired_opportunities(opportunities)  
           old_opp_keys = old_opportunities.keys
@@ -23,7 +23,7 @@ class CleanOldOpportunityData
           
           # get a set of the remaining opportunities so we don't reject a contact that may be related to more than one opportunity
           current_opportunities = opportunities.reject{|k,v| old_opp_keys.include?(k) }
-          old_contacts = get_expired_contacts(old_opportunities, current_opportunities, contacts)
+          old_contacts = get_expired_contacts(current_opportunities, contacts, policies)
           InsiteLogger.info "Old contacts are: #{old_contacts.keys.inspect}"
           
           # delete expired records for both models
@@ -40,11 +40,11 @@ class CleanOldOpportunityData
       end
     end
     
-    def get_expired_contacts(old_opportunities, current_opportunities, contacts)
-      opportunity_contact_ids = old_opportunities.map{|a| a['contact_id']}
+    def get_expired_contacts(current_opportunities, contacts, policies)
       current_opportunities_contact_ids = current_opportunities.map{|a| a['contact_id']}
+      policy_contact_ids = policies.map{|k,v| v['contact_id']}
       contacts.select do |key, contact|
-        opportunity_contact_ids.include?(key) && !current_opportunities_contact_ids.include?(key)
+        !current_opportunities_contact_ids.include?(key) && !policy_contact_ids.include?(key))
       end
     end
     
@@ -70,7 +70,8 @@ class CleanOldOpportunityData
           user, 
           Rhosync::Store.get_data("source:application:#{user}:Opportunity:md"),
           Rhosync::Store.get_data("source:application:#{user}:Activity:md"),
-          Rhosync::Store.get_date("source:application:#{user}:Contact:md")
+          Rhosync::Store.get_date("source:application:#{user}:Contact:md"),
+          Rhosync::Store.get_date("source:application:#{user}:Policy:md")
         ]
       end
     end
