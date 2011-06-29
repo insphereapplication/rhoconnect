@@ -57,6 +57,7 @@ local_crm_proxy: http://192.168.51.128/ # Change this if you're running locally 
     :apple_soft_upgrade_url: 'itms-services://?action=download-manifest&amp;url=http://m.model.insphereis.net/InSiteMobile/Documents/InSite_Mobile.plist'
     :android_force_upgrade_url: 'https://m.model.insphereis.net/insitemobile'
     :android_soft_upgrade_url: 'https://m.model.insphereis.net/insitemobile'
+    :mobile_crypt_key: "HFAGIEH777837776KFKHHSJJJFHEUUGF"
 # The following sections inherit from the global section and will override any values duplicated from global (:ssl:, etc.)
 # The :env: value above determines which of these sections is used by the Rhosync environment.
 :test: 

@@ -9,8 +9,15 @@ $target = :onsite_model
 $server = ($config[$target] ? $config[$target][:syncserver] : "").sub('/application', '')
 $password = ($config[$target] ? $config[$target][:rhoadmin_password] : "")
 
-
 namespace :server do
+  def rest_rescue
+    begin
+      yield if block_given?
+    rescue RestClient::Exception => e
+      puts "Got rest exception:"
+      ap e
+    end
+  end
   
   desc "Sets the current environment target. Must be an existing environment in settings/settings.yml ('development', 'test', etc.)"
   task :set, :env do |t, args|
@@ -236,6 +243,24 @@ namespace :server do
       }.to_json, 
       :content_type => :json
     )
+  end
+  
+  desc "pushes a delete of object with id object_id of source source_id for user user_id"
+  task :push_delete, [:user_id, :source_id, :object_id] => [:set_token] do |t,args|
+    abort "user_id, source_id and object_id must be specified" unless args[:user_id] and args[:source_id] and args[:object_id]
+    rest_rescue do
+      res = RestClient.post(
+        "#{$server}api/push_deletes",
+        {
+          :api_token => @token,
+          :user_id => args[:user_id],
+          :source_id => args[:source_id],
+          :objects => [args[:object_id]]
+        }.to_json,
+        :content_type => :json
+      )
+      ap res
+    end
   end
   
   desc "manually raise a test exception (should send a notification to ExceptionUtil)" 

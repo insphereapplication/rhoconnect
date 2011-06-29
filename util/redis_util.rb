@@ -3,6 +3,8 @@ require 'ap'
 require 'rhosync'
 
 module RedisUtil
+  class RecordNotFound < RuntimeError; end
+  
   Rhosync::Store.extend(Rhosync)
   Rhosync::Store.db # need to call this to initialize the @db member of Store
   class << self 
@@ -23,7 +25,7 @@ module RedisUtil
     def get_model(model, user, key)
       md = get_md(model, user)
       unless record = md[key]
-        raise "No #{model} record with key #{key} found"
+        raise RecordNotFound, "No #{model} record with key #{key} found"
       end
       record
     end
