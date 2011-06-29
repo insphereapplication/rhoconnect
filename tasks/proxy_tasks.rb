@@ -246,7 +246,12 @@ namespace :proxy do
 	desc "Compares all the data in Rhosync with all the in-scope data in CRM"
 	task :validate_user_data_against_crm, [:username] => [:setup, :set_identity] do |t,args|
 	  puts "\n*************Start validating Redis data against CRM:"
-    validate_user_data_against_crm(@proxy_url,@credential,@identity,args[:username])
+	  
+	  if args[:username] == "*"
+      validate_all_users_data_against_crm(@proxy_url,@credential,@identity)	    
+    else  
+      validate_user_data_against_crm(@proxy_url,@credential,@identity,args[:username])
+    end
     puts "Done!!!!!!!!!!!!!\n\n"
   end
 	
