@@ -242,7 +242,6 @@ namespace :proxy do
 		remove_file_if_exists($environmentfile)
 	end
 	
-	######### to be changed into a Resque job ########
 	desc "Compares all the data in Rhosync with all the in-scope data in CRM"
 	task :validate_user_data_against_crm, [:username] => [:setup, :set_identity] do |t,args|
 	  puts "\n*************Start validating Redis data against CRM:"
