@@ -5,9 +5,15 @@ require 'rhosync'
 module RedisUtil
   class RecordNotFound < RuntimeError; end
   
-  Rhosync::Store.extend(Rhosync)
-  Rhosync::Store.db # need to call this to initialize the @db member of Store
-  class << self 
+  # Rhosync::Store.extend(Rhosync)
+  # Rhosync::Store.db # need to call this to initialize the @db member of Store
+  class << self
+    
+    def connect(host, port)
+      Rhosync::Store.db.client.disconnect if defined?(Rhosync::Store.db.client)
+      puts "Connecting to redis at #{host}:#{port}"
+      Rhosync::Store.db = Redis.new(:thread_safe => true, :host => host, :port => port)
+    end
     
     def clear_md(model, user)
       Rhosync::Store.put_data("source:application:#{user}:#{model}:md")

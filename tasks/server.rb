@@ -3,11 +3,12 @@
 API_KEY = 'b8788d7b2ae404c9661f40215f5d9258aede9c83'
 
 $settings_file = 'settings/settings.yml'
-$config = YAML::load_file($settings_file)
-$app_path = File.expand_path(File.dirname(__FILE__))
+$settings = YAML::load_file($settings_file)
 $target = :onsite_model
-$server = ($config[$target] ? $config[$target][:syncserver] : "").sub('/application', '')
-$password = ($config[$target] ? $config[$target][:rhoadmin_password] : "")
+$config = ConfigFile.get_settings_for_environment($settings, $target)
+$app_path = File.expand_path(File.dirname(__FILE__))
+$server = ($config[:syncserver] || "").sub('/application', '')
+$password = ($config[:rhoadmin_password] || "")
 
 namespace :server do
   def rest_rescue
@@ -21,7 +22,7 @@ namespace :server do
   
   desc "Sets the current environment target. Must be an existing environment in settings/settings.yml ('development', 'test', etc.)"
   task :set, :env do |t, args|
-    raise "No configuration found for '#{args.env}'" unless $config["#{args.env}".to_sym]
+    raise "No configuration found for '#{args.env}'" unless $settings["#{args.env}".to_sym]
     rake = File.readlines(__FILE__)
     rake.map!{|l| l =~ /^\$target/ ? "$target = :#{args.env}\n"  : l }
     File.open(__FILE__, 'w+') {|f| f.write(rake) }
@@ -448,6 +449,16 @@ namespace :server do
       puts "\tFailed checks: #{result[:failures].awesome_inspect(:multiline => false)}" if has_failures
     }
     
+  end
+  
+	
+	desc "Compares all the data in Rhosync with all the in-scope data in CRM"
+	task :validate_user_data_against_crm, [:user_pattern] do |t,args|
+	  puts "\n*************Start validating Redis data against CRM:"
+
+    DataValidation.validate($config[:crm_path],$config[:redis_url],$config[:redis_port],args[:user_pattern])
+
+    puts "Done!!!!!!!!!!!!!\n\n"
   end
   
   def get_client_param_value(client_params_hash, param_name)

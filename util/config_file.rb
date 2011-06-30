@@ -3,13 +3,17 @@ require 'yaml'
 
 class ConfigFile
   def self.load
-    # load and merge all global and env-specific settings from settings.yml
     settings = YAML::load_file("#{File.dirname(__FILE__)}/../settings/settings.yml")
     env = settings[:env].to_sym
-    config = settings[:global].deep_merge(settings[env])
-    config[:crm_path] = settings[config[:crm_proxy]]
+    get_settings_for_environment(settings, env)
+  end
+  
+  def self.get_settings_for_environment(settings_yaml, env)
+    # load and merge all global and env-specific settings from the given settings yml
+    config = settings_yaml[:global].deep_merge(settings_yaml[env])
+    config[:crm_path] = settings_yaml[config[:crm_proxy]]
     config[:env] = env
-    config[:sources] = settings[:sources]
+    config[:sources] = settings_yaml[:sources]
     config[:redis_url], config[:redis_port] = config[:redis].split(':')
     config
   end
