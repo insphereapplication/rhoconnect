@@ -1,4 +1,4 @@
-set :stages, %w(model prod)
+set :stages, %w(model prod resque_model resque_prod)
 set :default_stage, 'model'
 require 'capistrano/ext/multistage'
 require 'ap'
@@ -135,6 +135,16 @@ def run_and_gather_responses(command)
   end
   
   host_responses
+end
+
+namespace :resque do 
+  task :init_workers do 
+    run "VVERBOSE=1 QUEUE=limit_client_exceptions rake resque:work"
+  end
+  
+  task :console do 
+    run "resque-web jobs/resque_config.rb -p 8282"
+  end
 end
 
 namespace :util do  
