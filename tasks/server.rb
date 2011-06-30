@@ -1,4 +1,5 @@
-
+app_path = File.expand_path(File.join(File.dirname(__FILE__)))
+require "#{app_path}/util/config_file"
 
 API_KEY = 'b8788d7b2ae404c9661f40215f5d9258aede9c83'
 
