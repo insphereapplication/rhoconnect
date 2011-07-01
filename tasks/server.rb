@@ -458,7 +458,8 @@ namespace :server do
 	task :validate_user_data_against_crm, [:user_pattern] do |t,args|
 	  puts "\n*************Start validating Redis data against CRM:"
 
-    DataValidation.validate($config[:crm_path],$config[:redis_url],$config[:redis_port],args[:user_pattern])
+    DataValidation.validate(args[:user_pattern])
+    #DataValidation.validate($config[:crm_path],$config[:redis_url],$config[:redis_port],args[:user_pattern])
 
     puts "Done!!!!!!!!!!!!!\n\n"
   end

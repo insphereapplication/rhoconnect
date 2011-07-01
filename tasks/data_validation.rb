@@ -1,106 +1,125 @@
 app_path = File.expand_path(File.join(File.dirname(__FILE__))) 
 require "#{app_path}/../util/config_file"
-require "#{app_path}/../util/redis_util"
+require "#{app_path}/../util/rhosync_api_session"
 require "#{app_path}/../helpers/crypto"
 
 class DataValidation
-  class << self
-    def get_user_password(username)    
-      encryptedPassword = Store.get_value("username:#{username.downcase}:password")
-      Crypto.decrypt( encryptedPassword )
+  
+  def self.validate(username=nil)
+    
+    puts "Environment: #{CONFIG[:env]}"
+    
+    rhosyncApi = RhosyncApiSession.new CONFIG[:env]
+     
+    users = []
+    if username.nil?
+      users = rhosyncApi.get_all_users
+    else
+      users << username
     end
+    
+    #get user passwords to use during REST calls to the Proxy
+    passwords = Hash.new
+    users.each do |user|
+      encrypted_password = rhosyncApi.get_db_doc("username:#{user}:password", 'string')
+      passwords[user] = Crypto.decrypt(encrypted_password)
+    end
+        
+    users.each do |user|
+    
+      puts "\n\n" + "*"*10 + "User #{user}:\n"
+    
+      #1.compare Contact data
+      puts "\n"
+      
+      contact_docs = rhosyncApi.list_source_docs('Contact', user)      
+      contact_data = rhosyncApi.get_db_doc( contact_docs['md'] )
+      contact_ids_rhosync = contact_data.keys
+      puts "Contacts in Rhosync: " + contact_ids_rhosync.count.to_s
+            
+      res = RestClient.post("#{CONFIG[:crm_path]}/contact",
+        { :username => user, 
+          :password => passwords[user] },
+          :content_type => :json
+      ).body
+      contact_ids_crm = JSON.parse(res).map { |i| i['contactid'] }  
+      puts "Contacts in CRM: #{contact_ids_crm.count}"  
+      
+      contact_ids_in_rhosync_not_crm = contact_ids_rhosync.reject do |id|
+        contact_ids_crm.include?(id)
+      end
+      puts "Contacts in Rhosync not in CRM: #{contact_ids_in_rhosync_not_crm.count}"
+      puts contact_ids_in_rhosync_not_crm.inspect unless contact_ids_in_rhosync_not_crm.count == 0
+  
+      contact_ids_in_crm_not_rhosync = contact_ids_crm.reject do |id|
+        contact_ids_rhosync.include?(id)
+      end
+      puts "Contacts in CRM not in Rhosync: #{contact_ids_in_crm_not_rhosync.count}"
+      puts contact_ids_in_crm_not_rhosync.inspect unless contact_ids_in_crm_not_rhosync.count == 0
+      
+      
+      #2.compare Opportunity data
+      puts "\n"
+      
+      opp_docs = rhosyncApi.list_source_docs('Opportunity', user)      
+      opp_data = rhosyncApi.get_db_doc( opp_docs['md'] )
+      opp_ids_rhosync = opp_data.keys
+      puts "Opportunities in Rhosync: " + opp_ids_rhosync.count.to_s
+            
+      res = RestClient.post("#{CONFIG[:crm_path]}/opportunity",
+        { :username => user, 
+          :password => passwords[user] },
+          :content_type => :json
+      ).body
+      opp_ids_crm = JSON.parse(res).map { |i| i['opportunityid'] }  
+      puts "Opportunities in CRM: #{opp_ids_crm.count}"  
+      
+      opp_ids_in_rhosync_not_crm = opp_ids_rhosync.reject do |id|
+        opp_ids_crm.include?(id)
+      end
+      puts "Opportunities in Rhosync not in CRM: #{opp_ids_in_rhosync_not_crm.count}"
+      puts opp_ids_in_rhosync_not_crm.inspect unless opp_ids_in_rhosync_not_crm.count == 0
+  
+      opp_ids_in_crm_not_rhosync = opp_ids_crm.reject do |id|
+        opp_ids_rhosync.include?(id)
+      end
+      puts "Opportunities in CRM not in Rhosync: #{opp_ids_in_crm_not_rhosync.count}"
+      puts opp_ids_in_crm_not_rhosync.inspect unless opp_ids_in_crm_not_rhosync.count == 0
+      
+      
+      #3.Integrity check for Rhosync data
+      puts "\n"
 
-    def validate(proxy_url, redis_host, redis_port, user_pattern)
-      RedisUtil.connect(redis_host, redis_port)      
-      usernames = []
-      RedisUtil.get_keys("user:#{user_pattern}:rho__id").each do |key|
-        usernames << RedisUtil.get_value(key)
+      opps_without_contacts = opp_ids_rhosync.reject do |id|
+        contact_ids_rhosync.include?( opp_data[id]['contact_id'] )
       end
-      usernames.sort!
-      puts "Validating users #{usernames.join(", ")}"
-      usernames.each do |username|
-        puts "\n\n" + "*"*10 + "User #{username}:"
-        validate_user_data_against_crm(proxy_url,username)
+      puts "Opportunities in Rhosync with no attached contacts: #{opps_without_contacts.count}"
+      puts opps_without_contacts.inspect unless opps_without_contacts.count == 0
+            
+      
+      #4.Device key check
+      puts "\n"
+      
+      user_devices = rhosyncApi.get_user_devices(user)
+      next if user_devices.empty?
+      
+      puts "Devices in Rhosync: #{user_devices.count}"
+      
+      devices_missing_pin = []
+      user_devices.each do |device_id|
+        device_pin = rhosyncApi.get_device_params(device_id).select{ |k| k['name'] == 'device_pin' }.first        
+        devices_missing_pin << device_id if device_pin.nil? || (!device_pin.nil? && device_pin['value'].nil?)      
       end
-    end
-    
-    private 
-    
-    def validate_user_data_against_crm(proxy_url,username)      
-  
-      #prestep 1: check if the user is in Redis at all
-      user_keys = RedisUtil.get_keys("client:application:#{username}")
-  
-      if user_keys.count == 0
-        puts "User #{username} has no client:application keys in the Redis database"
+      
+      if devices_missing_pin.count > 0
+        puts "#{devices_missing_pin.count} of #{user_devices.count} devices have no PIN"
+        devices_missing_pin.each do |id| puts "  #{id}" end
       else
-        #prestep 2: get the contact's password
-        password = get_user_password(username)
-    
-        #1.Contacts validation  
-        puts ""
-        res = RestClient.post("#{proxy_url}/contact",
-          { :username => username, 
-            :password => password },
-            :content_type => :json
-        ).body
-        contact_ids_from_crm = JSON.parse(res).map { |i| i['contactid'] }  
-        puts "Contacts in CRM: #{contact_ids_from_crm.count}"  
-  
-        contacts_on_device = RedisUtil.get_md('Contact', username)
-        puts "Contacts on device: #{contacts_on_device.count}"
-  
-        contact_ids_on_device_not_in_crm = contacts_on_device.keys.reject do |id|
-          contact_ids_from_crm.include?(id)
-        end
-        puts "Contacts on device not in CRM: #{contact_ids_on_device_not_in_crm.count}"
-        puts contact_ids_on_device_not_in_crm.inspect unless contact_ids_on_device_not_in_crm.count == 0
-  
-        contact_ids_in_crm_not_on_device = contact_ids_from_crm.reject do |id|
-          contacts_on_device.keys.include?(id)
-        end
-        puts "Contacts in CRM not on device: #{contact_ids_in_crm_not_on_device.count}"
-        puts contact_ids_in_crm_not_on_device.inspect unless contact_ids_in_crm_not_on_device.count == 0
-  
-        #2.Opportunities validation  
-        puts ""
-        res = RestClient.post("#{proxy_url}/opportunity",
-          { :username => username, 
-            :password => password },
-            :content_type => :json
-        ).body
-        opp_ids_from_crm = JSON.parse(res).map { |i| i['opportunityid'] }  
-        puts "Opps in CRM: #{opp_ids_from_crm.count}"  
-  
-        opps_on_device = RedisUtil.get_md('Opportunity', username)
-        puts "Opps on device: #{opps_on_device.keys.count}"
-    
-        opp_ids_on_device_not_in_crm = opps_on_device.keys.reject do |id|
-          opp_ids_from_crm.include?(id)
-        end
-        puts "Opps on device not in CRM: #{opp_ids_on_device_not_in_crm.count}"
-        puts opp_ids_on_device_not_in_crm.inspect unless opp_ids_on_device_not_in_crm.count == 0
-  
-        opp_ids_in_crm_not_on_device = opp_ids_from_crm.reject do |id|
-          opps_on_device.keys.include?(id)
-        end
-        puts "Opps in CRM not on device: #{opp_ids_in_crm_not_on_device.count}"
-        puts opp_ids_in_crm_not_on_device.inspect unless opp_ids_in_crm_not_on_device.count == 0
-  
-        #3.Integrity check for on-device data
-        puts ""
-        opps_without_contacts = opps_on_device.keys.reject do |id|
-          contacts_on_device.keys.include?( opps_on_device[id]['contact_id'] )
-        end
-        puts "Opps on device with no attached contacts: #{opps_without_contacts.count}"
-        puts opps_without_contacts.inspect unless opps_without_contacts.count == 0
-  
-        #4.Device push PIN check
-        # puts ""
-        # puts RedisUtil.get_client_attributes(username)
-  
-        puts ""
-      end
-    end
+        puts "All #{user_devices.count} devices have a PIN"  
+      end      
+      
+    end    
+    puts "\n\n*************Done!\n\n"      
   end
+  
 end
