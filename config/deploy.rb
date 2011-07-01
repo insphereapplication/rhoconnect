@@ -138,12 +138,12 @@ def run_and_gather_responses(command)
 end
 
 namespace :resque do 
-  task :pwd, :roles => :resque do 
-    run "pwd"
+  task :init_client_exceptions, :roles => :resque do 
+    run "cd #{current_release}/jobs; VVERBOSE=1 QUEUE=limit_client_exceptions rake resque:work --trace"
   end
   
-  task :init_workers, :roles => :resque do 
-    run "cd #{current_release}/jobs; VVERBOSE=1 QUEUE=limit_client_exceptions rake resque:work --trace"
+  task :init_clean_old_opp_data, :roles => :resque do 
+    run "cd #{current_release}/jobs; VVERBOSE=1 QUEUE=clean_old_opportunity_data rake resque:work --trace"
   end
   
   task :console, :roles => :resque do 

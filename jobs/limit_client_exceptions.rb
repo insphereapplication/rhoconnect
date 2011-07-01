@@ -1,4 +1,5 @@
-require File.expand_path("#{File.dirname(__FILE__)}/../jobs/rhosync_resque_job")
+root_path = File.expand_path("#{File.dirname(__FILE__)}/..")
+require "#{root_path}/jobs/rhosync_resque_job"
 
 class LimitClientExceptions 
   include RhosyncResqueJob

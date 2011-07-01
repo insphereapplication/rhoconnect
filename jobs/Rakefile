@@ -1,8 +1,10 @@
 require 'resque/tasks'
 require 'resque_scheduler'
 require 'resque/scheduler'
-require File.expand_path("#{File.dirname(__FILE__)}/../util/config_file")
+require 'limit_client_exceptions'
+require 'clean_old_opportunity_data'
 
+require File.expand_path("#{File.dirname(__FILE__)}/../util/config_file")
 
 namespace :resque do
   task :setup do
