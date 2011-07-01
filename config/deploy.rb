@@ -138,8 +138,15 @@ def run_and_gather_responses(command)
 end
 
 namespace :resque do 
-  task :init_client_exceptions, :roles => :resque do 
-    run "cd #{current_release}/jobs; VVERBOSE=1 QUEUE=limit_client_exceptions rake resque:work --trace"
+  
+  QUEUE_NAMES = ["limit_client_exceptions","clean_old_opportunity_data"]
+  
+  task :stop_resque_workers, :roles => :resque do
+    QUEUE_NAMES.each{|queue| run "ps -ef | grep -P '^((?!grep).)*resque.*#{queue}.*$' | awk '{print $2}' | xargs -t kill; true"}
+  end
+  
+  task :start_resque_workers, :roles => :resque do 
+    QUEUE_NAMES.each{|queue| run "cd #{current_release}/jobs; VVERBOSE=1 QUEUE=#{queue} rake resque:work --trace >> #{queue}.log &"}
   end
   
   task :init_clean_old_opp_data, :roles => :resque do 

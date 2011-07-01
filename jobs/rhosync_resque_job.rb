@@ -7,7 +7,7 @@ module RhosyncResqueJob
   Rhosync::Store.db # need to call this to initialize the @db member of Store
   
   def users
-    @redis = Redis.connect(:url => ENV['REDIS'])
+    @redis = Redis.connect(:host => CONFIG[:redis_url], :port => CONFIG[:redis_port])
     userkeys = @redis.keys('user:*:rho__id')
     userkeys.map{|u| @redis.get(u)}
   end

@@ -2,11 +2,12 @@ root_path = File.expand_path("#{File.dirname(__FILE__)}/..")
 require "#{root_path}/jobs/rhosync_resque_job"
 
 class LimitClientExceptions 
-  include RhosyncResqueJob
   CLIENT_EXCEPTION_LIMIT = 100
   @queue = :limit_client_exceptions
   
   class << self
+    include RhosyncResqueJob
+    
     def perform
       InsiteLogger.info "Initiating resque job LimitClientExceptions..."
       ExceptionUtil.rescue_and_reraise do
