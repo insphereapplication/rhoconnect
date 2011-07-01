@@ -1,5 +1,3 @@
-require 'bundler'
-Bundler.require
 root_path = File.expand_path("#{File.dirname(__FILE__)}/..")
 require "#{root_path}/util/insite_logger"
 require "#{root_path}/util/exception_util"
