@@ -141,11 +141,11 @@ namespace :resque do
   
   QUEUE_NAMES = ["limit_client_exceptions","clean_old_opportunity_data"]
   
-  task :stop_resque_workers, :roles => :resque do
-    QUEUE_NAMES.each{|queue| run "ps -ef | grep -P '^((?!grep).)*resque.*#{queue}.*$' | awk '{print $2}' | xargs -t kill; true"}
+  task :stop_workers, :roles => :resque do
+    QUEUE_NAMES.each{|queue| run "ps -ef | grep -P '^((?!grep).)*resque.*#{queue}.*$' | awk '{print $2}' | xargs -rt kill; true"}
   end
   
-  task :start_resque_workers, :roles => :resque do 
+  task :start_workers, :roles => :resque do 
     QUEUE_NAMES.each{|queue| run "cd #{current_release}/jobs; VVERBOSE=1 QUEUE=#{queue} rake resque:work --trace >> #{queue}.log &"}
   end
   
@@ -153,8 +153,12 @@ namespace :resque do
     run "cd #{current_release}/jobs; VVERBOSE=1 QUEUE=clean_old_opportunity_data rake resque:work --trace"
   end
   
-  task :console, :roles => :resque do 
-    run "cd #{current_release}; resque-web jobs/resque_config.rb -p 8282"
+  task :start_console, :roles => :resque do 
+    run "cd #{current_release}/jobs; resque-web resque_config.rb -p 8282"
+  end
+  
+  task :stop_console, :roles => :resque do
+    run "ps -ef | grep -P '^((?!grep).)*resque-web.*$' | awk '{print $2}' | xargs -rt kill; true"
   end
 end
 
