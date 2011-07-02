@@ -8,6 +8,11 @@ class CleanOldOpportunityData
   
   class << self
     include RhosyncResqueJob
+    
+    def get_doc_ids(doc)
+      doc.map{|item| item[0]}
+    end
+    
     def perform
       InsiteLogger.info "Initiating resque job CleanOldOpportunityData..."
       ExceptionUtil.rescue_and_reraise do
@@ -15,30 +20,32 @@ class CleanOldOpportunityData
         get_master_docs(users).each do |user, opportunities, activities, contacts, policies|
 
           # find the expired Opportunities
-          old_opportunities = get_expired_opportunities(opportunities)       
-          
-          old_opp_keys = old_opportunities.map{ |old_opp| old_opp[0] }
-          InsiteLogger.info "Deleting old opportunities, activities, contacts for user #{user}"
-          InsiteLogger.info "Old opps are: #{old_opp_keys.count} :#{old_opp_keys.inspect}"
+          old_opportunities = get_expired_opportunities(opportunities)          
+          old_opportunity_ids = get_doc_ids(old_opportunities)
         
           # now find the activities that are owned by the expired Opportunties
-          old_activities = get_expired_activities(old_opp_keys, activities)
+          old_activities = get_expired_activities(old_opportunity_ids, activities)
+          old_activity_ids = get_doc_ids(old_activities)
           
           # get a set of the remaining opportunities so we don't reject a contact that may be related to more than one opportunity
-          current_opportunities = opportunities.reject{|k,v| old_opp_keys.include?(k) }
+          current_opportunities = opportunities.reject{|k,v| old_opportunity_ids.include?(k) }
           old_contacts = get_expired_contacts(current_opportunities, contacts, policies)
+          old_contact_ids = get_doc_ids(old_contacts)
+
           
-          # delete expired records for both models
-          Rhosync::Store.delete_data("source:application:#{user}:Activity:md", old_activities) unless old_opportunities.empty?
-          Rhosync::Store.delete_data("source:application:#{user}:Opportunity:md", old_opportunities) unless old_opportunities.empty?
-          Rhosync::Store.delete_data("source:application:#{user}:Contact:md", old_contacts) unless old_contacts.empty?
+          InsiteLogger.info(:format_and_join => ["Deleting for user #{user}: opps ",old_opportunity_ids,", contacts: ",old_contact_ids,", activities: ",old_activity_ids])
+          
+          # delete expired records for both models 
+          rhosync_api.push_deletes('Activity',user,old_activity_ids) unless old_activity_ids.empty?
+          rhosync_api.push_deletes('Opportunity',user,old_opportunity_ids) unless old_opportunity_ids.empty?
+          rhosync_api.push_deletes('Contact',user,old_contact_ids) unless old_contact_ids.empty?
         end
       end
     end 
     
-    def get_expired_activities(old_opp_keys, activities)
+    def get_expired_activities(old_opp_ids, activities)
       activities.select do |key, activity|
-         activity['parent_type'] == 'opportunity' && old_opp_keys.include?(activity['parent_id'])
+         activity['parent_type'] == 'opportunity' && old_opp_ids.include?(activity['parent_id'])
       end
     end
     
@@ -67,13 +74,14 @@ class CleanOldOpportunityData
     end
       
     def get_master_docs(users)
+      
        users.map do |user| 
         [ 
-          user, 
-          Rhosync::Store.get_data("source:application:#{user}:Opportunity:md"),
-          Rhosync::Store.get_data("source:application:#{user}:Activity:md"),
-          Rhosync::Store.get_data("source:application:#{user}:Contact:md"),
-          Rhosync::Store.get_data("source:application:#{user}:Policy:md")
+          user,
+          rhosync_api.get_db_doc("source:application:#{user}:Opportunity:md"),
+          rhosync_api.get_db_doc("source:application:#{user}:Activity:md"),
+          rhosync_api.get_db_doc("source:application:#{user}:Contact:md"),
+          rhosync_api.get_db_doc("source:application:#{user}:Policy:md")
         ]
       end
     end

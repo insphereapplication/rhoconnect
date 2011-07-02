@@ -26,7 +26,7 @@
     :poll_interval: 1
     
 # !!! env defines the global context for the server !!!
-:env: development
+:env: test
 
 # use one of the following keys for the :crm_proxy: value in the environment sections below to determine which crm deployment Rhosync will use, i.e., ':crm_proxy: model_crm_proxy'
 model_crm_proxy: https://mobileproxy.model.insphereis.net/
@@ -60,17 +60,22 @@ local_crm_proxy: http://192.168.51.128/ # Change this if you're running locally 
     :android_force_upgrade_url: 'https://m.model.insphereis.net/insitemobile'
     :android_soft_upgrade_url: 'https://m.model.insphereis.net/insitemobile'
     :mobile_crypt_key: "HFAGIEH777837776KFKHHSJJJFHEUUGF"
+  :resque_worker_rhosync_api_host: 'http://localhost/'
+  :resque_worker_rhosync_api_password: ''
 # The following sections inherit from the global section and will override any values duplicated from global (:ssl:, etc.)
 # The :env: value above determines which of these sections is used by the Rhosync environment.
 :test: 
-  :crm_proxy: model_crm_proxy
+  :crm_proxy: dev_crm_proxy
   :redis: localhost:6379
   :licensefile: settings/license.key
   :syncserver: http://localhost:9292/application/
   :authtoken: 'DQAAAN4AAABMr5gOJS_7EvXDtx6gyJAk2xHHmkV_RybjlOgPQWOKv5Bjr6ylRnTHt8ogtQcOCAm_j-LjqFQ3f0OHLExbmeRCxOKcRqBY2drlhkMPJL3CW679Dadnwg5VNnufZUEFdHl4SUIwd7dGJK-AtjnDSRC_pPYlP7N0Ldjn2vessXN9Yk4v-k9CGNtKcuFRG2LGeLwRfHco8d5aHpMI4kKbDrOPjRHSKn6jEalsmLmv9Gq6tRxVRkxoN8EiUv6bg638U2nOOHHgr_wF0hcmg9WuYmtlPE41Hm2GlPhrV-nh9Mhu6w'
   :rhoadmin_password: ''
   :ssl: false
+  # :bundler: true
   :fork_resque: false
+  :raise_on_expired_lock: true
+  :lock_duration: 60
   :log:
     :mode: 'file'
 :production: 
@@ -130,6 +135,7 @@ local_crm_proxy: http://192.168.51.128/ # Change this if you're running locally 
   :lock_duration: 60
   :log:
     :mode: 'file'
+  :resque_worker_rhosync_api_password: aW9wVhyU84Sj
 :onsite_model: 
   :bundler: true
   :redis_boot: true
@@ -149,3 +155,4 @@ local_crm_proxy: http://192.168.51.128/ # Change this if you're running locally 
   :lock_duration: 60
   :log:
     :mode: 'file'
+  :resque_worker_rhosync_api_password: U5PgMPngu27j

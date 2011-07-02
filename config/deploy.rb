@@ -139,14 +139,14 @@ end
 
 namespace :resque do 
   
-  QUEUE_NAMES = ["limit_client_exceptions","clean_old_opportunity_data"]
+  QUEUE_NAMES = ["limit_client_exceptions","clean_old_opportunity_data","validate_redis_data"]
   
   task :stop_workers, :roles => :resque do
     QUEUE_NAMES.each{|queue| run "ps -ef | grep -P '^((?!grep).)*resque.*#{queue}.*$' | awk '{print $2}' | xargs -rt kill; true"}
   end
   
   task :start_workers, :roles => :resque do 
-    QUEUE_NAMES.each{|queue| run "cd #{current_release}/jobs; VVERBOSE=1 QUEUE=#{queue} rake resque:work --trace >> #{queue}.log &"}
+    QUEUE_NAMES.each{|queue| run "cd #{current_release}/jobs; VVERBOSE=1 QUEUE=#{queue} rake resque:work --trace >> #{shared_path}/#{queue}.log &"}
   end
   
   task :init_clean_old_opp_data, :roles => :resque do 

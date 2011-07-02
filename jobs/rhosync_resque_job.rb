@@ -2,16 +2,17 @@ root_path = File.expand_path("#{File.dirname(__FILE__)}/..")
 require "#{root_path}/util/insite_logger"
 require "#{root_path}/util/exception_util"
 require "#{root_path}/util/config_file"
-require 'rhosync'
+require "#{root_path}/util/rhosync_api_session"
 
-module RhosyncResqueJob      
-  # Override default rhosync store connection (localhost) with configured redis host
-  Rhosync::Store.db.client.disconnect if defined?(Rhosync::Store.db.client)
-  puts "Connecting to redis at #{CONFIG[:redis_url]}:#{CONFIG[:redis_port]}"
-  Rhosync::Store.db = Redis.new(:thread_safe => true, :host => CONFIG[:redis_url], :port => CONFIG[:redis_port])
+module RhosyncResqueJob
+  
+  @@rhosync_api = nil
+  
+  def rhosync_api
+    @@rhosync_api ||= RhosyncApiSession.new(CONFIG[:resque_worker_rhosync_api_host], CONFIG[:resque_worker_rhosync_api_password])
+  end
   
   def users
-    userkeys = Rhosync::Store.db.keys('user:*:rho__id')
-    userkeys.map{|u| Rhosync::Store.db.get(u)}
+    rhosync_api.get_all_users
   end
 end

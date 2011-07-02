@@ -1,6 +1,3 @@
-app_path = File.expand_path(File.join(File.dirname(__FILE__))) 
-require "#{app_path}/../util/config_file"
-
 require 'rest-client'
 require 'ap'
 require 'json'
@@ -8,10 +5,24 @@ require 'yaml'
 
 class RhosyncApiSession
   
-  def initialize(target)    
-    load_config_settings(target)            
-    login()
-    set_token()
+  def initialize(host, password)
+    @server = host
+    @password = password
+    login
+  end
+  
+  def push_deletes(source_id, user_id, object_ids)
+    params_hash = {
+      :api_token => @token,
+      :user_id => user_id,
+      :source_id => source_id,
+      :objects => object_ids
+    }
+    RestClient.post(
+      "#{@server}api/push_deletes",
+      params_hash.to_json,
+      :content_type => :json
+    )
   end
   
   def get_db_doc(doc, type=nil)
@@ -77,16 +88,6 @@ class RhosyncApiSession
     users.gsub(/[\[\]]/, '').gsub('"','').split(",")
   end
 
-  def load_config_settings(target)
-    @target = target || :onsite_model
-    settings = YAML::load_file('settings/settings.yml')
-  
-    @config = ConfigFile.get_settings_for_environment(settings, @target)
-    @app_path = File.expand_path(File.dirname(__FILE__))
-    @server = (@config[:syncserver] || "").sub('/application', '')
-    @password = (@config[:rhoadmin_password] || "")    
-  end
-
   def login()
     res = RestClient.post("#{@server}login", { :login => 'rhoadmin', :password => @password }.to_json, :content_type => :json)
   
@@ -96,34 +97,11 @@ class RhosyncApiSession
     #URL-encoded value of '%25' to prevent escaped characters in the given cookie from being unescaped by
     #rest-client. For example, a given cookie of "1234%3D%0A5" would have been unescaped and sent back to
     #RhoSync as "12345=\n5", but RhoSync expects the cookie to be in its original escaped format.
-    @preserved_cookies = res.cookies.inject({}){ |h,(key,value)| 
-       h[key] = value.gsub('%', '%25')
-       h
-     }
-  end
-
-  def set_token
-    tokenfile = '.rhosync_token'
-    begin
-      @token = RestClient.post("#{@server}api/get_api_token",'',{ :cookies => @preserved_cookies, })    
-      File.open(tokenfile, 'w') {|f| f.write(@token) }
-    rescue Exception => e
-      puts "!!!! Exception thrown: #{e.inspect}"
-    end    
-  end
-
-  def get_token
-    tokenfile = '.rhosync_token'
-    begin
-      if File.exists?(tokenfile)
-        @token = File.readlines(tokenfile).first.strip
-      else
-        set_token
-      end
-    rescue Exception => e
-      puts "!!!! Exception thrown: #{e.inspect}"
-    end
-    @token
+    cookies = res.cookies.inject({}){ |h,(key,value)| 
+      h[key] = value.gsub('%', '%25')
+      h
+    }
+    @token = RestClient.post("#{@server}api/get_api_token",'',{ :cookies => cookies, })
   end
 
 end

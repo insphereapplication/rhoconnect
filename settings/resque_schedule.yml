@@ -10,3 +10,9 @@ limit_client_exceptions:
   class: LimitClientExceptions
   args:
   description: "This job limits logged client exceptions to a max of 100"
+validate_redis_data:
+  queue: validate_redis_data  
+  cron: "01 4 * * *"
+  class: ValidateRedisData
+  args:
+  description: "This job validates that the data in redis for each user matches CRM"

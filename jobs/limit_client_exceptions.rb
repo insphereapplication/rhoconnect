@@ -14,13 +14,16 @@ class LimitClientExceptions
         get_master_docs.each do |user, client_exceptions|
           InsiteLogger.info "Limiting client exceptions for user #{user}"
           # the key of each ClientException record in redis is based on the time the exception was thrown, 
-          # so we can safely sort and remove exceptions based on the value of that 
-          keep_exceptions = client_exceptions.keys.sort.slice(0, client_exception_limit)
-          if keep_exceptions && keep_exceptions.size > 0
-            removed_exceptions = client_exceptions.reject{|k,v| keep_exceptions.include?(k) }
-            Rhosync::Store.delete_data("source:application:#{user}:ClientException:md", removed_exceptions)
+          # so we can safely sort and remove exceptions based on the value of that
+          client_exception_count = client_exceptions.count
+          if client_exception_count > client_exception_limit
+            # Keep the n most recent client exceptions, where n=client_exception_limit
+            removed_exception_ids = client_exceptions.keys.sort.slice(0,client_exception_count-client_exception_limit)
+            InsiteLogger.info(:format_and_join => ["Removing #{removed_exception_ids.count} exceptions for user #{user}: ",removed_exception_ids])
+            rhosync_api.push_deletes('ClientException',user,removed_exception_ids)
+          else
+            InsiteLogger.info "No exceptions to remove for user #{user}"
           end
-          InsiteLogger.info "Client exceptions removed for user #{user}"
         end
       end
     end
@@ -29,7 +32,7 @@ class LimitClientExceptions
        users.map do |user| 
          [ 
            user,
-           Rhosync::Store.get_data("source:application:#{user}:ClientException:md")
+           rhosync_api.get_db_doc("source:application:#{user}:ClientException:md")
          ]
       end
     end
