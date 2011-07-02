@@ -35,7 +35,6 @@ after "deploy:update", "deploy:set_license"
 after "deploy:update", "deploy:httpd_conf"
 after "deploy:update", "deploy:gemfile"
 
-
 # Runs the given command as the given user. Prompts for the user's password then passes that as a response to any password prompts
 def run_as_user_send_password(user, command)
   @response_hash = {}
@@ -146,11 +145,7 @@ namespace :resque do
   end
   
   task :start_workers, :roles => :resque do 
-    QUEUE_NAMES.each{|queue| run "cd #{current_release}/jobs; VVERBOSE=1 QUEUE=#{queue} rake resque:work --trace >> #{shared_path}/#{queue}.log &"}
-  end
-  
-  task :init_clean_old_opp_data, :roles => :resque do 
-    run "cd #{current_release}/jobs; VVERBOSE=1 QUEUE=clean_old_opportunity_data rake resque:work --trace"
+    QUEUE_NAMES.each{|queue| run "cd #{current_release}/jobs; VVERBOSE=1 QUEUE=#{queue} rake resque:work --trace >> #{shared_path}/log/#{queue}.log &"}
   end
   
   task :start_console, :roles => :resque do 
@@ -159,6 +154,14 @@ namespace :resque do
   
   task :stop_console, :roles => :resque do
     run "ps -ef | grep -P '^((?!grep).)*resque-web.*$' | awk '{print $2}' | xargs -rt kill; true"
+  end
+  
+  task :start_scheduler, :roles => :resque do
+    run "cd #{current_release}/jobs; rake resque:scheduler >> #{shared_path}/log/resque_scheduler.log &"
+  end
+  
+  task :stop_scheduler, :roles => :resque do
+    run "ps -ef | grep -P '^((?!grep).)*resque:scheduler.*$' | awk '{print $2}' | xargs -r -t kill; true"
   end
 end
 
