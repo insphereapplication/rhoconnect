@@ -78,19 +78,6 @@ namespace :server do
     `rm #{tokenfile}`
   end
   
-  task :get_user_token, [:username] => :set_token do |t, args|
-    puts "getting user token..."
-    res = JSON.parse(RestClient.post(
-      "#{$server}api/get_user_token", 
-      { 
-        :api_token => @token, 
-        :username => args[:username]
-      }.to_json, 
-      :content_type => :json
-    ).body)
-    ap res
-  end
-  
   desc "Creates a user with the given password in the system at #{$server}"
   task :create_user, [:login, :password] => :set_token do |t, args|
     RestClient.post("#{$server}api/create_user",
