@@ -546,6 +546,19 @@ namespace :server do
     ap(platform_counts,:plain => true)
   end
   
+  desc "Checks redis for dead/failed locks"
+  task :get_dead_locks => [:set_token] do |t,args|
+    res = RestClient.post(
+      "#{$server}api/get_dead_locks", 
+      { 
+        :api_token => @token
+      }.to_json, 
+      :content_type => :json
+    ).body
+    dead_locks = JSON.parse(res)
+    ap dead_locks.reduce({}){|sum,(key,value)| sum[key] = Time.at(value.to_i); sum }
+  end
+  
   namespace :opportunity do
     desc "Creates <num_contacts> opportunities for <user_id> with generated attributes in the current target server."
     task :create, [:user_id, :first_name, :last_name]  => :set_token do |t, args|
