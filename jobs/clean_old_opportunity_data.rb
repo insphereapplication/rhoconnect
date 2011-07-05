@@ -35,7 +35,7 @@ class CleanOldOpportunityData
           
           InsiteLogger.info(:format_and_join => ["Deleting for user #{user}: opps ",old_opportunity_ids,", contacts: ",old_contact_ids,", activities: ",old_activity_ids])
           
-          # delete expired records for both models 
+          # delete expired records for all models 
           rhosync_api.push_deletes('Activity',user,old_activity_ids) unless old_activity_ids.empty?
           rhosync_api.push_deletes('Opportunity',user,old_opportunity_ids) unless old_opportunity_ids.empty?
           rhosync_api.push_deletes('Contact',user,old_contact_ids) unless old_contact_ids.empty?
