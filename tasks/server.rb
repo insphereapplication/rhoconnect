@@ -559,6 +559,12 @@ namespace :server do
     ap dead_locks.reduce({}){|sum,(key,value)| sum[key] = Time.at(value.to_i); sum }
   end
   
+  desc "Get client exceptions for user, sorted by exception date ascending"
+  task :get_client_exceptions, [:user_id] => :set_token do |t,args|
+    abort "user_id must be specified" unless args[:user_id]
+    ap get_md(args[:user_id],'ClientException').sort.map{|key,value| [Time.at(key.to_i),value]}
+  end
+  
   namespace :opportunity do
     desc "Creates <num_contacts> opportunities for <user_id> with generated attributes in the current target server."
     task :create, [:user_id, :first_name, :last_name]  => :set_token do |t, args|
