@@ -550,6 +550,15 @@ def generate_new_dependents_for_contact(server,credential,identity,dependent_cou
   created_dependent_ids
 end
 
+def delete_activity_by_id(server,credential,identity,activity_id,activity_type)  
+  puts "Deleting activity ID #{activity_id} of type #{activity_type}. Server: #{server}"
+  activity_data = {
+    'activityid' => activity_id,
+    'type' => activity_type    
+  }  
+	RestClient.post("#{server}/activity/delete", credential.to_hash.merge(:attributes => activity_data.to_json)).body
+end
+
 def delete_dependent_by_id(server,credential,identity,dependent_id)
   puts "Deleteing #{dependent_id}"
   delete_dependent(server,credential,identity,dependent_id)

@@ -28,6 +28,14 @@ namespace :proxy do
     update_policy_primary_insured(@proxy_url,@credential,@identity,policy_id,primary_insured)
   end
   
+  desc "Deletes an activity in CRM given its GUID and activity type"
+  task :delete_activity, [:activity_id,:activity_type] => [:setup, :set_identity] do |t,args|
+    activity_id = args[:activity_id]
+    activity_type = args[:activity_type]
+    
+    delete_activity_by_id(@proxy_url,@credential,@identity,activity_id,activity_type)
+  end
+  
   desc "Resets the DNC status of all numbers on [contact_id] back to allow calls."
   task :reset_contact_dncstatus, [:contact_id] => [:setup, :set_identity] do |t,args|
     contact_id = args[:contact_id]
