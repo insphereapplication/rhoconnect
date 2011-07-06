@@ -386,6 +386,24 @@ namespace :server do
     JSON.parse(res)
   end
   
+  task :check_duplicate_activities, [:user_pattern] => [:set_token] do |t, args|
+    abort "User pattern and model must be specified" unless args[:user_pattern] and args[:model]
+    filtered_users = get_users.reject{|user| user[Regexp.new(args[:user_pattern])].nil?}
+    
+    results = filtered_users.reduce([]){|sum,user|
+      records = get_md(user, 'Activity')
+      due_date_counts = {}
+      records.map{|key,value|
+        date_count_key = "#{value['parent_id']},#{value['scheduledend']}"
+        due_date_counts[date_count_key] = 0 unless due_date_counts[date_count_key]
+        due_date_counts[date_count_key] += 1
+      }
+      sum << {:user => user, :count => records.count, :by_due_date => due_date_counts.reject{|key,value| value < 2}}
+    }
+    
+    ap results.sort{|x,y| y[:count] <=> x[:count]}
+  end
+  
   desc "check data integrity for all users matching regex pattern <user_pattern> (i.e. use 'check_integrity[.]' to check all users)"
   task :check_integrity, [:user_pattern] => [:set_token] do |t, args|
     abort "!!! User regex pattern must be specified (i.e. 'rake server:check_integrity[\"a[0-9]\"]' to check integrity for all users that match the agent code pattern)" unless args[:user_pattern]
