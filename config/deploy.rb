@@ -140,12 +140,29 @@ namespace :resque do
   
   QUEUE_NAMES = ["limit_client_exceptions","clean_old_opportunity_data","validate_redis_data"]
   
+  task :restart, :roles => :resque do
+    stop
+    start
+  end
+  
+  task :stop, :roles => :resque do
+    stop_scheduler
+    stop_workers
+    stop_console
+  end
+  
+  task :start, :roles => :resque do
+    start_console
+    start_workers
+    start_scheduler
+  end
+  
   task :stop_workers, :roles => :resque do
     QUEUE_NAMES.each{|queue| run "ps -ef | grep -P '^((?!grep).)*resque.*#{queue}.*$' | awk '{print $2}' | xargs -rt kill; true"}
   end
   
   task :start_workers, :roles => :resque do 
-    QUEUE_NAMES.each{|queue| run "cd #{current_release}/jobs; VVERBOSE=1 QUEUE=#{queue} rake resque:work --trace >> #{shared_path}/log/#{queue}.log &"}
+    QUEUE_NAMES.each{|queue| run "cd #{current_release}/jobs; VVERBOSE=1 QUEUE=#{queue} rake resque:work --trace >> #{shared_path}/log/jobs/#{queue}.log &"}
   end
   
   task :start_console, :roles => :resque do 
@@ -157,11 +174,11 @@ namespace :resque do
   end
   
   task :start_scheduler, :roles => :resque do
-    run "cd #{current_release}/jobs; rake resque:scheduler >> #{shared_path}/log/resque_scheduler.log &"
+    run "cd #{current_release}/jobs; rake resque:scheduler >> #{shared_path}/log/jobs/resque_scheduler.log &"
   end
   
   task :stop_scheduler, :roles => :resque do
-    run "ps -ef | grep -P '^((?!grep).)*resque:scheduler.*$' | awk '{print $2}' | xargs -r -t kill; true"
+    run "ps -ef | grep -P '^((?!grep).)*resque:scheduler.*$' | awk '{print $2}' | xargs -rt kill; true"
   end
 end
 
