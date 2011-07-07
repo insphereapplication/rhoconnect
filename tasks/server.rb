@@ -6,7 +6,7 @@ API_KEY = 'b8788d7b2ae404c9661f40215f5d9258aede9c83'
 
 $settings_file = 'settings/settings.yml'
 $settings = YAML::load_file($settings_file)
-$target = :onsite_model
+$target = :onsite
 $config = ConfigFile.get_settings_for_environment($settings, $target)
 $app_path = File.expand_path(File.dirname(__FILE__))
 $server = ($config[:syncserver] || "").sub('/application', '')
@@ -386,8 +386,28 @@ namespace :server do
     JSON.parse(res)
   end
   
+  task :check_duplicate_activities_print, [:user_pattern] => [:set_token] do |t, args|
+    abort "User pattern must be specified" unless args[:user_pattern]
+    filtered_users = get_users.reject{|user| user[Regexp.new(args[:user_pattern])].nil?}
+    
+    user_data = filtered_users.reduce({}) do |user_hash,user|
+      
+      records = get_md(user, 'Activity')
+      
+      records.each do |id,details|        
+        key = "#{user}|#{details['parent_id']}|#{details['scheduledend']}"
+        user_hash[key] = [] unless user_hash[key]
+        user_hash[key] << id        
+      end
+      user_hash
+    end
+    
+    user_data.reject!{ |key,val| val.count < 2 }
+    puts user_data.reduce({}){ |sum,v| sum[v[0]] = v[1].count; sum  }.inspect    
+  end  
+  
   task :check_duplicate_activities, [:user_pattern] => [:set_token] do |t, args|
-    abort "User pattern and model must be specified" unless args[:user_pattern] and args[:model]
+    abort "User pattern must be specified" unless args[:user_pattern]
     filtered_users = get_users.reject{|user| user[Regexp.new(args[:user_pattern])].nil?}
     
     results = filtered_users.reduce([]){|sum,user|
@@ -401,6 +421,7 @@ namespace :server do
       sum << {:user => user, :count => records.count, :by_due_date => due_date_counts.reject{|key,value| value < 2}}
     }
     
+    results.reject!{ |x| x[:count] == 0 or x[:by_due_date].empty? }
     ap results.sort{|x,y| y[:count] <=> x[:count]}
   end
   
