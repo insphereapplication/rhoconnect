@@ -1,3 +1,7 @@
+app_path = File.expand_path(File.join(File.dirname(__FILE__))) 
+require "#{app_path}/../util/config_file"
+require "#{app_path}/../helpers/crypto"
+
 require 'rest-client'
 require 'ap'
 require 'json'
@@ -24,6 +28,11 @@ class RhosyncApiSession
       :content_type => :json
     )
   end
+    
+  def get_user_password(user)    
+    encrypted_password = get_db_doc("username:#{user}:password", 'string')
+    Crypto.decrypt(encrypted_password)
+  end  
   
   def get_db_doc(doc, type=nil)
     
