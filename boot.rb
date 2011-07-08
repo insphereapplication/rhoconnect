@@ -6,6 +6,7 @@ require "#{app_path}/util/redis_util"
 require "#{app_path}/util/exception_util"
 require "#{app_path}/util/update_util"
 require "#{app_path}/util/proxy_util"
+require "#{app_path}/util/sync_status_util"
 require "#{app_path}/helpers/crypto"
 require 'resque_scheduler'
 require 'ap'

@@ -40,9 +40,8 @@ class UpdateUtil
       yield(SourceSync.new(source)) if block_given?
     rescue StoreLockException
       # reset sync status for user
-      user_key_pattern = "username:#{source.user_id}:[^:]*:initialized"
-      InsiteLogger.info "Got StoreLockException for user #{source.user_id} in update util; resetting sync status for pattern #{user_key_pattern}."
-      Store.flash_data(user_key_pattern)
+      InsiteLogger.info "Got StoreLockException for user #{source.user_id} in update util; resetting sync status."
+      SyncStatusUtil.reset_sync_status(source.user_id)
       reraise_lock_exception ? raise : InsiteLogger.info(:format_and_join => ["Not re-raising, call stack: ",caller])
     end
   end
