@@ -62,7 +62,7 @@ local_crm_proxy: http://192.168.51.128/ # Change this if you're running locally 
     :mobile_crypt_key: "HFAGIEH777837776KFKHHSJJJFHEUUGF"
   :resque_worker_rhosync_api_host: 'http://127.0.0.1/'
   :resque_worker_rhosync_api_password: ''
-  :resque_data_validation_email_group: vishal.bardoloi@parivedasolutions.com
+  :resque_data_validation_email_group: test@test.com # change this to your own debug value; it will be overwritten automatically in Prod
 # The following sections inherit from the global section and will override any values duplicated from global (:ssl:, etc.)
 # The :env: value above determines which of these sections is used by the Rhosync environment.
 :test: 
@@ -136,6 +136,7 @@ local_crm_proxy: http://192.168.51.128/ # Change this if you're running locally 
   :log:
     :mode: 'file'
   :resque_worker_rhosync_api_password: aW9wVhyU84Sj
+  :resque_data_validation_email_group: InsphereMobileSupport@inspherehq.com
 :onsite_model: 
   :bundler: true
   :redis_boot: true
