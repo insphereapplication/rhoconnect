@@ -52,10 +52,10 @@ class Contact < SourceAdapter
       InsiteLogger.info "CREATE CONTACT"
       ExceptionUtil.context(:current_user => current_user.login, :create_hash => create_hash)
       
-      if (create_hash['contactid'].upcase.match('[A-Z0-9]{8}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{12}'))
+      if (create_hash['contactid'] && create_hash['contactid'].upcase.match('[A-Z0-9]{8}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{12}'))
         #contact already exists in CRM; do not push to CRM. Only create it on the device.
         result = create_hash['contactid']
-      else  
+      else
         #new contact created on the device; call proxy_create to push new contact to CRM
         #include user_id context needed by mapper on create
         result = proxy_create(create_hash,{:user_id => Store.get_value(@user_id_key)})     
