@@ -125,6 +125,10 @@ class RhosyncSession
     raise "No links given after #{model} create for #{login}" unless last_result[5]['links']
     
     model_id = last_result[5]['links'].values.first['l']
+    
+    puts "Links:"
+    ap last_result[5]['links']
+    
     puts "New #{model} id: #{model_id}"
 
     puts "acking the create..."

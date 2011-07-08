@@ -41,6 +41,7 @@ module TestData
     def create_phone_call(parent_id, parent_contact_id, disposition, statecode = "", statuscode = "")
       res = {}
       mock_id = UUIDTools::UUID.random_create.to_s.gsub(/\-/,'')
+      
       res[mock_id] = 
       {
                   "scheduledstart" => "2011-04-21 17:00:00",
@@ -58,7 +59,9 @@ module TestData
                      "description" => "",
                 "cssi_disposition" => disposition, #"Left Message"/"Contact Made"/"No Answer"
                        "statecode" => statecode,
-                      "statuscode" => statuscode
+                      "statuscode" => statuscode,
+                         "temp_id" => mock_id
+                      
       }
       res
     end  

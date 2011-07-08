@@ -2,7 +2,7 @@ require 'rhosync_session'
 require 'test_data'
 
 # agent = {:login => 'stephen.pillow', :password => 'Pariveda1'}
-base_url = 'https://rhosync.insphereis.net/application'
+base_url = 'http://localhost:9292/application'
 $CURRENT_LOGIN
 
 namespace :client do 
@@ -35,6 +35,18 @@ namespace :client do
     
     update_hash = TestData.get_activity_updated('PhoneCall', new_activity_id, "Left Message", 'Completed', 'Made')
     @session.update('Activity', update_hash)
+  end
+  
+  task :create_duplicate_activity, [:login] => [:login, :load_opps] do |t, args|
+    $CURRENT_LOGIN = args.login
+    raise "no opps created" unless @opps
+    opp = @opps.first
+    create_hash = TestData.create_phone_call(opp['opportunityid'], opp['contact_id'], "Left Message", 'Open', 'Open')
+    new_activity_id = @session.create('Activity', create_hash)
+    new_activity_id = @session.create('Activity', create_hash)
+    
+    # update_hash = TestData.get_activity_updated('PhoneCall', new_activity_id, "Left Message", 'Completed', 'Made')
+    # @session.update('Activity', update_hash)
   end
   
   
