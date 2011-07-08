@@ -24,8 +24,6 @@ class SearchContacts < SourceAdapter
            :content_type => :json
       ).body
          
-      # hard-coding PK to 1 -- this is basically a singleton object for the user. There 
-      # will be one search results representing the results of the last search term
       @result = { Time.now.to_i => {
           :terms => params.to_json,
           :results => Mapper.map_source_data(result, 'Contact').to_json
