@@ -15,7 +15,7 @@ class RhosyncSession
       puts "Loading persisted session from #{serialized_filename(login)}"
       load(login)
     else
-      puts "Creating new session for #{login}/#{password}..."
+      #puts "Creating new session for #{login}/#{password}..."
       session = new(base_url, login, password)
       puts "Session created, persisting..."
       session.persist_local

@@ -31,7 +31,7 @@ class StaticEntity < SourceAdapter
         carriers << carrier << "||"
       end
       
-      ap "Carriers: #{carriers}"
+      #ap "Carriers: #{carriers}"
       
       lob_res = JSON.parse(RestClient.post(@staticentity_url, {:username => @username,
                                                                :password => @password,
@@ -43,7 +43,7 @@ class StaticEntity < SourceAdapter
         lobs << lob << "||"
       end               
 
-      ap "LOB Entity options: #{lobs}"                               
+      #ap "LOB Entity options: #{lobs}"                               
 
       rawlead_lob_res = JSON.parse(RestClient.post("#{@staticentity_url}/getattributeoptions",
                                                           {:username => @username,
@@ -57,7 +57,7 @@ class StaticEntity < SourceAdapter
         rawlead_lobs << lob << "||"
       end
       
-      ap "Raw Lead LOB picklist options: #{rawlead_lobs}"                               
+      #ap "Raw Lead LOB picklist options: #{rawlead_lobs}"                               
 
       lead_source_res = JSON.parse(RestClient.post(@staticentity_url, {:username => @username,
                                                                        :password => @password,
@@ -69,7 +69,7 @@ class StaticEntity < SourceAdapter
         lead_sources << lead_source << "||"
       end             
             
-      ap "Lead sources: #{lead_sources}"                 
+      #ap "Lead sources: #{lead_sources}"                 
       
       ExceptionUtil.context(:result => @result)          
       

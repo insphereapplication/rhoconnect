@@ -10,7 +10,7 @@ class CryptKey < SourceAdapter
   def query(params=nil)
     settings = YAML::load_file('settings/settings.yml')
     mobile_crypt_key = settings[:global][:app_info][:mobile_crypt_key]
-    ap "*** Crypt key is:  #{mobile_crypt_key} ***"
+    #ap "*** Crypt key is:  #{mobile_crypt_key} ***"
     @result = { "1" => { :mobile_crypt_key => mobile_crypt_key } }
     
   end
