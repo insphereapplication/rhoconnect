@@ -1,11 +1,31 @@
 require 'ap'
 
 class ConflictManagementUtil
-  OPPORTUNITY_CONFLICT_FIELDS = ['statuscode', 'statecode', 'cssi_statusdetail', 'cssi_lastactivitydate']
+  OPPORTUNITY_CONFLICT_FIELDS = ['statuscode', 'statecode', 'cssi_statusdetail']
+  FIELDS_TO_REJECT_ON_CONFLICT = OPPORTUNITY_CONFLICT_FIELDS + ['cssi_lastactivitydate']
+  
+  STATUS_HISTORY_FIELD = '_status_'
+  
+  def self.get_update_history_util(user_id)
+    UpdateHistoryUtil.new('Opportunity',user_id)
+  end
+  
+  def self.process_opportunity_push(user_id, push_hash)
+    # if the hash being pushed contains any of the conflict fields, make sure to touch the update the timestamp stored in our status history field
+    push_hash.each{|opp_id,opp|
+      if opp_id && opp.select{|key,value| OPPORTUNITY_CONFLICT_FIELDS.include?(key)}.count > 0
+        touch_result = get_update_history_util(user_id).touch(opp_id,STATUS_HISTORY_FIELD)
+        InsiteLogger.info "Detected update to opportunity conflict fields for #{user_id}'s opp #{opp_id}, touched update history. Old time: #{touch_result[:prior_update_time]}, new time: #{touch_result[:new_update_time]}"
+      else
+        InsiteLogger.info "No updates to opportunity conflict fields detected for #{user_id}'s opp #{opp_id}, no need to touch update history."
+      end
+    }
+  end
+  
   def self.reject_conflict_fields(update_hash)
     rejected_fields = {}
     update_hash.reject!{|key, value| 
-      should_reject = OPPORTUNITY_CONFLICT_FIELDS.include?(key)
+      should_reject = FIELDS_TO_REJECT_ON_CONFLICT.include?(key)
       rejected_fields[key] = value if should_reject
       should_reject
     }
@@ -39,21 +59,21 @@ class ConflictManagementUtil
       return {}
     end
     
+    last_status_update = get_update_history_util(current_user.login).last_update(opp_id,STATUS_HISTORY_FIELD)
+    
     # don't reject anything if redis doesn't have a last activity date for the updated opportunity
-    if redis_opp['cssi_lastactivitydate'].blank?
-      InsiteLogger.info "No prior last activity date found in redis, therefore no conflicts found for opp #{opp_id}."
+    if last_status_update.nil?
+      InsiteLogger.info "No prior update found, therefore no conflicts found for opp #{opp_id}."
       return updated_opportunity
     end
-    
-    redis_last_activity_date = Time.parse(redis_opp['cssi_lastactivitydate'])
   
     client_last_activity_date = Time.parse(updated_opportunity['cssi_lastactivitydate'])
     
-    InsiteLogger.info "Redis last activity date = #{redis_last_activity_date}"
+    InsiteLogger.info "Last known status update = #{last_status_update}"
     InsiteLogger.info "Client last activity date = #{client_last_activity_date}"
     
-    # If the redis last activity date is 5 minutes or more after the client's last activity date, reject the update
-    if (redis_last_activity_date - client_last_activity_date > CONFIG[:conflict_management_threshold])
+    # If the difference between the redis last activity date and the client's last activity date is greater than the configured threshold, reject the update
+    if (last_status_update - client_last_activity_date > CONFIG[:conflict_management_threshold])
       updated_opportunity,rejected_fields = reject_conflict_fields(updated_opportunity)
       InsiteLogger.info(:format_and_join => ["Found conflict for opportunity #{opp_id}, rejected fields: ", rejected_fields])
     else
