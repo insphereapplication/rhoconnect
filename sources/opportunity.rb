@@ -88,7 +88,7 @@ class Opportunity < SourceAdapter
       update_hash = ConflictManagementUtil.manage_opportunity_conflicts(update_hash, current_user)
       
       # unless conflict management completely rejected the update
-      unless update_hash.length == 0
+      unless update_hash.length <= 1
         
         # update CRM by calling update in Proxy
         start = Time.now
