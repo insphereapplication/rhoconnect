@@ -12,6 +12,7 @@ describe ConflictManagementUtil do
   # it_should_behave_like "SpecHelper"
   
   before(:all) do
+    @early_opp_id = "1234567890"
     @current_user = Object.new
     def @current_user.login
        "testuser" 
@@ -124,14 +125,31 @@ describe ConflictManagementUtil do
      result['statecode'].should == 'client state'
      result['cssi_lastactivitydate'].should == client_lad
    end
+   
+  it "should not reject updates if the last activity date from the client is less than 5 minutes behind that of CRM" do
+    RedisUtil.stub!(:get_model).and_return({'cssi_lastactivitydate' => Time.now.to_s})
+    
+    client_lad = 4.5.minutes.ago.to_s
+    
+    result = ConflictManagementUtil.manage_opportunity_conflicts({
+       'id' => @early_opp_id,   
+       'cssi_lastactivitydate' => client_lad,
+       'statuscode' => 'client status',
+       'statecode' => 'client state'
+     }, FakeUser.new)
+  
+     result['statuscode'].should ==  'client status'
+     result['statecode'].should == 'client state'
+     result['cssi_lastactivitydate'].should == client_lad
+  end
   
     it "should not send down conflict fields if last_activity_date in Redis is earlier than last_activity_date on the client" do
-      RedisUtil.stub!(:get_model).and_return({'cssi_lastactivitydate' => 1.day.ago.to_s})
+      RedisUtil.stub!(:get_model).and_return({'cssi_lastactivitydate' => Time.now.to_s})
       
       current_user = Object.new
       def current_user.login; end
       
-      client_lad = 2.days.ago.to_s
+      client_lad = 5.1.minutes.ago.to_s
       
       result = ConflictManagementUtil.manage_opportunity_conflicts({
         'cssi_lastactivitydate' => client_lad,

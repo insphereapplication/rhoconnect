@@ -51,8 +51,9 @@ class ConflictManagementUtil
     
     InsiteLogger.info "Redis last activity date = #{redis_last_activity_date}"
     InsiteLogger.info "Client last activity date = #{client_last_activity_date}"
-
-    if (redis_last_activity_date > client_last_activity_date)
+    
+    # If the redis last activity date is 5 minutes or more after the client's last activity date, reject the update
+    if (redis_last_activity_date - client_last_activity_date > CONFIG[:conflict_management_threshold])
       updated_opportunity,rejected_fields = reject_conflict_fields(updated_opportunity)
       InsiteLogger.info(:format_and_join => ["Found conflict for opportunity #{opp_id}, rejected fields: ", rejected_fields])
     else
