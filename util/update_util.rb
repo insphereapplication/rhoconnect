@@ -3,6 +3,7 @@ require 'ap'
 class UpdateUtil
   def self.push_update(source, update_hash, reraise_lock_exception=false)
     push_hash = build_push_hash(update_hash)
+    PushHandler.handle_push(source.name, source.user_id, push_hash)
     InsiteLogger.info(:format_and_join => ["*"*10 + "Committing update to redis for model #{source.name} for user #{source.user_id}: ", push_hash])
     rejected_creates = []
     
@@ -16,6 +17,7 @@ class UpdateUtil
   
   def self.push_createupdate(source, createupdate_hash, reraise_lock_exception=false)
     push_hash = build_push_hash(createupdate_hash)
+    PushHandler.handle_push(source.name, source.user_id, push_hash)
     InsiteLogger.info(:format_and_join => ["*"*10 + "Committing create/update to redis for model #{source.name} for user #{source.user_id}: ", push_hash])
     using_source_sync(source,reraise_lock_exception) do |source_sync|
       source_sync.push_objects(push_hash)
@@ -23,6 +25,7 @@ class UpdateUtil
   end
   
   def self.push_objects(source, objects, reraise_lock_exception=false)
+    PushHandler.handle_push(source.name, source.user_id, objects)
     InsiteLogger.info(:format_and_join => ["*"*10 + "Committing to redis for model #{source.name} for user #{source.user_id}: ", objects])
     using_source_sync(source,reraise_lock_exception) do |source_sync|
       source_sync.push_objects(objects)

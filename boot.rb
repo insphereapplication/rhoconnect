@@ -2,8 +2,10 @@ app_path = File.expand_path(File.join(File.dirname(__FILE__)))
 
 require "#{app_path}/util/config_file"
 require "#{app_path}/mappers/mapper"
+require "#{app_path}/push_handlers/push_handler"
 require "#{app_path}/util/redis_util"
 require "#{app_path}/util/exception_util"
+require "#{app_path}/util/update_history_util"
 require "#{app_path}/util/update_util"
 require "#{app_path}/util/proxy_util"
 require "#{app_path}/util/sync_status_util"
@@ -19,7 +21,8 @@ require 'sinatra'
   'jobs', 
   'api', 
   'initializers', 
-  'mappers'
+  'mappers',
+  'push_handlers'
 ].each do 
    |dir| Dir[File.join(File.dirname(__FILE__),dir,'**','*.rb')].each { |file| require file }
  end
