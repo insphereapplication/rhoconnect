@@ -14,8 +14,12 @@ class ClientException < SourceAdapter
  
   def create(client_exception,blob=nil)
     ExceptionUtil.rescue_and_reraise do
+      client_exception.merge!({
+        :server_created_on => Time.now.strftime(DateUtil::DEFAULT_TIME_FORMAT)
+      })
+      
       InsiteLogger.info(:format_and_join => ["!!! Client exception created: ",client_exception])
-
+      
       client_exception['exception_id']
     end
   end
