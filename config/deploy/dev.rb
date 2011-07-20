@@ -1,5 +1,5 @@
 # env determines the environment section in settings/settings.yml that will be used by Rhosync
-set :env, :onsite_dev
+set :env, :development
 # target servers 
 role :app, "nrhrhod401.uicnrh.dom"
 role :resque, "nrhrhod401.uicnrh.dom"
