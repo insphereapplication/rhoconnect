@@ -5,6 +5,3 @@ role :app, "nrhrho201.uicnrh.dom", "nrhrho202.uicnrh.dom"
 role :resque, "nrhrho201.uicnrh.dom"
 set :server_name, "https://rhosync.model.insphereis.net"
 set :branch,      "master"
-
-before "deploy:update", "resque:stop"
-after "deploy:update", "resque:start"

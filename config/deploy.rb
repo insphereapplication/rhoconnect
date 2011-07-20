@@ -35,6 +35,9 @@ after "deploy:update", "deploy:set_license"
 after "deploy:update", "deploy:httpd_conf"
 after "deploy:update", "deploy:gemfile"
 
+before "deploy:update", "resque:stop"
+after "deploy:update", "resque:start"
+
 # Runs the given command as the given user. Prompts for the user's password then passes that as a response to any password prompts
 def run_as_user_send_password(user, command)
   @response_hash = {}
