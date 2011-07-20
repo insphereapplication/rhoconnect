@@ -1,5 +1,7 @@
 
 class PolicyMapper < Mapper
+  REJECT_FIELDS = ['cssi_decisionclassification'] # include fields here that are returned by the backend but are not defined in the fixed schema in rhodes
+  
   def map_from_source_hash(policy_array)
     policy_array.map! do |value| 
       carrier_id = value['cssi_carrierid']
@@ -23,6 +25,8 @@ class PolicyMapper < Mapper
       #always filter out attributes that are only set in RhoSync (avoids problems with fixed schema)
       #these fields are not modified from rhodes and should only be injected in map_data_from_client as needed
       value.reject!{|k,v|  ['ownerid'].include?(k) }
+      
+      value.reject!{|k,v| REJECT_FIELDS.include?(k) }
       value
     end
     policy_array.reduce({}){|sum, value| sum[value["cssi_policyid"]] = value if value; sum }
