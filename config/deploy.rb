@@ -1,4 +1,4 @@
-set :stages, %w(model prod resque_model resque_prod)
+set :stages, %w(model prod dev resque_model resque_prod)
 set :default_stage, 'model'
 require 'capistrano/ext/multistage'
 require 'ap'
