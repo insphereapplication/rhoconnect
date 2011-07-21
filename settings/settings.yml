@@ -82,6 +82,7 @@ local_crm_proxy: http://192.168.51.128/ # Change this if you're running locally 
     :mode: 'file'
 :development: 
   :crm_proxy: dev_crm_proxy
+  :redis_boot: true
   :iphonecertfile: settings/apple_push_cert_sandbox.pem
   :redis: nrhrhod403:6379
   :iphonepassphrase: Pariveda1
