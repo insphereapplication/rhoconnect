@@ -135,7 +135,6 @@ local_crm_proxy: http://192.168.51.128/ # Change this if you're running locally 
     :mode: 'file'
   :resque_worker_rhosync_api_password: U5PgMPngu27j
 :onsite_dev: 
-  :bundler: true
   :redis_boot: true
   :crm_proxy: dev_crm_proxy
   :iphonecertfile: settings/apple_push_cert_sandbox.pem
