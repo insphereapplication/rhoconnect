@@ -55,10 +55,10 @@ local_crm_proxy: http://192.168.51.128/ # Change this if you're running locally 
   :app_info:
     :min_required_version: 2.0.10 # This MUST be 3 groups of numbers, in the form x.x.x, or there is a risk of tossing an exception when checking for an upgrade
     :latest_version: 2.0.10 # This MUST be 3 groups of numbers, in the form x.x.x, or there is a risk of tossing an exception when checking for an upgrade
-    :apple_force_upgrade_url: 'itms-services://?action=download-manifest&amp;url=http://m.insphereis.net/InSiteMobile/Documents/InSite_Mobile.plist'
-    :apple_soft_upgrade_url: 'itms-services://?action=download-manifest&amp;url=http://m.insphereis.net/InSiteMobile/Documents/InSite_Mobile.plist'
-    :android_force_upgrade_url: 'https://m.insphereis.net/InSiteMobile'
-    :android_soft_upgrade_url: 'https://m.insphereis.net/InSiteMobile'
+    :apple_force_upgrade_url: 'itms-services://?action=download-manifest&amp;url=http://m.model.insphereis.net/InSiteMobile/Documents/InSite_Mobile.plist'
+    :apple_soft_upgrade_url: 'itms-services://?action=download-manifest&amp;url=http://m.model.insphereis.net/InSiteMobile/Documents/InSite_Mobile.plist'
+    :android_force_upgrade_url: 'https://m.model.insphereis.net/insitemobile'
+    :android_soft_upgrade_url: 'https://m.model.insphereis.net/insitemobile'
     :mobile_crypt_key: "HFAGIEH777837776KFKHHSJJJFHEUUGF"
   :resque_worker_rhosync_api_host: 'http://127.0.0.1/'
   :resque_worker_rhosync_api_password: ''
@@ -114,6 +114,11 @@ local_crm_proxy: http://192.168.51.128/ # Change this if you're running locally 
     :mode: 'file'
   :resque_worker_rhosync_api_password: aW9wVhyU84Sj
   :resque_data_validation_email_group: InsphereMobileSupport@inspherehq.com
+  :app_info:
+    :apple_force_upgrade_url: 'itms-services://?action=download-manifest&amp;url=http://m.insphereis.net/InSiteMobile/Documents/InSite_Mobile.plist'
+    :apple_soft_upgrade_url: 'itms-services://?action=download-manifest&amp;url=http://m.insphereis.net/InSiteMobile/Documents/InSite_Mobile.plist'
+    :android_force_upgrade_url: 'https://m.insphereis.net/InSiteMobile'
+    :android_soft_upgrade_url: 'https://m.insphereis.net/InSiteMobile'
 :onsite_model: 
   :bundler: true
   :redis_boot: true
