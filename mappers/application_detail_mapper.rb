@@ -26,7 +26,6 @@ class ApplicationDetailMapper < Mapper
       #always filter out attributes that are only set in RhoSync (avoids problems with fixed schema)
       #these fields are not modified from rhodes and should only be injected in map_data_from_client as needed
       value.reject!{|k,v|  ['ownerid', 'temp_id'].include?(k) }
-      value['cssi_avforapplicationsubmitted'] ||= '0.0'
       value
     end
     app_detail_mapper.reduce({}){|sum, value| sum[value["cssi_applicationid"]] = value if value; sum }
