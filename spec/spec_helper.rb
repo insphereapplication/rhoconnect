@@ -1,5 +1,6 @@
 require 'rubygems'
 require 'logger'
+require 'rspec'
 
 # Set environment to test
 ENV['RHO_ENV'] = 'test'
@@ -18,7 +19,6 @@ end
 # Load our rhosync application
 include Rhosync
 require "#{ROOT_PATH}/application"
-
 
 require 'rhosync/test_methods'
 require File.expand_path("#{ROOT_PATH}/boot.rb")

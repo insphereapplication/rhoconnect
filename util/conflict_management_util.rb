@@ -59,26 +59,28 @@ class ConflictManagementUtil
       return {}
     end
     
-    last_status_update = get_update_history_util(current_user.login).last_update(opp_id,STATUS_HISTORY_FIELD)
+    # last_status_update = get_update_history_util(current_user.login).last_update(opp_id,STATUS_HISTORY_FIELD)
+    #     
+    # # don't reject anything if redis doesn't have a last activity date for the updated opportunity
+    # if last_status_update.nil?
+    #   InsiteLogger.info "No prior update found, therefore no conflicts found for opp #{opp_id}."
+    #   return updated_opportunity
+    # end
+    #   
+    # client_last_activity_date = Time.parse(updated_opportunity['cssi_lastactivitydate'])
+    # 
+    # InsiteLogger.info "Last known status update = #{last_status_update}"
+    # InsiteLogger.info "Client last activity date = #{client_last_activity_date}"
+    # 
+    # # If the difference between the redis last activity date and the client's last activity date is greater than the configured threshold, reject the update
+    # if (last_status_update - client_last_activity_date > CONFIG[:conflict_management_threshold])
+    #   updated_opportunity,rejected_fields = reject_conflict_fields(updated_opportunity)
+    #   InsiteLogger.info(:format_and_join => ["Found conflict for opportunity #{opp_id}, rejected fields: ", rejected_fields])
+    # else
+    #   InsiteLogger.info "No conflicts found for opp #{opp_id}"
+    # end
     
-    # don't reject anything if redis doesn't have a last activity date for the updated opportunity
-    if last_status_update.nil?
-      InsiteLogger.info "No prior update found, therefore no conflicts found for opp #{opp_id}."
-      return updated_opportunity
-    end
-  
-    client_last_activity_date = Time.parse(updated_opportunity['cssi_lastactivitydate'])
-    
-    InsiteLogger.info "Last known status update = #{last_status_update}"
-    InsiteLogger.info "Client last activity date = #{client_last_activity_date}"
-    
-    # If the difference between the redis last activity date and the client's last activity date is greater than the configured threshold, reject the update
-    if (last_status_update - client_last_activity_date > CONFIG[:conflict_management_threshold])
-      updated_opportunity,rejected_fields = reject_conflict_fields(updated_opportunity)
-      InsiteLogger.info(:format_and_join => ["Found conflict for opportunity #{opp_id}, rejected fields: ", rejected_fields])
-    else
-      InsiteLogger.info "No conflicts found for opp #{opp_id}"
-    end
+    InsiteLogger.info "Time-based conflict management logic commented out, so no conflicts found for opp #{opp_id}"
     
     updated_opportunity
   end
