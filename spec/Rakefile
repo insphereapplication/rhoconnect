@@ -1,0 +1,14 @@
+
+
+app_path = File.expand_path(File.join(File.dirname(__FILE__),'..'))
+require "#{app_path}/spec/spec_helper"
+require 'rubygems'
+require 'rspec/core/rake_task'
+
+desc "Run all tests"
+RSpec::Core::RakeTask.new('spec') do |task|
+  task.pattern = "#{app_path}/spec/**/*_spec.rb"
+  task.verbose = true
+  # t.spec_opts = ["--format", "html:doc/reports/tools/failing_examples.html", "--diff"]
+  #   t.fail_on_error = false
+end
