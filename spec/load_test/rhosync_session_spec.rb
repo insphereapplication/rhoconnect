@@ -1,6 +1,4 @@
-app_path = File.expand_path(File.dirname(__FILE__))
-require "#{app_path}/../spec_helper"
-require "#{app_path}/../../load_test/rhosync_session"
+require "#{ROOT_PATH}/load_test/rhosync_session"
 
 
 describe RhosyncSession do

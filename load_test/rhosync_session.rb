@@ -1,8 +1,10 @@
+
+
 require 'rest-client'
 require 'ap'
 require 'json'
 require 'yaml'
-require 'session_stats'
+require "#{File.expand_path(File.dirname(__FILE__))}/session_stats"
 
 class RhosyncSession 
   attr_accessor :client_id
