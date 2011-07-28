@@ -9,7 +9,6 @@ class FakeUser
 end
 
 describe ConflictManagementUtil do 
-  # it_should_behave_like "SpecHelper"
   
   def stub_last_update(time=Time.now)
     update_history_util = mock("UpdateHistoryUtil")
