@@ -28,44 +28,14 @@ describe OpportunityMapper do
   #   query_errors.should == {}
   # end
   
-  
-  it "should send down conflict fields if last_activity_date in Redis is earlier than last_activity_date on the client" do
-    RedisUtil.stub!(:get_model).and_return({'cssi_lastactivitydate' => 2.days.ago.to_s})
-        
-    client_lad = 1.day.ago.to_s
+  it "should reject client-only fields" do
+    result = Mapper.map_data_from_client(OpportunityMapper::CLIENT_ONLY_FIELDS.reduce({}){|sum,field| sum[field] = ''; sum}.merge({:test => 'test'}), 'Opportunity')
     
-    result = OpportunityMapper.map_data_from_client({
-      'id' => @early_opp_id,   
-      'cssi_lastactivitydate' => client_lad,
-      'statuscode' => 'client status',
-      'statecode' => 'client state'
-    }, @current_user)
-
-    result['statuscode'].should ==  'client status'
-    result['statecode'].should == 'client state'
-    result['cssi_lastactivitydate'].should == client_lad
+    OpportunityMapper::CLIENT_ONLY_FIELDS.each{|cof| 
+      result.keys.should_not include(cof)
+    }
     
-  end
-
-  
-  it "should not send down conflict fields if last_activity_date in Redis is earlier than last_activity_date on the client" do
-    RedisUtil.stub!(:get_model).and_return({'cssi_lastactivitydate' => 1.day.ago.to_s})
-    
-    current_user = Object.new
-    def current_user.login; end
-    
-    client_lad = 2.days.ago.to_s
-    
-    result = OpportunityMapper.map_data_from_client({
-      'cssi_lastactivitydate' => client_lad,
-      'statuscode' => 'client status',
-      'statecode' => 'client state'
-    }, current_user)
-
-    result['statuscode'].should be_nil
-    result['statecode'].should be_nil
-    result['cssi_lastactivitydate'].should be_nil
-    
+    result.keys.should include(:test)
   end
 end
 

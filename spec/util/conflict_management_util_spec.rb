@@ -25,7 +25,7 @@ describe ConflictManagementUtil do
     @dummy_opp = {"opportunityid" => "12345", "contactid" => "54321"}
   end
   
-  it "should reject the conflict fields and return if no cssi_lastactivitydate is given" do 
+  it "should reject the conflict fields and return if no status_update_timestamp is given" do 
     no_lad = {
       'statuscode' => 'fu', 
       'statecode' => 'bar', 
@@ -47,7 +47,7 @@ describe ConflictManagementUtil do
       'statecode' => 'bar', 
       'cssi_statusdetail' => 'fu', 
       'hey' => 'hey',
-      'cssi_lastactivitydate' => "Fri May 27 17:21:53 -0500 2011"
+      'status_update_timestamp' => "Fri May 27 17:21:53 -0500 2011"
     }
     returned = ConflictManagementUtil.manage_opportunity_conflicts(client_fields, FakeUser.new)
     returned.should == {}
@@ -61,7 +61,7 @@ describe ConflictManagementUtil do
       'statecode' => 'bar', 
       'cssi_statusdetail' => 'fu', 
       'hey' => 'hey',
-      'cssi_lastactivitydate' => "Fri May 27 17:21:53 -0500 2011"
+      'status_update_timestamp' => "Fri May 27 17:21:53 -0500 2011"
     }
     
     returned = ConflictManagementUtil.manage_opportunity_conflicts(client_fields, FakeUser.new)
@@ -78,7 +78,7 @@ describe ConflictManagementUtil do
       'statecode' => 'bar', 
       'cssi_statusdetail' => 'fu', 
       'hey' => 'hey',
-      'cssi_lastactivitydate' => "Fri May 27 17:21:53 -0500 2011"
+      'status_update_timestamp' => "Fri May 27 17:21:53 -0500 2011"
     }
     returned = ConflictManagementUtil.manage_opportunity_conflicts(client_fields, FakeUser.new)
     returned.should == {}
@@ -96,7 +96,7 @@ describe ConflictManagementUtil do
       'statecode' => 'bar', 
       'cssi_statusdetail' => 'fu', 
       'hey' => 'hey',
-      'cssi_lastactivitydate' => "Fri May 27 17:21:53 -0500 2011"
+      'status_update_timestamp' => "Fri May 27 17:21:53 -0500 2011"
     }
     returned = ConflictManagementUtil.manage_opportunity_conflicts(client_fields, FakeUser.new)
     returned.should_not == {}
@@ -112,7 +112,7 @@ describe ConflictManagementUtil do
       'statecode' => 'bar', 
       'cssi_statusdetail' => 'fu', 
       'hey' => 'hey',
-      'cssi_lastactivitydate' => "Fri May 27 17:21:53 -0500 2011"
+      'status_update_timestamp' => "Fri May 27 17:21:53 -0500 2011"
     }
     returned = ConflictManagementUtil.manage_opportunity_conflicts(client_fields, FakeUser.new)
     returned.should == client_fields
@@ -127,14 +127,14 @@ describe ConflictManagementUtil do
      
      result = ConflictManagementUtil.manage_opportunity_conflicts({
        'id' => @early_opp_id,   
-       'cssi_lastactivitydate' => client_lad,
+       'status_update_timestamp' => client_lad,
        'statuscode' => 'client status',
        'statecode' => 'client state'
      }, FakeUser.new)
   
      result['statuscode'].should ==  'client status'
      result['statecode'].should == 'client state'
-     result['cssi_lastactivitydate'].should == client_lad
+     result['status_update_timestamp'].should == client_lad
    end
    
   it "should not reject updates if the last activity date from the client is less than <configured threshold> seconds behind that of the last status update" do
@@ -146,14 +146,14 @@ describe ConflictManagementUtil do
     
     result = ConflictManagementUtil.manage_opportunity_conflicts({
        'id' => @early_opp_id,   
-       'cssi_lastactivitydate' => client_lad,
+       'status_update_timestamp' => client_lad,
        'statuscode' => 'client status',
        'statecode' => 'client state'
      }, FakeUser.new)
   
      result['statuscode'].should ==  'client status'
      result['statecode'].should == 'client state'
-     result['cssi_lastactivitydate'].should == client_lad
+     result['status_update_timestamp'].should == client_lad
   end
   
     it "should reject conflict fields if the known last status update time is later than the given last_activity_date from the client (including threshold)" do
@@ -167,13 +167,13 @@ describe ConflictManagementUtil do
       client_lad = (CONFIG[:conflict_management_threshold] + 30).seconds.ago.to_s
       
       result = ConflictManagementUtil.manage_opportunity_conflicts({
-        'cssi_lastactivitydate' => client_lad,
+        'status_update_timestamp' => client_lad,
         'statuscode' => 'client status',
         'statecode' => 'client state',
         'hey' => 'what'
       }, current_user)
    
-      result.should == {'hey' => 'what'}
+      result.should == {'hey' => 'what', 'status_update_timestamp' => client_lad}
       
     end
 end
