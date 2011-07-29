@@ -42,6 +42,7 @@ GEM
       sqlite3-ruby (~> 1.2.5)
       templater (~> 1.0.0)
       uuidtools (>= 2.1.1)
+    rspec-core (2.6.4)
     rubyzip (0.9.4)
     rufus-scheduler (2.0.10)
       tzinfo (>= 0.3.23)
@@ -71,3 +72,4 @@ DEPENDENCIES
   rack-ssl-enforcer
   resque-scheduler
   rhosync (= 2.1.7)
+  rspec-core
