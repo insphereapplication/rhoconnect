@@ -1,8 +1,9 @@
 
 class OpportunityMapper < Mapper
+  CLIENT_ONLY_FIELDS = ['temp_id',ConflictManagementUtil::CLIENT_UPDATE_TIMESTAMP_FIELD]
 
   def map_data_from_client(data, mapper_context={})
-    data.reject!{|k,v| ['temp_id'].include?(k)}
+    data.reject!{|k,v| CLIENT_ONLY_FIELDS.include?(k)}
     data['cssi_fromrhosync'] = 'true'
     
     if mapper_context[:user_id]
