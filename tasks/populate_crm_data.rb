@@ -34,6 +34,8 @@ $carrier_ids = ['99aa3815-80a4-df11-bb36-0050568d2fb2','98aa3815-80a4-df11-bb36-
 
 $product_ids = ['afb020ac-96a9-df11-bb36-0050568d2fb2','a5aa3815-80a4-df11-bb36-0050568d2fb2','74ab3815-80a4-df11-bb36-0050568d2fb2','6aab3815-80a4-df11-bb36-0050568d2fb2']
 
+$decision_classifications = ['High Risk','']
+
 #-----------------------
 
 def rand_array_item(array)
@@ -113,6 +115,10 @@ def rand_product_id
   rand_array_item($product_ids)
 end
 
+def rand_decision_classification
+  rand_array_item($decision_classifications)
+end
+
 #-----------------------
 
 def calculate_age(in_dob)
@@ -189,7 +195,8 @@ def get_fake_policy_data(identity, policy_status)
     'cssi_carrierstatusvalue' => 'Active and paying',
     'cssi_statusreason' => status_reason,
     'cssi_insuredtype' => rand_insured_type,
-    'cssi_annualpremium' => Faker::Base.numerify('####.##')
+    'cssi_annualpremium' => Faker::Base.numerify('####.##'),
+    'cssi_decisionclassification' => rand_decision_classification
   };
   
   fake_data
