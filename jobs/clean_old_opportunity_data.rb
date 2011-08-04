@@ -2,8 +2,8 @@ require File.expand_path("#{File.dirname(__FILE__)}/../jobs/rhosync_resque_job")
 require 'time'
 
 class CleanOldOpportunityData
-  MAX_OPEN_OPPORTUNITY_AGE_IN_DAYS = 60
-  MAX_WON_OPPORTUNITY_AGE_IN_DAYS = 90
+  MAX_OPEN_OPPORTUNITY_AGE_IN_DAYS = 61
+  MAX_WON_OPPORTUNITY_AGE_IN_DAYS = 91
   @queue = :clean_old_opportunity_data
   
   class << self
