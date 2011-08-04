@@ -4,16 +4,16 @@ module InsiteLogger
   
   # If input is a string, return the string; otherwise, format using awesome_print
   def self.format_for_logging(input)
-    input.kind_of?(String) ? input : input.awesome_inspect(:multiline => false)
+    input.kind_of?(String) ? input : input.awesome_inspect(:multiline => false, :plain => true)
   end
-
-  # Log at the info level
+  
+  # Log at the given level
   # Set format_and_join_array=true when you want to print a one-liner with the formatted and joined form of the array given by message
   # i.e. 
   #   self.info(:format_and_join => ["Test beginning ",{:a => "a", :b => "B"}," test end."])
   # will print 
   #   Test beginning { :a => "a", :b => "B" } test end.
-  def self.info(input)
+  def self.add(level, input)
     if input.kind_of?(Hash) && input.count == 1 && input[:format_and_join].kind_of?(Array)
       # Format each element in the array and join
       input = (input[:format_and_join].map{|value| format_for_logging(value)}).join('')
@@ -23,7 +23,15 @@ module InsiteLogger
     end
     output_host_name
     puts input
-    insite_logger.info("#{host_name}:#{release_dir} -- #{input}") if insite_logger
+    insite_logger.add(level, "#{host_name}:#{release_dir} -- #{input}") if insite_logger
+  end
+  
+  def self.info(input)
+    add(Logger::INFO, input)
+  end
+  
+  def self.error(input)
+    add(Logger::ERROR, input)
   end
   
   def self.insite_logger
