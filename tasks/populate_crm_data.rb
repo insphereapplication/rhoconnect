@@ -237,8 +237,7 @@ def get_fake_phonecall_data(opportunity_id)
 	fake_data = {
 		'regardingobjectid' => {'type' => 'opportunity', 'id' => opportunity_id},
 		'subject' => "Test Phone Call - #{Faker::Name.first_name}",
-		'type' => 'PhoneCall',
-		'cssi_disposition' => 'Appointment Set'
+		'type' => 'PhoneCall'
 	};
 	fake_data
 end
@@ -263,7 +262,7 @@ def get_fake_note_data(object_id, object_type)
 		'subject' => Faker::Lorem.words.join(' '),
 		'objectid' => {'id' => object_id},
 		'objecttypecode' => object_type,
-		'notetext' => Faker::Lorem.sentences.join(' ')
+		'notetext' => (0..5).map{Faker::Lorem.paragraph(12)}.join("\n\n")
 	}
 	fake_data
 end
@@ -304,18 +303,10 @@ end
 
 def create_policy(server,credential,identity,contact_id,policy_status)
   policy_data = get_fake_policy_data(identity,policy_status)
+  policy_data.merge!({'cssi_contactid' => {'type' => 'contact', 'id' => contact_id}})
   ap policy_data
   policy_id = RestClient.post("#{server}/policy/create", credential.to_hash.merge(:attributes => policy_data.to_json)).body
   ap policy_id
-  
-  policy_update = {
-    "cssi_policyid" => "#{policy_id}",
-    'cssi_contactid' => {'type' => 'contact', 'id' => contact_id}
-  };
-  
-  update_id = RestClient.post("#{server}/policy/update", credential.to_hash.merge(:attributes => policy_update.to_json)).body
-  ap update_id
-  
   policy_id
 end
 

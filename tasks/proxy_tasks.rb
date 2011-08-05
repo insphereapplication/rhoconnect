@@ -13,11 +13,42 @@ $environments = {'local' => 'http://192.168.51.128',
   'dev-integrated' => 'http://nrhwwwd403.insp.dom:2195/crm/ActivityCenter/MobileProxy'}
 
 namespace :proxy do
+  def rest_rescue
+    begin
+      yield if block_given?
+    rescue RestClient::Exception => e
+      puts "Got rest exception:"
+      ap e
+    end
+  end
+  
+  task :populate_phonecalls_for_opp, [:opp_id, :phonecall_count] => [:setup, :set_identity] do |t,args|
+    (0...args[:phonecall_count].to_i).each do
+      create_phonecall(@proxy_url,@credential,args[:opp_id])
+    end
+  end
+  
+  task :populate_notes_for_opp, [:opp_id, :note_count] => [:setup, :set_identity] do |t,args|
+    rest_rescue do
+      (0...args[:note_count].to_i).each do
+        create_note(@proxy_url,@credential,args[:opp_id],'opportunity')
+      end
+    end
+  end
+  
   desc "Generates [policy_count] new policies and contacts.  If status is passed in, it will use the status; otherwise active"
   task :populate_newpolicies, [:policy_count,:status] => [:setup, :set_identity] do |t,args|
     policy_count = args[:policy_count].nil? ? 1 : args[:policy_count].to_i
     policy_status = args[:status].nil? ? 'Active' : args[:status]
     populate_new_policies(@proxy_url,@credential,@identity,policy_count,policy_status)
+  end
+  
+  task :populate_policies_for_contact, [:contact_id,:policy_count,:status] => [:setup, :set_identity] do |t,args|
+    abort "contact_id must be specified" unless args[:contact_id]
+    policy_count = args[:policy_count].nil? ? 1 : args[:policy_count].to_i
+    policy_status = args[:status].nil? ? 'Active' : args[:status]
+    puts "Generating #{args[:policy_count]} new policies for contact #{args[:contact_id]}"
+    (1..policy_count).each{ generate_new_policies(@proxy_url,@credential,@identity,[args[:contact_id]],policy_status) }
   end
   
   desc "Updates the [primary_insured] name of policy # [policy_id]"
@@ -189,13 +220,12 @@ namespace :proxy do
 		username = args[:login_username]
 		password = args[:login_password]
 		puts "Logging in as #{username}"
-		begin
+		
+		rest_rescue do
 		  login(@proxy_url, username, password)
 		  @credential = Credential.new(username, password)
 		  persist_to_file($credentialfile, @credential.to_string)
   		puts "Logged in successfully"
-		rescue
-		  puts "Login failed"
 	  end
 	end
 	

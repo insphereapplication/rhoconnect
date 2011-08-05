@@ -222,7 +222,7 @@ namespace :server do
   end
   
   desc "pushes objects and invokes the notify method associated with the sources" 
-  task :push_objects_notify => [:set_token] do |t, args|
+  task :push_objects_notify, [:user_id] => [:set_token] do |t, args|
     res = RestClient.post(
       "#{$server}api/push_objects_notify", 
       { 
@@ -568,6 +568,26 @@ namespace :server do
     puts "\nTotal device count: #{platform_counts.values.reduce(0){|sum,value| sum += value}}"
     puts "Platform breakdown:"
     ap(platform_counts,:plain => true)
+  end
+  
+  task :client_exception_stats, [:user_pattern] => [:set_token] do |t,args|
+    filtered_users = get_users.reject{|user| user[Regexp.new(args[:user_pattern])].nil?}
+    
+    total_matches = 0
+    
+    filtered_users.each do |user|
+      exceptions = get_md(user, 'ClientException')
+      
+      # relevant_exceptions = exceptions.select{|key,value| value['message'][/Could not find rhosync-2.1.7 in any of the sources/]}
+      relevant_exceptions = exceptions
+      
+      total_matches += relevant_exceptions.count
+      
+      ap "#{relevant_exceptions.count} exceptions for user #{user}: "
+      ap relevant_exceptions.map{|id,value| id[0,10]}.sort.map{|time| Time.at(time.to_i)}
+    end
+    
+    ap "Total matches: #{total_matches}"
   end
   
   desc "Checks redis for dead/failed locks"
