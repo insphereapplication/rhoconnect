@@ -30,6 +30,10 @@ class ValidationHelpers
       user_initialized_sources && user_initialized_sources.include?(source.downcase)
     end
     
+    def get_user_devices(user)
+       rhosync_api.get_user_devices(user)
+    end  
+    
     def get_crm_data(source, user, pw)
       res = RestClient.post("#{CONFIG[:crm_path]}/#{source}",
         { :username => user, 
@@ -116,7 +120,7 @@ class OpportunityCheck < ValidationCheck
   end
   
   def passed
-    @passed ||= (agent_failures.count > 0)
+     (agent_failures.count == 0)
   end
   
   def result_summary
@@ -132,6 +136,138 @@ class OpportunityCheck < ValidationCheck
     super + "\n#{details}"
   end
 end
+
+
+
+class UnhandledExceptionCheck < ValidationCheck
+  def initialize
+    super("Unhandled E400/E500 Exceptions")
+    @results = {}
+    run
+  end
+  
+  def run
+    ValidationHelpers.users.each do |user|
+      begin
+         log "*"*10 + "Checking for unhandled client expections #{user}"
+         client_exception_data = ValidationHelpers.get_rhosync_source_data( user, 'ClientException')
+         client_exception_counter = 0
+         client_exception_data.each do |id, client_exception|
+           client_exception_type = client_exception['exception_type']
+           if (client_exception_type = 'E400' || client_exception_type = 'E500') && (Time.parse(client_exception.server_created_on) + (60 * 60 * 24) > Time.now)
+              client_exception_counter += 1
+           end
+        end
+        
+        @results[user] = {:passed => (client_exception_counter == 0), :unhandled_exception_counter => client_exception_counter}       
+               
+        rescue Exception => ex
+          log "#"*80
+          log "Exception encountered: #{ex.awesome_inspect}"
+          log "#"*80
+        end
+    end
+  end
+  
+  def failures
+    @failures ||= @results.select{|key,value| !value[:passed] }
+  end
+  
+  def agent_failures
+    @agent_failures ||= failures.select{|key,value| key =~ /^[aA][0-9]{5}$/}
+  end
+  
+  def other_failures
+    @other_failures ||= failures.reject{|key,value| agent_failures.include?(key)}
+  end
+  
+  def passed
+     (agent_failures.count == 0)
+  end
+  
+  def result_summary
+    total_user_count = ValidationHelpers.users.count
+    super + " #{agent_failures.count} agents and #{other_failures.count} other users failed the client exception check out of #{total_user_count} total users."
+  end
+  
+  def result_details
+    details = failures.reduce([]){|sum,(user,result)|
+      sum << "#{user} had #{result[:unhandled_exception_counter]}  unhandled client E400/E500 exceptions."
+      sum
+    }.join("\n")
+    super + "\n#{details}"
+  end
+end
+
+
+class DevicePinCheck < ValidationCheck
+  def initialize
+    super("Device Pin Check")
+    @results = {}
+    run
+  end
+  
+  def run
+    ValidationHelpers.users.each do |user|
+      begin
+        
+        log "*"*10 + "Checking user device pins #{user}"
+        user_devices = ValidationHelpers.get_user_devices(user)
+        next if user_devices.empty?
+
+
+        log "Devices in Rhosync: #{user_devices.count}"
+
+        devices_missing_pin = []
+        user_devices.each do |device_id|
+          device_pin = rhosync_api.get_device_params(device_id).select{ |k| k['name'] == 'device_pin' }.first        
+          devices_missing_pin << device_id if device_pin.nil? || (!device_pin.nil? && device_pin['value'].nil?)      
+        end
+        log "#{user} has #{user_devices_missing_pin.count} device(s) missing pin of #{user_devices_missing_pin.count}"
+        @results[user] = {:passed => (devices_missing_pin.count == 0), :user_devices => user_devices, :user_devices_missing_pin => devices_missing_pin}
+        
+       
+      rescue Exception => ex
+        log "#"*80
+        log "Exception encountered: #{ex.awesome_inspect}"
+        log "#"*80
+      end
+    end
+  end
+  
+  def failures
+    @failures ||= @results.select{|key,value| !value[:passed] }
+  end
+  
+  def agent_failures
+    @agent_failures ||= failures.select{|key,value| key =~ /^[aA][0-9]{5}$/}
+  end
+  
+  def other_failures
+    @other_failures ||= failures.reject{|key,value| agent_failures.include?(key)}
+  end
+  
+  def passed
+     (agent_failures.count == 0)
+  end
+  
+  def result_summary
+    total_user_count = ValidationHelpers.users.count
+    super + " #{agent_failures.count} agents and #{other_failures.count} failed the device pin check of #{total_user_count}."
+  end
+  
+  def result_details
+    details = failures.reduce([]){|sum,(user,result)|
+      sum << "#{user} had #{result[:user_devices_missing_pin].count} device(s) missing pins of #{result[:user_devices].count}."
+      sum
+    }.join("\n")
+    super + "\n#{details}"
+  end
+end
+
+
+
+
 
 
 class ValidateRedisData
@@ -150,7 +286,7 @@ class ValidateRedisData
       puts "*"*20 + "Starting Validate_Redis_Data job"
       puts "Target rhosync host: #{CONFIG[:resque_worker_rhosync_api_host]}"
       
-      checks = [OpportunityCheck.new]
+      checks = [OpportunityCheck.new,DevicePinCheck.new,UnhandledExceptionCheck.new]
       
       environment = CONFIG[:env]
       start_time = Time.now
