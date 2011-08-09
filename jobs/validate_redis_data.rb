@@ -44,14 +44,15 @@ class ValidateRedisData
         'users' => {
           'total' => users.count,
           'mismatched' => {
-            'contacts' => 0,
-            'opportunities' => 0,
-            'integrity_check' => 0,
+            'contacts_userlist' => [],
+            'opportunities_userlist' => [],
+            'integrity_check_userlist' => [],
+            'unhandled_client_exception_userlist' => []
           }
         },
         'devices' => {
           'total' => 0, 
-          'mismatched_pins' => 0
+          'mismatched_pins_userlist' => []
         }
       }
       
@@ -76,7 +77,7 @@ class ValidateRedisData
           puts"Contacts in CRM not in Rhosync: #{contact_ids_in_crm_not_rhosync.count}"
           puts contact_ids_in_crm_not_rhosync.inspect unless contact_ids_in_crm_not_rhosync.count == 0
     
-          summary_results['users']['mismatched']['contacts'] = contact_ids_in_rhosync_not_crm.count if contact_ids_in_rhosync_not_crm.count > 0 
+          summary_results['users']['mismatched']['contacts_userlist'] << user unless contact_ids_in_crm_not_rhosync.count == 0
              
       
           #2.compare Opportunity data
@@ -93,38 +94,52 @@ class ValidateRedisData
           puts "Opportunities in CRM not in Rhosync: #{opp_ids_in_crm_not_rhosync.count}"
           puts opp_ids_in_crm_not_rhosync.inspect unless opp_ids_in_crm_not_rhosync.count == 0
           
-          summary_results['users']['mismatched']['opportunities'] = opp_ids_in_crm_not_rhosync.count if opp_ids_in_crm_not_rhosync.count > 0
-
+          summary_results['users']['mismatched']['opportunities_userlist'] << user if opp_ids_in_crm_not_rhosync.count > 0
 
           #3.Integrity check for Rhosync data
           opps_without_contacts = opp_ids_rhosync.reject { |id| contact_ids_rhosync.include?( opp_data[id]['contact_id'] ) }
           puts "Opportunities in Rhosync with no attached contacts: #{opps_without_contacts.count}"
           puts opps_without_contacts.inspect unless opps_without_contacts.count == 0
 
-          summary_results['users']['mismatched']['integrity_check'] = opps_without_contacts.count if opps_without_contacts.count > 0
+          summary_results['users']['mismatched']['integrity_check_userlist'] << user if opps_without_contacts.count > 0
     
+          #4.Device key check
+          #Only check if the user pattern is a12345
+          if user =~/(a|A)\d{5}/      
+            user_devices = rhosync_api.get_user_devices(user)
+            next if user_devices.empty?
     
-          #4.Device key check      
-          user_devices = rhosync_api.get_user_devices(user)
-          next if user_devices.empty?
+            summary_results['devices']['total'] += user_devices.count      
     
-          summary_results['devices']['total'] += user_devices.count      
+            puts "Devices in Rhosync: #{user_devices.count}"
     
-          puts "Devices in Rhosync: #{user_devices.count}"
-    
-          devices_missing_pin = []
-          user_devices.each do |device_id|
-            device_pin = rhosync_api.get_device_params(device_id).select{ |k| k['name'] == 'device_pin' }.first        
-            devices_missing_pin << device_id if device_pin.nil? || (!device_pin.nil? && device_pin['value'].nil?)      
-          end
+            devices_missing_pin = []
+            user_devices.each do |device_id|
+              device_pin = rhosync_api.get_device_params(device_id).select{ |k| k['name'] == 'device_pin' }.first        
+              devices_missing_pin << device_id if device_pin.nil? || (!device_pin.nil? && device_pin['value'].nil?)      
+            end
   
-          if devices_missing_pin.count > 0
-            summary_results['devices']['mismatched_pins'] += devices_missing_pin.count                
-            puts "#{devices_missing_pin.count} of #{user_devices.count} devices have no PIN"
-            devices_missing_pin.each{ |id| puts id }
-          else
-            puts "All #{user_devices.count} devices have a PIN"  
-          end
+            if devices_missing_pin.count > 0
+              summary_results['devices']['mismatched_pins'] += devices_missing_pin.count    
+              summary_results['devices']['mismatched_pins_userlist']  << '#{user}:#{devices_missing_pin.count} of #{user_devices.count},')      
+              puts "#{devices_missing_pin.count} of #{user_devices.count} devices have no PIN"
+              devices_missing_pin.each{ |id| puts id }
+            else
+              puts "All #{user_devices.count} devices have a PIN"  
+            end
+          end    
+          
+        #5. Check for unhandled client exceptions
+        client_exception_data = get_rhosync_source_data(rhosync_api, user, 'ClientException')
+        client_exception_counter = 0
+        client_exception_data.each do |client_exception|
+        if (client_exception.exception_type = 'E400' || client_exception.exception_type = 'E500') && (client_exception.server_created_on + (60 * 60 * 24) > Time.now)
+          client_exception_counter += 1
+        end
+        
+        summary_results['users']['unhandled_client_exception_userlist'] << ('#{user}:#{client_exception_counter}') if client_exception_counter > 0
+
+        end        
         rescue Exception => ex
           puts "#"*80
           puts "Exception encountered: #{ex.awesome_inspect}"
