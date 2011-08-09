@@ -57,15 +57,15 @@ class CleanOldOpportunityData
       end
     end
     
-    def get_expired_opportunities(opportunities)
+    def get_expired_opportunities(opportunities, offset_days=0)
       opportunities.select do |key, opp|
         begin
           check_date = opp['cssi_lastactivitydate'] || opp['createdon']                                        
           case opp['statecode']
           when "Won"
-            Time.now.to_i - Time.parse(check_date).to_i > MAX_WON_OPPORTUNITY_AGE_IN_DAYS*86400
+            Time.now.to_i - Time.parse(check_date).to_i > (MAX_WON_OPPORTUNITY_AGE_IN_DAYS + offset_days)*86400
           else
-            Time.now.to_i - Time.parse(check_date).to_i > MAX_OPEN_OPPORTUNITY_AGE_IN_DAYS*86400  
+            Time.now.to_i - Time.parse(check_date).to_i > (MAX_OPEN_OPPORTUNITY_AGE_IN_DAYS + offset_days)*86400  
           end
         rescue
           true

@@ -1,41 +1,13 @@
 Data Validation Job results:
 
-Environment: <%= summary_results['environment'] %>
-Start time: <%= summary_results['run_start'].to_s %>
+Environment: <%= environment %>
+Start time: <%= start_time.to_s %>
 
 
-1. Opportunities Match: <%= summary_results['users']['mismatched']['opportunities'] == 0? 'PASS':'FAIL' %>
+Summary of results:
 
-<% if summary_results['users']['mismatched']['opportunities'] > 0 %>
-<%= summary_results['users']['mismatched']['opportunities_userlist'].count%> of <%= summary_results['users']['total']%> users had mismatched opportunities
-userlist = <%= summary_results['users']['mismatched']['opportunities_userlist']%>
-<% else %>
-All <%= summary_results['users']['total']%> users have their opportunities in sync
-<% end %>
+<%= checks.map{|check| check.result_summary}.join("\n\n") %>
 
-2. Integrity check: <%= summary_results['users']['mismatched']['integrity_check'] == 0? 'PASS':'FAIL' %>
+Detailed results:
 
-<% if summary_results['users']['mismatched']['integrity_check'] > 0 %>
-<%= summary_results['users']['mismatched']['integrity_check_userlist'].count%> of <%= summary_results['users']['total']%> users had opportunities in RhoSync not associated with a contact
-userlist = <%= summary_results['users']['mismatched']['integrity_check_userlist']%>
-<% else %>
-All <%= summary_results['users']['total']%> users had 100% of their opportunities associated with a contact 
-<% end %>
-
-3. Device PIN check: <%= summary_results['devices']['mismatched_pins'] == 0? 'PASS':'FAIL' %>
-
-<% if summary_results['devices']['mismatched_pins'] > 0 %>
-<%= summary_results['devices']['mismatched_pins_userlist'].count%>  of <%= summary_results['devices']['total']%> devices in RhoSync did not have a push PIN
-userlist = <%= summary_results['devices']['mismatched_pins_userlist']%> 
-<% else %>
-All <%= summary_results['devices']['total']%> devices in RhoSync have a push PIN
-<% end %>
-
-4. Check for un-handled client exceptions: <%= summary_results['devices']['unhandled_client_exception'] == 0? 'PASS':'FAIL' %>
-
-<% if summary_results['devices']['unhandled_client_exception'] > 0 %>
-<%= summary_results['devices']['unhandled_client_exception_userlist'].count %>  of<%= summary_results['users']['total']%> devices in RhoSync did not have a push PIN
-userlist = <%= summary_results['devices']['unhandled_client_exception_userlist'] %>
-<% else %>
-All <%= summary_results['users']['total']%> users did not have a client exception logged in the past 24 hours
-<% end %>
+<%= checks.map{|check| check.result_details}.join("\n\n") %>
