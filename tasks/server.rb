@@ -206,7 +206,27 @@ namespace :server do
       :content_type => :json
     ).body)
     
-    ap res.sort
+    # ap res.sort
+    
+    sync_status = res
+    # build hash of user -> init flags of the format {'<username>' => ['<source_name1>', '<source_name2>', ...]}
+    init_flags = sync_status['matching_init_keys'].reduce({}){|sum,init_key| 
+      parsed = init_key.match(/username:([^:]+):([^:]+)/)
+      puts "#{parsed[1]}, #{parsed[2]}"
+      sum[parsed[1]] ||= []
+      sum[parsed[1]] << parsed[2]
+      sum
+    }
+    # build hash of user -> (source, refresh_time) values of the format {'<username>' => [{:source => '<source_name1>', :time => '<refresh_time>'}, {:source => '<source_name2>', :time => ...}]}
+    refresh_times = sync_status['matching_refresh_time_keys'].reduce({}){|sum,(key,time)|
+      parsed = key.match(/read_state:application:([^:]+):([^:]+)/)
+      sum[parsed[1]] ||= []
+      sum[parsed[1]] << {:source => parsed[2], :time => Time.at(time.to_i)}
+      sum
+    }
+    test = {:init_flags => init_flags, :refresh_times => refresh_times}
+    ap test
+    puts "done"
   end
   
   task :get_log => [:set_token] do
