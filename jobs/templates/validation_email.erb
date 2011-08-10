@@ -6,8 +6,8 @@ Start time: <%= start_time.to_s %>
 
 Summary of results:
 
-<%= checks.map{|check| check.result_summary}.join("\n\n") %>
-
+<%= checks.each_with_index.map{|check,i| "#{i+1}) #{check.result_summary}"}.join("\n\n") %>
+<%= "\n\n\n#{'-'*80}\n\n\n" %>
 Detailed results:
 
-<%= checks.map{|check| check.result_details}.join("\n\n") %>
+<%= checks.each_with_index.map{|check,i| "#{i+1}) #{check.result_details}"}.join("\n\n") %>

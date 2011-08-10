@@ -109,7 +109,6 @@ class RhosyncApiSession
     # build hash of user -> init flags of the format {'<username>' => ['<source_name1>', '<source_name2>', ...]}
     init_flags = sync_status['matching_init_keys'].reduce({}){|sum,init_key| 
       parsed = init_key.match(/username:([^:]+):([^:]+)/)
-      puts "#{parsed[1]}, #{parsed[2]}"
       sum[parsed[1]] ||= []
       sum[parsed[1]] << parsed[2]
       sum
@@ -122,6 +121,18 @@ class RhosyncApiSession
       sum
     }
     {:initialized_sources => init_flags, :refresh_times => refresh_times}
+  end
+  
+  def get_dead_locks
+    res = RestClient.post(
+      "#{@server}api/get_dead_locks", 
+      { 
+        :api_token => @token
+      }.to_json, 
+      :content_type => :json
+    ).body
+    dead_locks = JSON.parse(res)
+    dead_locks.reduce({}){|sum,(key,value)| sum[key] = Time.at(value.to_i); sum }
   end
 
   def login()
