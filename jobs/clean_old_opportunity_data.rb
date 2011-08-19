@@ -59,17 +59,24 @@ class CleanOldOpportunityData
     
     def get_expired_opportunities(opportunities, offset_days=0)
       opportunities.select do |key, opp|
+        expired = false
         begin
-          check_date = opp['cssi_lastactivitydate'] || opp['createdon']                                        
           case opp['statecode']
           when "Won"
-            Time.now.to_i - Time.parse(check_date).to_i > (MAX_WON_OPPORTUNITY_AGE_IN_DAYS + offset_days)*86400
+            check_date = opp['actualclosedate'] || opp['createdon']
+            expired = Time.now.to_i - Time.parse(check_date).to_i > (MAX_WON_OPPORTUNITY_AGE_IN_DAYS + offset_days)*86400
+          when "Open"
+            check_date = opp['cssi_lastactivitydate'] || opp['createdon'] 
+            expired = Time.now.to_i - Time.parse(check_date).to_i > (MAX_OPEN_OPPORTUNITY_AGE_IN_DAYS + offset_days)*86400  
           else
-            Time.now.to_i - Time.parse(check_date).to_i > (MAX_OPEN_OPPORTUNITY_AGE_IN_DAYS + offset_days)*86400  
+            # For all other state codes (i.e. Lost), mark as expired
+            expired = true
           end
         rescue
-          true
+          # If time parsing or other logic fails, assume expired
+          expired = true
         end
+        expired
       end
     end
       
