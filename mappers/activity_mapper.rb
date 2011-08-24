@@ -1,13 +1,12 @@
 
 class ActivityMapper < Mapper
+  LOOKUPS = [
+    Lookup.new('regardingobjectid', 'parent_type', 'parent_id')
+  ]
+  
   def map_from_source_hash(activity_array)
     activity_array.map! do |value| 
-      parentprops = value['regardingobjectid'] 
-      unless parentprops.nil?
-        #value.reject!{|k,v| k == 'regardingobjectid'}
-        value.reject!{|k,v|  ['regardingobjectid'].include?(k) }
-        value.merge!({'parent_id' => parentprops['id'], 'parent_type' => Mapper.convert_type_name(parentprops['type'])}) unless parentprops.blank?
-      end
+      LOOKUPS.each{|lookup| lookup.inject_mobile_attributes!(value)}
       
       email_to_value = value['to']
       unless email_to_value.nil?
@@ -41,16 +40,8 @@ class ActivityMapper < Mapper
   def map_data_from_client(data, mapper_context={})
     #reject fields that shouldn't be sent to the proxy. these are read-only from CRM and should not be ever be included in a create/update message
     data.reject!{|key, value| REJECT_FIELDS.include?(key.to_s)}
-        
-    if data['parent_type'] || data['parent_id']
-      data.merge!({
-        'regardingobjectid' => {
-            'type' => data['parent_type'],
-            'id' => data['parent_id']
-          }
-        })
-      data.reject!{|k,v| ['parent_id', 'parent_type'].include?(k)}
-    end
+    
+    LOOKUPS.each{|lookup| lookup.inject_crm_lookups!(data)}
     
     email_to_value = data['email_to']
     unless email_to_value.nil?

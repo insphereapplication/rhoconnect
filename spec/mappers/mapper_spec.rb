@@ -36,8 +36,8 @@ describe Mapper do
   end
   
   it 'should convert type names' do
-    Mapper.convert_type_name('blah').should == 'Blah'
-    Mapper.convert_type_name('phoneCall').should == 'PhoneCall'
+    Mapper.convert_crm_type('blah').should == 'Blah'
+    Mapper.convert_crm_type('phoneCall').should == 'PhoneCall'
   end
   
   

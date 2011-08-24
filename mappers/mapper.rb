@@ -1,4 +1,59 @@
 class Mapper
+  class TypeName
+    attr_accessor :crm, :mobile
+    def initialize(crm, mobile)
+      @crm = crm
+      @mobile = mobile
+    end
+  end
+  
+  class Lookup
+    attr_accessor :crm_name, :mobile_type_attribute, :mobile_id_attribute
+    def initialize(crm_name, mobile_type_attribute, mobile_id_attribute)
+      @crm_name = crm_name
+      @mobile_type_attribute = mobile_type_attribute
+      @mobile_id_attribute = mobile_id_attribute
+    end
+
+    def inject_crm_lookups!(data)
+      if data[@mobile_type_attribute] || data[@mobile_id_attribute]
+        data.merge!({@crm_name => Lookup.build_crm_lookup(data[@mobile_type_attribute], data[@mobile_id_attribute])})
+        data.reject!{|k,v| [@mobile_type_attribute, @mobile_id_attribute].include?(k)}
+      end
+      data
+    end
+
+    def inject_mobile_attributes!(data)
+      lookup = data[@crm_name] 
+      unless lookup.nil?
+        data.reject!{|k,v| k == @crm_name}
+        data.merge!(Lookup.split_crm_lookup(lookup, @mobile_type_attribute, @mobile_id_attribute)) unless lookup.blank?
+      end
+      data
+    end
+
+    class << self
+      def build_crm_lookup(type, id)
+        {
+          'type' => Mapper.convert_mobile_type(type),
+          'id' => id
+        }
+      end
+
+      def split_crm_lookup(lookup, type_attribute_name, id_attribute_name)
+        {
+          id_attribute_name => lookup['id'], 
+          type_attribute_name => Mapper.convert_crm_type(lookup['type'])
+        }
+      end
+    end
+  end
+  
+  TYPE_NAMES = [
+    TypeName.new("phonecall","PhoneCall"),
+    TypeName.new("cssi_policy","Policy")
+  ]
+  
   def self.map_source_data(data, source_name)
     mapper = load(source_name)
     mapper.map_source_data(data)
@@ -17,8 +72,14 @@ class Mapper
     end
   end
   
-  def self.convert_type_name(type)
-    type.downcase == 'phonecall' ? 'PhoneCall' : type.capitalize
+  def self.convert_crm_type(type)
+    type_name = TYPE_NAMES.select{|tn| tn.crm.downcase == type.downcase }.first
+    type_name.nil? ? type.capitalize : type_name.mobile
+  end
+  
+  def self.convert_mobile_type(type)
+    type_name = TYPE_NAMES.select{|tn| tn.mobile.downcase == type.downcase }.first
+    type_name.nil? ? type.downcase : type_name.crm
   end
   
   def initialize(source_name=nil)
