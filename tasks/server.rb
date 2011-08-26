@@ -1,6 +1,6 @@
 app_path = File.expand_path(File.join(File.dirname(__FILE__)) + '/..')
-puts app_path
 require "#{app_path}/util/config_file"
+require "#{app_path}/tasks/lib/version_check"
 
 API_KEY = 'b8788d7b2ae404c9661f40215f5d9258aede9c83'
 
@@ -608,6 +608,56 @@ namespace :server do
     end
     
     ap "Total matches: #{total_matches}"
+  end
+  
+  def get_platform_stats(user)
+    exceptions = get_md(user, 'ClientException')
+    
+    platform_versions = {}
+    
+    exceptions.each do |id, exception|        
+      platform = exception['client_platform']
+      if platform
+        platform_versions[platform] ||= Set.new
+        os_version = exception['os_version'] || "UNKNOWN"
+        platform_versions[platform].add(os_version)
+      end
+    end
+    
+    platform_versions
+  end
+  
+  desc "Gets platform stats for users matching [user_pattern]"
+  task :client_platform_stats, [:user_pattern] => [:set_token] do |t,args|
+    filtered_users = get_users.reject{|user| user[Regexp.new(args[:user_pattern])].nil?}
+    
+    results = {}
+    
+    filtered_users.each do |user|
+      results[user] = get_platform_stats(user)
+    end
+    
+    ap results
+  end
+  
+  desc "Gets users matching [user_pattern] which can be identified as having unsupported OS versions"
+  task :get_unsupported_platform_versions, [:user_pattern] => [:set_token] do |t,args|
+    filtered_users = get_users.reject{|user| user[Regexp.new(args[:user_pattern])].nil?}
+    
+    results = {}
+    
+    filtered_users.each do |user|
+      platform_stats = get_platform_stats(user)
+      platform_stats.each do |platform,versions|
+        unsupported_versions = versions.select{|version| VersionCheck.unsupported_platform_version?(platform,version)}
+        if unsupported_versions.count > 0
+          results[user] ||= {}
+          results[user][platform] = unsupported_versions
+        end
+      end
+    end
+    
+    ap results
   end
   
   desc "Checks redis for dead/failed locks"
