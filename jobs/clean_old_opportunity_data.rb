@@ -2,11 +2,11 @@ require File.expand_path("#{File.dirname(__FILE__)}/../jobs/rhosync_resque_job")
 require 'time'
 
 class CleanOldOpportunityData
-  MAX_OPEN_OPPORTUNITY_AGE_IN_DAYS = 60
-  MAX_WON_OPPORTUNITY_AGE_IN_DAYS = 90
-  CLOSED_ACTIVITY_AGE_IN_DAYS = 14
-  OPEN_SCHEDULED_ACTIVITY_AGE_IN_DAYS = 60
-  OPEN_UNSCHEDULED_ACTIVTY_AGE_IN_DAYS = 60
+  MAX_OPEN_OPPORTUNITY_AGE_IN_DAYS = 61
+  MAX_WON_OPPORTUNITY_AGE_IN_DAYS = 91
+  CLOSED_ACTIVITY_AGE_IN_DAYS = 15
+  OPEN_SCHEDULED_ACTIVITY_AGE_IN_DAYS = 61
+  OPEN_UNSCHEDULED_ACTIVTY_AGE_IN_DAYS = 61
   SECONDS_IN_A_DAY = 86400
   @queue = :clean_old_opportunity_data
   
@@ -93,19 +93,26 @@ class CleanOldOpportunityData
 
     end
     
-    def get_expired_opportunities(opportunities)
+    def get_expired_opportunities(opportunities, offset_days=0)
       opportunities.select do |key, opp|
+        expired = false
         begin
-          check_date = opp['cssi_lastactivitydate'] || opp['createdon']                                        
           case opp['statecode']
           when "Won"
-            Time.now.to_i - Time.parse(check_date).to_i > MAX_WON_OPPORTUNITY_AGE_IN_DAYS*SECONDS_IN_A_DAY
+            check_date = opp['actualclosedate'] || opp['createdon']
+            expired = Time.now.to_i - Time.parse(check_date).to_i > (MAX_WON_OPPORTUNITY_AGE_IN_DAYS + offset_days)*SECONDS_IN_A_DAY
+          when "Open"
+            check_date = opp['cssi_lastactivitydate'] || opp['createdon'] 
+            expired = Time.now.to_i - Time.parse(check_date).to_i > (MAX_OPEN_OPPORTUNITY_AGE_IN_DAYS + offset_days)*SECONDS_IN_A_DAY  
           else
-            Time.now.to_i - Time.parse(check_date).to_i > MAX_OPEN_OPPORTUNITY_AGE_IN_DAYS*SECONDS_IN_A_DAY  
+            # For all other state codes (i.e. Lost), mark as expired
+            expired = true
           end
         rescue
-          true
+          # If time parsing or other logic fails, assume expired
+          expired = true
         end
+        expired
       end
     end
       

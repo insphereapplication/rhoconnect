@@ -53,8 +53,8 @@ local_crm_proxy: http://192.168.51.128/ # Change this if you're running locally 
     :num_archived_logs: 10
     :mode: stdout # logging defaults to stdout only; set mode to 'file' to turn on file logging to log:path (above)
   :app_info:
-    :min_required_version: 2.1.0.28
-    :latest_version: 2.1.0.28
+    :min_required_version: 2.1.58
+    :latest_version: 2.1.58
     :apple_force_upgrade_url: 'itms-services://?action=download-manifest&amp;url=http://m.model.insphereis.net/InSiteMobile/Documents/InSite_Mobile.plist'
     :apple_soft_upgrade_url: 'itms-services://?action=download-manifest&amp;url=http://m.model.insphereis.net/InSiteMobile/Documents/InSite_Mobile.plist'
     :android_force_upgrade_url: 'https://m.model.insphereis.net/insitemobile'
@@ -158,16 +158,3 @@ local_crm_proxy: http://192.168.51.128/ # Change this if you're running locally 
   :log:
     :mode: 'file'
   :resque_worker_rhosync_api_password: iGyz5rk6JVYA
-  
-  :crm_proxy: dev_crm_proxy
-  :iphonecertfile: settings/apple_push_cert_sandbox.pem
-  :redis: nrhrhod403:6379
-  :iphonepassphrase: Pariveda1
-  :licensefile: settings/license.key
-  :iphoneserver: gateway.sandbox.push.apple.com
-  :iphoneport: 2195
-  :syncserver: https://rhohub-insphere-a06075d6.heroku.com/application/
-  :authtoken: 'DQAAAOcBAADl9A9fwcQRgR2U89II3lFA2AXRykLmnaFlAtInOR1Q_rD3md6WjC7MHAPOnaYrMjIOqR8zMbJf2whRqrfzM1vwXe4ylr0Vzv2ukajBJ1zeDUoMjKrN6zvM63rBD6JqiWTB42xRNqsHs9ivn1DC--NmRgeKb1iKbUubBeZTPx3z1QIfCaAix7wWKK1yXVqY_FexN4ZrbjgCPLJ9fQrgqZsZHfNvuuOdcrZ5wAHHl4Gz0VqkPE-bK2dr8fvw1qQAkocsct3LlwaGMMLq7F0EWrHvcM1zZqElkdrtSYSw5fJ-AFATpRzqJNqxAbHtuchyHn8oSHkwPv6OGoElQBeWVamhBcc7e1033fQ_XwWurCAN-J0oI2oxeVR7RZTMQASYQzvUYglt9Syl_GcBk6tzQR_mYkzNY4b7V7MMOKIAWYVSnWKfXgx6fp3xYZjQde85mm8l_YYdPDEc-VN9GsXCTu1T6MJMa3ODXzWO6UW53TAmUsntZHOtgfDKiMwEiM7ayaZxEDP3Vld5I4uLtcF50ujbNwzXSDGXNr4_WZKWGmm8pddmBXdjgVlmy3uHqr_DotMKsZI8U2SsVeoMOmp2980lj5_gvy5en8A5XKBfCeiIf3h_YCfNQ90N1vuJ6Zup4UBDYfkys_tBAJZbyk7lFk2s'
-  :rhoadmin_password: iGyz5rk6JVYA
-  :log:
-    :mode: 'file'

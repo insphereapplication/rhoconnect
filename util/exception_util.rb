@@ -21,19 +21,16 @@ class ExceptionUtil
   private
   
   def self.print_exception(exception, exception_string="")
-   [ 
-     "*** EXCEPTION MESSAGE ***",
-     exception.message,
-     "*** EXCEPTION TYPE ***",
-     exception.class,
-     "*** EXCEPTION CONTEXT ***",
-     @context,
-     "*** EXCEPTION STRING ***",
-     exception_string,
-     "*** EXCEPTION STACK TRACE ***",
-     exception.backtrace,
-     "*** END EXCEPTION ***"
-    ].each { |line| InsiteLogger.info line }
+    InsiteLogger.error(:format_and_join => [
+      "Exception! ",
+      {
+        :message => exception.message, 
+        :class => exception.class, 
+        :context => @context, 
+        :given_string => exception_string, 
+        :backtrace => exception.backtrace
+      }
+    ])
   end # print_exception
   
 end # class

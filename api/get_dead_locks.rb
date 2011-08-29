@@ -4,7 +4,7 @@ Rhosync::Server.api :get_dead_locks do |params,user|
     
     locks = lock_keys.reduce({}){|sum,key| sum[key] = Store.db.get(key); sum}
     
-    min_valid_lock_timeout = Time.now.to_i - (CONFIG[:lock_duration] || 1)
+    min_valid_lock_timeout = Time.now.to_i - ((CONFIG[:lock_duration] || 1) * 2)
     
     dead_locks = locks.reject{|key,value| value.nil? || value.to_i > min_valid_lock_timeout }
     

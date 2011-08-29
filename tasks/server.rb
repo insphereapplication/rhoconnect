@@ -206,7 +206,27 @@ namespace :server do
       :content_type => :json
     ).body)
     
-    ap res.sort
+    # ap res.sort
+    
+    sync_status = res
+    # build hash of user -> init flags of the format {'<username>' => ['<source_name1>', '<source_name2>', ...]}
+    init_flags = sync_status['matching_init_keys'].reduce({}){|sum,init_key| 
+      parsed = init_key.match(/username:([^:]+):([^:]+)/)
+      puts "#{parsed[1]}, #{parsed[2]}"
+      sum[parsed[1]] ||= []
+      sum[parsed[1]] << parsed[2]
+      sum
+    }
+    # build hash of user -> (source, refresh_time) values of the format {'<username>' => [{:source => '<source_name1>', :time => '<refresh_time>'}, {:source => '<source_name2>', :time => ...}]}
+    refresh_times = sync_status['matching_refresh_time_keys'].reduce({}){|sum,(key,time)|
+      parsed = key.match(/read_state:application:([^:]+):([^:]+)/)
+      sum[parsed[1]] ||= []
+      sum[parsed[1]] << {:source => parsed[2], :time => Time.at(time.to_i)}
+      sum
+    }
+    test = {:init_flags => init_flags, :refresh_times => refresh_times}
+    ap test
+    puts "done"
   end
   
   task :get_log => [:set_token] do
@@ -222,7 +242,7 @@ namespace :server do
   end
   
   desc "pushes objects and invokes the notify method associated with the sources" 
-  task :push_objects_notify => [:set_token] do |t, args|
+  task :push_objects_notify, [:user_id] => [:set_token] do |t, args|
     res = RestClient.post(
       "#{$server}api/push_objects_notify", 
       { 
@@ -568,6 +588,26 @@ namespace :server do
     puts "\nTotal device count: #{platform_counts.values.reduce(0){|sum,value| sum += value}}"
     puts "Platform breakdown:"
     ap(platform_counts,:plain => true)
+  end
+  
+  task :client_exception_stats, [:user_pattern] => [:set_token] do |t,args|
+    filtered_users = get_users.reject{|user| user[Regexp.new(args[:user_pattern])].nil?}
+    
+    total_matches = 0
+    
+    filtered_users.each do |user|
+      exceptions = get_md(user, 'ClientException')
+      
+      # relevant_exceptions = exceptions.select{|key,value| value['message'][/Could not find rhosync-2.1.7 in any of the sources/]}
+      relevant_exceptions = exceptions
+      
+      total_matches += relevant_exceptions.count
+      
+      ap "#{relevant_exceptions.count} exceptions for user #{user}: "
+      ap relevant_exceptions.map{|id,value| id[0,10]}.sort.map{|time| Time.at(time.to_i)}
+    end
+    
+    ap "Total matches: #{total_matches}"
   end
   
   desc "Checks redis for dead/failed locks"

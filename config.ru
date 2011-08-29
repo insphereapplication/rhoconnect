@@ -28,6 +28,12 @@ require 'sinatra'
 require 'logger'
 require 'ap'
 
+require "#{File.dirname(__FILE__)}/util/insite_logger"
+require "#{File.dirname(__FILE__)}/util/insite_rack_logger"
+require "#{File.dirname(__FILE__)}/util/insite_rhosync_logger"
+
+use Rack::CommonLogger, InsiteRackLogger.new
+
 set :raise_errors, true
 
 ROOT_PATH = File.expand_path(File.dirname(__FILE__))

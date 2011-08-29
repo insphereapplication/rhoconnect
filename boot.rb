@@ -18,7 +18,6 @@ require 'sinatra'
 [
   'util',
   'lib', 
-  'jobs', 
   'api', 
   'initializers', 
   'mappers',
