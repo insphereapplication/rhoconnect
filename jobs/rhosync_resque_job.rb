@@ -1,4 +1,5 @@
 root_path = File.expand_path("#{File.dirname(__FILE__)}/..")
+require "#{root_path}/initializers/object_extension"
 require "#{root_path}/util/insite_logger"
 require "#{root_path}/util/exception_util"
 require "#{root_path}/util/config_file"
