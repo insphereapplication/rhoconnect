@@ -1,6 +1,3 @@
-lib_path = File.expand_path(File.join(File.dirname(__FILE__))) 
-require "#{lib_path}/version"
-
 module VersionCheck
   MIN_APPLE_VERSION = "4"
   MIN_ANDROID_VERSION = "2.2"

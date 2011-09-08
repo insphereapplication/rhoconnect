@@ -1,9 +1,3 @@
-app_path = File.expand_path(File.join(File.dirname(__FILE__)) + '/..')
-require "#{app_path}/util/config_file"
-require "#{app_path}/tasks/lib/version_check"
-
-API_KEY = 'b8788d7b2ae404c9661f40215f5d9258aede9c83'
-
 $settings_file = 'settings/settings.yml'
 $settings = YAML::load_file($settings_file)
 $target = :onsite_model
@@ -28,7 +22,6 @@ namespace :server do
     rake = File.readlines(__FILE__)
     rake.map!{|l| l =~ /^\$target/ ? "$target = :#{args.env}\n"  : l }
     File.open(__FILE__, 'w+') {|f| f.write(rake) }
-    Rake::Task['server:clear_token'].invoke
   end
   
   desc 'Shows the current target server and url'
@@ -37,45 +30,17 @@ namespace :server do
   end
 
   login = 'rhoadmin'
-  tokenfile = '.rhosync_token'
   
   task :set_token do
     begin
-      if File.exists?(tokenfile) 
-        puts "reading token file..."
-        @token = File.readlines(tokenfile).first.strip
-        puts "using persisted token: #{@token}..."
-      else
-        puts "no persisted token found, authenticating at #{$server}..."
-        puts "Posting to: #{$server}login -- #{{ :login => 'rhoadmin', :password => $password }.to_json}"
-        res = RestClient.post("#{$server}login", { :login => 'rhoadmin', :password => $password }.to_json, :content_type => :json)
-        
-        puts "Pre-token cookies #{res.cookies.inspect}"
-        
-        #The following fix is needed when using rest-client 1.6.1;
-        #The make_headers function (lib/restclient/request.rb, line 86) uses CGI::unescape, but we want the cookies
-        #submitted to RhoSync to remain escaped. The following code simply replaces all '%' characters with their
-        #URL-encoded value of '%25' to prevent escaped characters in the given cookie from being unescaped by
-        #rest-client. For example, a given cookie of "1234%3D%0A5" would have been unescaped and sent back to
-        #RhoSync as "12345=\n5", but RhoSync expects the cookie to be in its original escaped format.
-        preserved_cookies = res.cookies.inject({}){ |h,(key,value)| 
-           h[key] = value.gsub('%', '%25')
-           h
-         }
-                
-        @token = RestClient.post("#{$server}api/get_api_token",'',{ :cookies => preserved_cookies, })
-        
-        puts "new token: #{@token}"
-        File.open(tokenfile, 'w') {|f| f.write(@token) }
-      end
+      puts "authenticating at #{$server}..."
+      @rhosync_api = RhosyncApiSession.new($server, $password)
+      @token = @rhosync_api.token
+      puts "login successful, token is #{@token}"
       Rake::Task['server:show'].invoke
     rescue Exception => e
       puts "!!!! Exception thrown: #{e.inspect}"
     end
-  end
-  
-  task :clear_token do
-    `rm #{tokenfile}`
   end
   
   desc "Creates a user with the given password in the system at #{$server}"
@@ -404,6 +369,26 @@ namespace :server do
       :content_type => :json
     ).body
     JSON.parse(res)
+  end
+  
+  task :count_records, [:user_pattern, :source_pattern] => [:set_token] do |t,args|
+    abort "User pattern must be specified" unless args[:user_pattern]
+    
+    # Default to all sources
+    source_pattern = args[:source_pattern] || '.'
+    
+    filtered_users = @rhosync_api.get_all_users.reject{|user| user[Regexp.new(args[:user_pattern])].nil?}
+    filtered_sources = @rhosync_api.list_sources.reject{|source| source[Regexp.new(source_pattern)].nil?}
+    
+    results = filtered_users.reduce({}) do |sum,user|
+      sum[user] = filtered_sources.reduce({}) do |user_source_counts,source|
+        user_source_counts[source] = @rhosync_api.get_md(source,user).count
+        user_source_counts
+      end
+      sum
+    end
+    
+    ap results
   end
   
   task :check_duplicate_activities, [:user_pattern] => [:set_token] do |t, args|
