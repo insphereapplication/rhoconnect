@@ -77,7 +77,7 @@ class StaticEntity < SourceAdapter
                                                                      :password => @password},
                                                                      :content_type => "application/x-www-form-urlencoded"))
 
-      can_reassign_opportunities = (role_source_res & CONFIG[:opp_assign_roles].split(',')).length > 1 ? true : false                                                               
+      can_reassign_opportunities = (role_source_res & CONFIG[:opp_assign_roles].split(',')).length >= 1 ? true : false                                                               
                                                                      
       downline_source_res = RestClient.post("#{CONFIG[:crm_path]}user/Downline",
                                                                     {:username => @username,
