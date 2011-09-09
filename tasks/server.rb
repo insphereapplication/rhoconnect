@@ -98,6 +98,22 @@ namespace :server do
     ap res.sort
   end
   
+  desc "Forces an immediate query for the given source <source_id> for the given <user_id>"
+  task :force_query, [:user_id, :source_id] => [:set_token] do |t,args|
+    abort "User source id must be specified" unless args[:user_id] and args[:source_id]
+    rest_rescue do
+      ap RestClient.post(
+        "#{$server}api/force_query", 
+        { 
+          :api_token => @token, 
+          :user_id => args[:user_id],
+          :source_id => args[:source_id]
+        }.to_json, 
+        :content_type => :json
+      )
+    end
+  end
+  
   desc "Reset the time that the given source for the given user will query the backend to now"
   task :reset_poll_time, [:source_name, :user_name] => [:set_token] do |t,args|
     abort "Source name & user name must be specified" unless args[:source_name] && args[:user_name]
