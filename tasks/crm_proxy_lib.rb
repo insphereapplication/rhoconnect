@@ -69,3 +69,11 @@ def get_log(server, credential, line_count=nil)
 	
 	RestClient.post("#{server}/log", post_attributes).body
 end
+
+def get_roles(server, credential)
+	JSON.parse(RestClient.post("#{server}/user/Roles", credential.to_hash).body)
+end
+
+def get_downline(server, credential)
+	JSON.parse(RestClient.post("#{server}/user/Downline", credential.to_hash).body)
+end

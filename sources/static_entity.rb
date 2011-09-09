@@ -70,14 +70,30 @@ class StaticEntity < SourceAdapter
       end             
             
       #ap "Lead sources: #{lead_sources}"                 
-      
+
+
+      role_source_res = JSON.parse(RestClient.post("#{CONFIG[:crm_path]}user/Roles",
+                                                                    {:username => @username,
+                                                                     :password => @password},
+                                                                     :content_type => "application/x-www-form-urlencoded"))
+
+      can_reassign_opportunities = (role_source_res & CONFIG[:opp_assign_roles].split(',')).length > 1 ? true : false                                                               
+                                                                     
+      downline_source_res = RestClient.post("#{CONFIG[:crm_path]}user/Downline",
+                                                                    {:username => @username,
+                                                                     :password => @password},
+                                                                     :content_type => "application/x-www-form-urlencoded")
+
+            
       ExceptionUtil.context(:result => @result)          
       
       @result = {
                   "1" => {"names" => carriers, "type" => "carriers"},
                   "2" => {"names" => lobs, "type" => "line_of_business"},
                   "3" => {"names" => rawlead_lobs, "type" => "rawlead_lineofbusiness"},
-                  "4" => {"names" => lead_sources, "type" => "lead_source"}
+                  "4" => {"names" => lead_sources, "type" => "lead_source"},
+                  "5" => {"names" => can_reassign_opportunities, "type" => "reassign_capability"},
+                  "6" => {"names" => downline_source_res, "type" => "downline_source"},
                 }
       
       ap "@result = #{@result.inspect}"
