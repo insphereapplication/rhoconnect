@@ -6,8 +6,12 @@ class OpportunityMapper < Mapper
     data.reject!{|k,v| CLIENT_ONLY_FIELDS.include?(k)}
     data['cssi_fromrhosync'] = 'true'
     
-    if mapper_context['ownerid']
-      data['ownerid'] = {:type => 'systemuser', :id => mapper_context['ownerid']}
+    new_owner = data['ownerid'].nil?  ? mapper_context['ownerid'] : data['ownerid']
+    
+    InsiteLogger.info "new_owner = #{new_owner.inspect} mapper_context[ownereid] = #{mapper_context['ownerid']}"
+    
+    if mapper_context['ownerid'] || new_owner
+      data['ownerid'] = {:type => 'systemuser', :id => new_owner }
     end
     
     data  

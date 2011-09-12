@@ -10,7 +10,8 @@ $environments = {'local' => 'http://192.168.51.128',
   'dev-external' => 'https://devmobileproxy.insphereis.net', 
   'model-external' => 'https://mobileproxy.model.insphereis.net',
   'production-external' => 'https://mobileproxy.insphereis.net',
-  'dev-integrated' => 'http://nrhwwwd403.insp.dom:2195/crm/ActivityCenter/MobileProxy'}
+  'dev-integrated' => 'http://nrhwwwd403.insp.dom:2195/crm/ActivityCenter/MobileProxy',
+  'local' => 'IT-64VANDEVENTE:49938' }
 
 namespace :proxy do
   def rest_rescue
@@ -57,6 +58,14 @@ namespace :proxy do
     primary_insured = args[:primary_insured]
     
     update_policy_primary_insured(@proxy_url,@credential,@identity,policy_id,primary_insured)
+  end
+  
+  desc "Reassigns an opportunity"
+  task :reassign_opportunity, [:opportunity_id,:reassignee_id] => [:setup, :set_identity] do |t,args|
+    opportunity_id = args[:opportunity_id]
+    reassignee_id = args[:reassignee_id]
+    
+    opportunity_reassign(@proxy_url,@credential,@identity,opportunity_id,reassignee_id)
   end
   
   desc "Deletes an activity in CRM given its GUID and activity type"
