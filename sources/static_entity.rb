@@ -84,6 +84,12 @@ class StaticEntity < SourceAdapter
                                                                      :password => @password},
                                                                      :content_type => "application/x-www-form-urlencoded")
 
+
+      whoami_source = JSON.parse(RestClient.post("#{CONFIG[:crm_path]}user/WhoAmI",
+                                                     {:username => @username,
+                                                      :password => @password},
+                                                      :content_type => "application/x-www-form-urlencoded"))
+      who_am_i_id =   whoami_source['id']                                                             
             
       ExceptionUtil.context(:result => @result)          
       
@@ -94,6 +100,7 @@ class StaticEntity < SourceAdapter
                   "4" => {"names" => lead_sources, "type" => "lead_source"},
                   "5" => {"names" => can_reassign_opportunities, "type" => "reassign_capability"},
                   "6" => {"names" => downline_source_res, "type" => "downline_source"},
+                  "7" => {"names" => who_am_i_id, "type" => "systemuserid"},
                 }
       
       ap "@result = #{@result.inspect}"
