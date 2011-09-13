@@ -6,8 +6,12 @@ class OpportunityMapper < Mapper
     data.reject!{|k,v| CLIENT_ONLY_FIELDS.include?(k)}
     data['cssi_fromrhosync'] = 'true'
     
-    if mapper_context[:user_id]
-      data['ownerid'] = {:type => 'systemuser', :id => mapper_context[:user_id]}
+    new_owner = data['ownerid'].nil?  ? mapper_context['ownerid'] : data['ownerid']
+    
+    InsiteLogger.info "new_owner = #{new_owner.inspect} mapper_context[ownereid] = #{mapper_context['ownerid']}"
+    
+    if mapper_context['ownerid'] || new_owner
+      data['ownerid'] = {:type => 'systemuser', :id => new_owner }
     end
     
     data  
@@ -17,9 +21,9 @@ class OpportunityMapper < Mapper
     opportunity_mapper.map! do |value| 
       #always filter out attributes that are only set in RhoSync (avoids problems with fixed schema)
       #these fields are not modified from rhodes and should only be injected in map_data_from_client as needed
-
-      value.reject!{|k,v|  ['ownerid', 'temp_id'].include?(k) }
       
+      value.reject!{|k,v|  ['temp_id'].include?(k) }
+      value['ownerid'] = value['ownerid']['id']
       # for 2.0 Iteration 1 only!
       # Greg Norz - 2011-06-13 - Leaving this commented in here for now in case we need it for iteration 2. It listed as a merge conflict.
       #value.reject!{|k,v|  ['opportunityratingcode', 'actualclosedate'].include?(k) }
