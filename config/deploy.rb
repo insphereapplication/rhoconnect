@@ -143,17 +143,20 @@ namespace :resque do
   
   QUEUE_NAMES = ["limit_client_exceptions","clean_old_opportunity_data","validate_redis_data"]
   
-  task :restart, :roles => :resque do
+  desc "Restart the resque jobs"  
+  task :restart, :roles => :resque do 
     stop
     start
   end
   
+  desc "Stop the resque jobs"  
   task :stop, :roles => :resque do
     stop_scheduler
     stop_workers
     stop_console
   end
   
+  desc "Start the resque jobs"  
   task :start, :roles => :resque do
     start_console
     start_workers
