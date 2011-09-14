@@ -14,7 +14,8 @@ class AppInfo < SourceAdapter
     # Retrieve static values from the settings.yml 
     static_app_info_attrs = { 'min_required_version' => app_info_config[:min_required_version],
                               'apple_upgrade_url' => app_info_config[:apple_force_upgrade_url],
-                              'android_upgrade_url' => app_info_config[:android_force_upgrade_url] }
+                              'android_upgrade_url' => app_info_config[:android_force_upgrade_url] 
+                              'model_limits' => app_info_config[:model_limits]}
     
     # Uncomment this (and delete the above line) when we're ready to deploy soft upgrade
     # static_app_info_attrs = { 'min_required_version' => app_info_config[:min_required_version], 

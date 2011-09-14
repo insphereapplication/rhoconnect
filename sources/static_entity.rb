@@ -91,9 +91,6 @@ class StaticEntity < SourceAdapter
                                                       :content_type => "application/x-www-form-urlencoded"))
       who_am_i_id =   whoami_source['id']                                                             
             
-      model_limits_source = CONFIG[:model_limits]
-            
-            
       ExceptionUtil.context(:result => @result)          
       
       @result = {
@@ -104,7 +101,6 @@ class StaticEntity < SourceAdapter
                   "5" => {"names" => can_reassign_opportunities, "type" => "reassign_capability"},
                   "6" => {"names" => downline_source_res, "type" => "downline_source"},
                   "7" => {"names" => who_am_i_id, "type" => "systemuserid"},
-                  "8" => {"names" => model_limits_source, "type" => "model_limits"},
                 }
       
       ap "@result = #{@result.inspect}"
