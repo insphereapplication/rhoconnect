@@ -1,6 +1,6 @@
 $settings_file = 'settings/settings.yml'
 $settings = YAML::load_file($settings_file)
-$target = :onsite_model
+$target = :test
 $config = ConfigFile.get_settings_for_environment($settings, $target)
 $app_path = File.expand_path(File.dirname(__FILE__))
 $server = ($config[:syncserver] || "").sub('/application', '')
