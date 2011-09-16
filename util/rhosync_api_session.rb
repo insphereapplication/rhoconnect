@@ -9,6 +9,8 @@ require 'yaml'
 
 class RhosyncApiSession
   
+  attr_reader :token
+  
   def initialize(host, password)
     @server = host
     @password = password
@@ -32,7 +34,7 @@ class RhosyncApiSession
   def get_user_password(user)    
     encrypted_password = get_db_doc("username:#{user}:password", 'string')
     Crypto.decrypt(encrypted_password)
-  end  
+  end
   
   def get_db_doc(doc, type=nil)
     
@@ -69,6 +71,10 @@ class RhosyncApiSession
       :content_type => :json
     ).body
     sources.gsub(/[\[\]]/, '').gsub('"','').split(",")
+  end
+  
+  def get_md(source_id, user_id)
+    get_db_doc("source:application:#{user_id}:#{source_id}:md")
   end
 
   def get_device_params(id)
@@ -150,5 +156,27 @@ class RhosyncApiSession
     }
     @token = RestClient.post("#{@server}api/get_api_token",'',{ :cookies => cookies, })
   end
-
+  
+  def reset_sync_status(username)
+   res = JSON.parse(RestClient.post(
+      "#{@server}api/reset_sync_status", 
+      { 
+        :api_token => @token, 
+        :user_pattern => username
+      }.to_json, 
+      :content_type => :json
+    ).body)
+  end
+  
+  def get_user_crm_id(username)
+    res = RestClient.post(
+       "#{@server}api/get_user_crm_id", 
+       { 
+         :api_token => @token, 
+         :username => username
+       }.to_json, 
+       :content_type => :json
+     ).body
+  end
+  
 end

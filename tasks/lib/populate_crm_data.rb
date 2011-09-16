@@ -1,7 +1,3 @@
-## remove later
-app_path = File.expand_path(File.join(File.dirname(__FILE__))) 
-require "#{app_path}/../util/redis_util"
-#require "#{app_path}/../helpers/crypto"
 require 'time'
 require 'faker'
 require 'ap'
@@ -586,4 +582,16 @@ def generate_appointment_leads(server,credential,identity,lead_count,due_seconds
 	appointment_attributes = get_crm_appointment_time_hash(dueStartTime, dueEndTime)
 	ap appointment_attributes
 	generate_leads_with_appointment(server,credential,identity,lead_count,appointment_attributes,create_notes)
+end
+
+def opportunity_reassign(server,credential,identity,opportunity_id,reassignee_id)  
+  puts "reassigning opportunity ID #{opportunity_id} to #{reassignee_id}"
+  opportunity_data = {
+    'opportunityid' => opportunity_id,
+    'ownerid' => reassignee_id    
+  }  
+  opportunity_data['ownerid'] = {:type => 'systemuser', :id => reassignee_id }
+  puts opportunity_data.inspect
+  
+	RestClient.post("#{server}/opportunity/update", credential.to_hash.merge(:attributes => opportunity_data.to_json)).body
 end

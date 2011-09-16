@@ -11,7 +11,8 @@ class LimitClientExceptions
     def perform
       InsiteLogger.info "Initiating resque job LimitClientExceptions..."
       ExceptionUtil.rescue_and_reraise do
-        get_master_docs.each do |user, client_exceptions|
+        users.each do |user| 
+          client_exceptions = rhosync_api.get_db_doc("source:application:#{user}:ClientException:md")
           InsiteLogger.info "Limiting client exceptions for user #{user}"
           # the key of each ClientException record in redis is based on the time the exception was thrown, 
           # so we can safely sort and remove exceptions based on the value of that
@@ -28,14 +29,6 @@ class LimitClientExceptions
       end
     end
     
-    def get_master_docs
-       users.map do |user| 
-         [ 
-           user,
-           rhosync_api.get_db_doc("source:application:#{user}:ClientException:md")
-         ]
-      end
-    end
     
     def client_exception_limit
       CLIENT_EXCEPTION_LIMIT

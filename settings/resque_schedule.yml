@@ -16,3 +16,9 @@ validate_redis_data:
   class: ValidateRedisData
   args:
   description: "This job validates that the data in redis for each user matches CRM"
+deactivate_inactive_user:
+    queue: deactivate_inactive_user  
+    cron: "01 5 * * *"
+    class: DeactivateInactiveUser
+    args:
+    description: "This job set the mobile user flag to false and reset the user sync status if they have not had any activity in 2 weeks"

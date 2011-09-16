@@ -1,8 +1,3 @@
-app_path = File.expand_path(File.join(File.dirname(__FILE__))) 
-require "#{app_path}/../util/config_file"
-require "#{app_path}/../util/rhosync_api_session"
-require "#{app_path}/../helpers/crypto"
-
 class DataValidation
   
   def self.validate(username=nil)
