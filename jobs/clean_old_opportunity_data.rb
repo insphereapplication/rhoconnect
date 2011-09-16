@@ -21,9 +21,13 @@ class CleanOldOpportunityData
       InsiteLogger.info "Initiating resque job CleanOldOpportunityData..."
       ExceptionUtil.rescue_and_reraise do
         
-        get_master_docs(users).each do |user, opportunities, activities, contacts, policies|
+        users.each do |user|
           begin
             InsiteLogger.info("*"*10 + "starting cleanup job for #{user}")
+            opportunities =  rhosync_api.get_db_doc("source:application:#{user}:Opportunity:md")
+            activities =  rhosync_api.get_db_doc("source:application:#{user}:Activity:md")
+            contacts = rhosync_api.get_db_doc("source:application:#{user}:Contact:md")
+            policies = rhosync_api.get_db_doc("source:application:#{user}:Policy:md")
           
             # find the expired Opportunities
             old_opportunities = get_expired_opportunities(opportunities)          
@@ -32,8 +36,6 @@ class CleanOldOpportunityData
             # find reassign Opportunities
             reassigned_opportunites = get_reassigned_opportunities(opportunities, user)
             reassigned_opportunity_ids = get_doc_ids(reassigned_opportunites)
-          
-            InsiteLogger.info("*****Reassigned opportunities #{reassigned_opportunity_ids}")
   
             # now find the activities that are expired
             old_activities = get_expired_activities(activities)
@@ -48,7 +50,6 @@ class CleanOldOpportunityData
             old_contacts = get_expired_contacts(current_opportunities, current_activities, contacts, policies)
             old_contact_ids = get_doc_ids(old_contacts)
 
-          
             InsiteLogger.info(:format_and_join => ["Deleting for user #{user}: old_opps: ",old_opportunity_ids,", reassign_opps: ",reassigned_opportunity_ids, ", contacts: ",old_contact_ids,", activities: ",old_activity_ids])
           
             # delete expired records for all models 
@@ -139,17 +140,5 @@ class CleanOldOpportunityData
        end 
     end
       
-    def get_master_docs(users)
-      
-       users.map do |user| 
-        [ 
-          user,
-          rhosync_api.get_db_doc("source:application:#{user}:Opportunity:md"),
-          rhosync_api.get_db_doc("source:application:#{user}:Activity:md"),
-          rhosync_api.get_db_doc("source:application:#{user}:Contact:md"),
-          rhosync_api.get_db_doc("source:application:#{user}:Policy:md")
-        ]
-      end
-    end
   end
 end

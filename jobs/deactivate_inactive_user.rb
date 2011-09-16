@@ -15,9 +15,10 @@ class DeactivateInactiveUser
       InsiteLogger.info "Initiating resque job decactivate inactive users"
       ExceptionUtil.rescue_and_reraise do
         
-        get_master_docs.each do |user, device_infos, devices|
+        users.each do |user|
           #If none of the user devices are active
-          
+          device_infos =  rhosync_api.get_db_doc("source:application:#{user}:DeviceInfo:md")
+          devices = rhosync_api.get_user_devices("#{user}")
           InsiteLogger.info("*"*10 + " Checking to see if #{user} is active")
           if device_infos.nil? || device_infos.count <=0 || is_inactive_user(device_infos)
             InsiteLogger.info("#{user} is inactive")
@@ -96,19 +97,6 @@ class DeactivateInactiveUser
       doc.map{|item| item[0]}
     end
     
-
-    
-    def get_master_docs
-      
-       InsiteLogger.info("Getting device info user")
-       users.map do |user| 
-        [ 
-          user,
-          rhosync_api.get_db_doc("source:application:#{user}:DeviceInfo:md"),
-          rhosync_api.get_user_devices("#{user}"),
-        ]
-      end
-    end
   end    
     
 end
