@@ -22,37 +22,51 @@ class CleanOldOpportunityData
       ExceptionUtil.rescue_and_reraise do
         
         get_master_docs(users).each do |user, opportunities, activities, contacts, policies|
+          begin
+            InsiteLogger.info("*"*10 + "starting cleanup job for #{user}")
+          
+            # find the expired Opportunities
+            old_opportunities = get_expired_opportunities(opportunities)          
+            old_opportunity_ids = get_doc_ids(old_opportunities)
+          
+            # find reassign Opportunities
+            reassigned_opportunites = get_reassigned_opportunities(opportunities, user)
+            reassigned_opportunity_ids = get_doc_ids(reassigned_opportunites)
+          
+            InsiteLogger.info("*****Reassigned opportunities #{reassigned_opportunity_ids}")
+  
+            # now find the activities that are expired
+            old_activities = get_expired_activities(activities)
+            old_activity_ids = get_doc_ids(old_activities)
+            #old_activity_ids =[]
+          
+            # get a set of the remaining opportunities so we don't reject a contact that may be related to more than one opportunity
+            current_opportunities = opportunities.reject{|k,v| old_opportunity_ids.include?(k) || reassigned_opportunity_ids.include?(k) }
+            current_activities = activities.reject{|k,v| old_activity_ids.include?(k)}
+          
+            # look for contacts on expired activities and expired opportunities that are eligible to be deleted
+            old_contacts = get_expired_contacts(current_opportunities, current_activities, contacts, policies)
+            old_contact_ids = get_doc_ids(old_contacts)
 
-          # find the expired Opportunities
-          old_opportunities = get_expired_opportunities(opportunities)          
-          old_opportunity_ids = get_doc_ids(old_opportunities)
-        
-          # now find the activities that are expired
-          old_activities = get_expired_activities(activities)
-          old_activity_ids = get_doc_ids(old_activities)
           
-          # get a set of the remaining opportunities so we don't reject a contact that may be related to more than one opportunity
-          current_opportunities = opportunities.reject{|k,v| old_opportunity_ids.include?(k) }
-          current_activities = activities.reject{|k,v| old_activity_ids.include?(k)}
+            InsiteLogger.info(:format_and_join => ["Deleting for user #{user}: old_opps: ",old_opportunity_ids,", reassign_opps: ",reassigned_opportunity_ids, ", contacts: ",old_contact_ids,", activities: ",old_activity_ids])
           
-          # look for contacts on expired activities and expired opportunities that are eligible to be deleted
-          old_contacts = get_expired_contacts(current_opportunities, current_activities, contacts, policies)
-          old_contact_ids = get_doc_ids(old_contacts)
-
-          
-          InsiteLogger.info(:format_and_join => ["Deleting for user #{user}: opps ",old_opportunity_ids,", contacts: ",old_contact_ids,", activities: ",old_activity_ids])
-          
-          # delete expired records for all models 
-          rhosync_api.push_deletes('Activity',user,old_activity_ids) unless old_activity_ids.empty?
-          rhosync_api.push_deletes('Opportunity',user,old_opportunity_ids) unless old_opportunity_ids.empty?
-          rhosync_api.push_deletes('Contact',user,old_contact_ids) unless old_contact_ids.empty?
-          
+            # delete expired records for all models 
+            rhosync_api.push_deletes('Activity',user,old_activity_ids) unless old_activity_ids.empty?
+            rhosync_api.push_deletes('Opportunity',user,old_opportunity_ids) unless old_opportunity_ids.empty?
+            rhosync_api.push_deletes('Opportunity',user,reassigned_opportunity_ids) unless reassigned_opportunity_ids.empty?
+            rhosync_api.push_deletes('Contact',user,old_contact_ids) unless old_contact_ids.empty?
+          rescue Exception => e
+            ExceptionUtil.print_exception(e)
+            InsiteLogger.info("*"*10 + "exception occured during cleanup job for #{user}")
+          end    
         end
       end
     end 
   
     def get_expired_activities(activities)
       activities.reject do |key, activity|
+      InsiteLogger.info( "!!!!!! working on activity: #{key}")
         begin
           case activity['statecode']
           when "Completed"
@@ -70,10 +84,12 @@ class CleanOldOpportunityData
         rescue Exception => e
           ExceptionUtil.print_exception(e)
           InsiteLogger.info( "4. Is #{activity['statecode']} activity #{key} expired: True")
-          true
+          false
         end    
       end
      end
+     
+
     
     def get_expired_contacts(current_opportunities, current_activities, contacts, policies)
       current_opportunities_contact_ids = current_opportunities.map{|k,v| v['contact_id']}
@@ -114,6 +130,13 @@ class CleanOldOpportunityData
         end
         expired
       end
+    end
+    
+    def get_reassigned_opportunities(opportunities, user)
+       crm_user_id = rhosync_api.get_user_crm_id("#{user}")
+       opportunities.reject do |key, opp|
+         opp["ownerid"].blank? || opp["ownerid"] == crm_user_id
+       end 
     end
       
     def get_master_docs(users)

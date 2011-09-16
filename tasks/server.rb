@@ -1,6 +1,6 @@
 $settings_file = 'settings/settings.yml'
 $settings = YAML::load_file($settings_file)
-$target = :onsite_model
+$target = :test
 $config = ConfigFile.get_settings_for_environment($settings, $target)
 $app_path = File.expand_path(File.dirname(__FILE__))
 $server = ($config[:syncserver] || "").sub('/application', '')
@@ -96,6 +96,20 @@ namespace :server do
       :content_type => :json
     ).body)
     ap res.sort
+  end
+  
+  desc "Get user's crm_user_id "
+  task :get_user_crm_id, [:username] => [:set_token] do |t, args|
+    abort "User name must be specified" unless args[:username]
+    res = RestClient.post(
+       "#{$server}api/get_user_crm_id", 
+       { 
+         :api_token => @token, 
+         :username => args[:username]
+       }.to_json, 
+       :content_type => :json
+     ).body
+    ap res
   end
   
   desc "Forces an immediate query for the given source <source_id> for the given <user_id>"
