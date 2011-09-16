@@ -141,7 +141,7 @@ end
 
 namespace :resque do 
   
-  QUEUE_NAMES = ["limit_client_exceptions","clean_old_opportunity_data","validate_redis_data"]
+  QUEUE_NAMES = ["limit_client_exceptions","clean_old_opportunity_data","validate_redis_data", "deactivate_inactive_user"]
   
   desc "Restart the resque jobs"  
   task :restart, :roles => :resque do 
