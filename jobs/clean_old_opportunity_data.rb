@@ -17,7 +17,12 @@ class CleanOldOpportunityData
       InsiteLogger.info "Initiating resque job CleanOldOpportunityData..."
       ExceptionUtil.rescue_and_reraise do
         
-        get_master_docs(users).each do |user, opportunities, activities, contacts, policies|
+        users.each do |user|
+          
+          opportunities = rhosync_api.get_db_doc("source:application:#{user}:Opportunity:md")
+          activities =  rhosync_api.get_db_doc("source:application:#{user}:Activity:md")
+          contacts =  rhosync_api.get_db_doc("source:application:#{user}:Contact:md")
+          policies =  rhosync_api.get_db_doc("source:application:#{user}:Policy:md")
 
           # find the expired Opportunities
           old_opportunities = get_expired_opportunities(opportunities)          
@@ -80,17 +85,5 @@ class CleanOldOpportunityData
       end
     end
       
-    def get_master_docs(users)
-      
-       users.map do |user| 
-        [ 
-          user,
-          rhosync_api.get_db_doc("source:application:#{user}:Opportunity:md"),
-          rhosync_api.get_db_doc("source:application:#{user}:Activity:md"),
-          rhosync_api.get_db_doc("source:application:#{user}:Contact:md"),
-          rhosync_api.get_db_doc("source:application:#{user}:Policy:md")
-        ]
-      end
-    end
   end
 end
