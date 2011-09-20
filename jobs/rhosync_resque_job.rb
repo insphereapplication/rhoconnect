@@ -3,6 +3,7 @@ require "#{root_path}/util/insite_logger"
 require "#{root_path}/util/exception_util"
 require "#{root_path}/util/config_file"
 require "#{root_path}/util/rhosync_api_session"
+require "#{root_path}/util/email_util"
 
 module RhosyncResqueJob
   
@@ -14,5 +15,17 @@ module RhosyncResqueJob
   
   def users
     rhosync_api.get_all_users
+  end
+  
+  def log(input)
+    puts InsiteLogger.format_for_logging(input)
+  end
+  
+  def log_and_continue
+    begin
+      yield if block_given?
+    rescue Exception => e
+      log "!!! Exception encountered !!! Message: \"#{e.message}\", class: #{e.class}, backtrace: #{InsiteLogger.format_for_logging(e.backtrace)}"
+    end
   end
 end
