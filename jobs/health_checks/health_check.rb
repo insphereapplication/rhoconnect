@@ -2,7 +2,9 @@ app_path = File.expand_path(File.join(File.dirname(__FILE__)))
 require "#{app_path}/../../jobs/rhosync_resque_job"
 require 'ap'
 
-class HealthCheck  
+class HealthCheck
+  include RhosyncResqueJob
+  
   def initialize(friendly_name)
     @passed = true
     @friendly_name = friendly_name
@@ -24,20 +26,8 @@ class HealthCheck
     "Detailed results for #{@friendly_name} check: "
   end
   
-  def log(message)
-    puts message
-  end
-  
   def log_run
-    puts "$"*25 + "  Starting #{@friendly_name} check  " + "$"*25
-  end
-  
-  def log_and_continue
-    begin
-      yield if block_given?
-    rescue Exception => e
-      log "!!! Exception encountered !!! Message: \"#{e.message}\", class: #{e.class}, backtrace: #{InsiteLogger.format_for_logging(e.backtrace)}"
-    end
+    log "$"*25 + "  Starting #{@friendly_name} check  " + "$"*25
   end
 end
 
