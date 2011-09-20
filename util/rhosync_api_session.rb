@@ -128,7 +128,7 @@ class RhosyncApiSession
     }
     {:initialized_sources => init_flags, :refresh_times => refresh_times}
   end
-  
+
   def get_dead_locks
     res = RestClient.post(
       "#{@server}api/get_dead_locks", 
@@ -138,7 +138,19 @@ class RhosyncApiSession
       :content_type => :json
     ).body
     dead_locks = JSON.parse(res)
+    # return a hash mapping the lock keys to the time at which they expired (i.e. {'lock:user:model:md' => Apr 25 2011 15:54 -0500})
     dead_locks.reduce({}){|sum,(key,value)| sum[key] = Time.at(value.to_i); sum }
+  end
+  
+  def release_lock(lock)
+    res = RestClient.post(
+      "#{@server}api/release_lock", 
+      { 
+        :api_token => @token,
+        :lock => lock
+      }.to_json, 
+      :content_type => :json
+    ).body
   end
 
   def login()

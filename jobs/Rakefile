@@ -8,6 +8,7 @@ require 'limit_client_exceptions'
 require 'clean_old_opportunity_data'
 require 'validate_redis_data'
 require 'deactivate_inactive_user'
+require 'release_dead_locks'
 
 require File.expand_path("#{File.dirname(__FILE__)}/../util/config_file")
 
