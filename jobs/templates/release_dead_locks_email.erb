@@ -1,0 +1,11 @@
+Environment: <%= environment %>
+Start time: <%= start_time.to_s %>
+
+Found dead locks:
+
+<%= dead_locks.map{|lock,expiration| "'#{lock}', expired at #{expiration.to_s}"}.join("\n") %>
+<%= "\n\n\n#{'-'*80}\n\n\n" %>
+
+Reset sync status for users:
+
+<%= users_to_reset.join("\n") %>

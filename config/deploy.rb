@@ -140,9 +140,9 @@ def run_and_gather_responses(command)
 end
 
 namespace :resque do 
-  
-  QUEUE_NAMES = ["limit_client_exceptions","clean_old_opportunity_data","validate_redis_data"]
-  
+
+  QUEUE_NAMES = ["limit_client_exceptions","clean_old_opportunity_data","validate_redis_data", "release_dead_locks"]
+
   task :restart, :roles => :resque do
     stop
     start
