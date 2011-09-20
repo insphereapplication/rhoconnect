@@ -171,20 +171,34 @@ namespace :server do
     end
   end
   
-  task :quick_performance_check => [:set_token] do |t,args|
-    interval = 20 # Number of seconds between checks
+  task :quick_performance_check, [:interval] => [:set_token] do |t,args|
+    interval = args[:interval].nil? ? 20 : args[:interval].to_f # Number of seconds between checks
+    
+    max = nil
+    min = nil
+    count = 0
+    sum = 0
     
     loop do
       timer_start = Time.now
       res = JSON.parse(RestClient.post(
-        "#{$server}api/get_sync_status", 
+        "#{$server}api/get_dead_locks", 
         { 
           :api_token => @token, 
           :user_pattern => "*"
         }.to_json, 
         :content_type => :json
       ).body)
-      puts "#{Time.now}: Request took #{Time.now-timer_start} seconds"
+      duration = Time.now-timer_start
+      max = duration if max.nil? or duration > max
+      min = duration if min.nil? or duration < min
+      
+      count += 1
+      sum += duration
+      
+      avg = sum/count
+      
+      puts "#{Time.now}: Request took #{duration} seconds, min=#{min}, max=#{max}, avg=#{avg}"
       sleep(interval)
     end
   end
