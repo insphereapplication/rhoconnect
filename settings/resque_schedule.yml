@@ -24,7 +24,7 @@ deactivate_inactive_user:
   description: "This job set the mobile user flag to false and reset the user sync status if they have not had any activity in 2 weeks"
 release_dead_locks:
   queue: release_dead_locks
-  cron: "30 */2 * * *"
+  cron: "*/5 * * * *"
   class: ReleaseDeadLocks
   args: 
   description: "This job identifies dead locks, releases them, and resets the sync status for each affected user."
