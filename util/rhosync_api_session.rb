@@ -122,6 +122,17 @@ class RhosyncApiSession
     }
     {:initialized_sources => init_flags, :refresh_times => refresh_times}
   end
+  
+  def reset_sync_status(username)
+   res = JSON.parse(RestClient.post(
+      "#{@server}api/reset_sync_status", 
+      { 
+        :api_token => @token, 
+        :user_pattern => username
+      }.to_json, 
+      :content_type => :json
+    ).body)
+  end
 
   def get_dead_locks
     res = RestClient.post(
