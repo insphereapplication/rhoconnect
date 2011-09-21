@@ -139,6 +139,7 @@ local_crm_proxy: http://192.168.51.128/ # Change this if you're running locally 
   :log:
     :mode: 'file'
   :resque_worker_rhosync_api_password: U5PgMPngu27j
+  :resque_data_validation_email_group: dwayne.smith@healthmarkets.com
 :onsite_dev: 
   :redis_boot: true
   :crm_proxy: dev_crm_proxy
