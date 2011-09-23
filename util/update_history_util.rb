@@ -7,7 +7,11 @@ class UpdateHistoryUtil
   def touch(record_id, field_name)
     prior_update_time = last_update(record_id, field_name)
     new_update_time = Time.now
-    Store.db.hset(tracked_updates_key, tracked_update_hash_key(record_id, field_name), new_update_time.to_i)
+    duration = TimerUtil.time_block do
+      Store.db.hset(tracked_updates_key, tracked_update_hash_key(record_id, field_name), new_update_time.to_i)
+    end
+    InsiteLogger.info("Touching #{field_name} for record #{record_id} for source #{@source_name} for user #{@user_id} took #{duration} seconds.")
+    
     {:prior_update_time => prior_update_time, :new_update_time => new_update_time}
   end
 
