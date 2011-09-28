@@ -11,6 +11,7 @@ class CleanOldOpportunityData
   @queue = :clean_old_opportunity_data
 
   include RhosyncResqueJob
+  set_log_file_name(@queue.to_s)
   
   class << self
     def get_doc_ids(doc)

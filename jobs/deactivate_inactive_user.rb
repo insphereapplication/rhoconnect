@@ -8,7 +8,8 @@ class DeactivateInactiveUser
   @queue = :deactivate_inactive_user
 
   include RhosyncResqueJob
-  
+  set_log_file_name(@queue.to_s)
+    
   class << self
     def perform
       InsiteLogger.info "Initiating resque job decactivate inactive users"

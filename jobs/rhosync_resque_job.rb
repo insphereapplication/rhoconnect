@@ -7,9 +7,6 @@ require "#{root_path}/util/rhosync_api_session"
 require "#{root_path}/util/email_util"
 
 module RhosyncResqueJob
-
-  InsiteLogger.init_logger("../log/jobs/#{self}.log")
-
   module ClassMethods  
     @@rhosync_api = nil
   
@@ -20,7 +17,12 @@ module RhosyncResqueJob
     def users
       rhosync_api.get_all_users
     end
-  
+    
+    # stored in job logs path
+    def set_log_file_name(name)
+      InsiteLogger.init_logger(File.join(root_path,'/log/jobs',"#{name}.log"))
+    end
+    
     def log(input)
       InsiteLogger.info(input)
     end

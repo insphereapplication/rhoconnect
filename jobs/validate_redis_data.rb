@@ -8,7 +8,8 @@ class ValidateRedisData
   @queue = :validate_redis_data
 
   include RhosyncResqueJob
-  
+  set_log_file_name(@queue.to_s)
+    
   class << self
     def send_email(email_body)
       ExceptionUtil.rescue_and_reraise do
