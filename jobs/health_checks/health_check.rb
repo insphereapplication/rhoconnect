@@ -27,7 +27,7 @@ class HealthCheck
   end
   
   def log_run
-    log "$"*25 + "  Starting #{@friendly_name} check  " + "$"*25
+    InsiteLogger.info "$"*25 + "  Starting #{@friendly_name} check  " + "$"*25
   end
 end
 

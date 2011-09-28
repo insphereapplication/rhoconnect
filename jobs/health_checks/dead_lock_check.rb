@@ -7,9 +7,9 @@ class DeadLockCheck < HealthCheck
   
   def run
     log_run
-    log_and_continue do
+    ExceptionUtil.rescue_and_continue do
       dead_locks = HealthCheckUtil.rhosync_api.get_dead_locks
-      log "Got dead locks: #{InsiteLogger.format_for_logging(dead_locks)}"
+      InsiteLogger.info(:format_and_join => ["Got dead locks: ",dead_locks])
       @result = dead_locks
     end
   end

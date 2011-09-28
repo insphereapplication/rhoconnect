@@ -10,8 +10,8 @@ class OpportunityIntegrityCheck < HealthCheck
   def run
     log_run
     HealthCheckUtil.users.each do |user|
-      log_and_continue do        
-        log "*"*10 + "Checking user #{user}"
+      ExceptionUtil.rescue_and_continue do        
+        InsiteLogger.info "*"*10 + "Checking user #{user}"
         
         opportunities = HealthCheckUtil.get_rhosync_source_data(user, 'Opportunity')
         contacts = HealthCheckUtil.get_rhosync_source_data(user, 'Contact')
@@ -20,11 +20,11 @@ class OpportunityIntegrityCheck < HealthCheck
           contacts.include?(opp['contact_id'])
         }
         
-        log "Opps without contacts: #{opps_without_contacts.map{|id,opp| id}.inspect}"
+        InsiteLogger.info "Opps without contacts: #{opps_without_contacts.map{|id,opp| id}.inspect}"
         
         user_passed = !HealthCheckUtil.source_initialized?(user, 'opportunity') || opps_without_contacts.count == 0
         
-        log "Result: #{user_passed ? 'PASS' : 'FAIL'}"
+        InsiteLogger.info "Result: #{user_passed ? 'PASS' : 'FAIL'}"
         
         @results[user] = {:passed => user_passed, :opps_without_contacts => opps_without_contacts}
       end

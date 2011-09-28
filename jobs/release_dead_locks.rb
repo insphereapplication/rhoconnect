@@ -14,16 +14,16 @@ class ReleaseDeadLocks
       environment = CONFIG[:env]
       start_time = Time.now
       
-      log "Initiating resque job ReleaseDeadLocks..."
+      InsiteLogger.info("Initiating resque job ReleaseDeadLocks...")
       ExceptionUtil.rescue_and_reraise do
         dead_locks = rhosync_api.get_dead_locks
-        log ["Found dead locks: ", dead_locks]
+        InsiteLogger.info(:format_and_join => ["Found dead locks: ", dead_locks])
         
         users_to_reset = Set.new
         
         dead_locks.each do |lock,expiration|
-          log_and_continue do
-            log "Releasing lock #{lock}"
+          ExceptionUtil.rescue_and_continue do
+            InsiteLogger.info("Releasing lock #{lock}")
             rhosync_api.release_lock(lock)
             
             user_match = lock.match(/^lock:[^:]+:[^:]+:([^:]+):/)
@@ -33,11 +33,11 @@ class ReleaseDeadLocks
         
         users_to_reset = users_to_reset.to_a
         
-        log "Done releasing dead locks, resetting sync status for users #{users_to_reset.join(', ')}"
+        InsiteLogger.info("Done releasing dead locks, resetting sync status for users #{users_to_reset.join(', ')}")
         
         users_to_reset.each do |user|
-          log_and_continue do
-            log "Resetting sync status for user #{user}"
+          ExceptionUtil.rescue_and_continue do
+            InsiteLogger.info("Resetting sync status for user #{user}")
             rhosync_api.reset_sync_status(user)
           end
         end
@@ -52,7 +52,7 @@ class ReleaseDeadLocks
           EmailUtil.send_mail(to, subject, email_body)
         end
         
-        log "ReleaseDeadLocks resque job complete"
+        InsiteLogger.info("ReleaseDeadLocks resque job complete")
       end
     end
   end

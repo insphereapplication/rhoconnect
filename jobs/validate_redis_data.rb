@@ -20,8 +20,8 @@ class ValidateRedisData
 
     def perform
       set_log_file_name(@queue.to_s)
-      log "*"*20 + "Starting Validate_Redis_Data job"
-      log "Target rhosync host: #{CONFIG[:resque_worker_rhosync_api_host]}"
+      InsiteLogger.info "*"*20 + "Starting Validate_Redis_Data job"
+      InsiteLogger.info "Target rhosync host: #{CONFIG[:resque_worker_rhosync_api_host]}"
       
       checks = [
         DeadLockCheck.new,
@@ -35,7 +35,7 @@ class ValidateRedisData
       environment = CONFIG[:env]
       start_time = Time.now
           
-      log "*"*15 + "Sending email with summary data"
+      InsiteLogger.info "*"*15 + "Sending email with summary data"
           
       # send an email with the results
       file_path = File.expand_path(File.join(File.dirname(__FILE__))) + '/templates/validation_email.erb'
@@ -43,7 +43,7 @@ class ValidateRedisData
       result = email_template.result(binding)
       send_email(result)
       
-      log "*"*20 + "Done with Validate_Redis_Data!"
+      InsiteLogger.info "*"*20 + "Done with Validate_Redis_Data!"
     end
   end
 end

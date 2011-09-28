@@ -10,8 +10,8 @@ class PolicyIntegrityCheck < HealthCheck
   def run
     log_run
     HealthCheckUtil.users.each do |user|
-      log_and_continue do        
-        log "*"*10 + "Checking user #{user}"
+      ExceptionUtil.rescue_and_continue do        
+        InsiteLogger.info "*"*10 + "Checking user #{user}"
         
         policies = HealthCheckUtil.get_rhosync_source_data(user, 'Policy')
         contacts = HealthCheckUtil.get_rhosync_source_data(user, 'Contact')
@@ -20,7 +20,7 @@ class PolicyIntegrityCheck < HealthCheck
           policy['contact_id'].nil? || contacts.include?(policy['contact_id'])
         }
         
-        log "Policies without contacts: #{policies_without_contacts.keys.inspect}"
+        InsiteLogger.info "Policies without contacts: #{policies_without_contacts.keys.inspect}"
         
         user_passed = (policies_without_contacts.count == 0)
         

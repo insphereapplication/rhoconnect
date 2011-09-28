@@ -23,18 +23,16 @@ module RhosyncResqueJob
       root_path = File.expand_path("#{File.dirname(__FILE__)}/..")
       InsiteLogger.init_logger(File.join(root_path,'/log/jobs',"#{name}.log"))
     end
-    
-    def log(input)
-      InsiteLogger.info(input)
-    end
+  end
   
-    def log_and_continue
-      begin
-        yield if block_given?
-      rescue Exception => e
-        log "!!! Exception encountered !!! Message: \"#{e.message}\", class: #{e.class}, backtrace: #{InsiteLogger.format_for_logging(e.backtrace)}"
-      end
-    end
+  def rhosync_api
+    #call corresponding class method
+    self.class.rhosync_api
+  end
+  
+  def users
+    #call corresponding class method
+    self.class.users
   end
 
   def self.included(model)

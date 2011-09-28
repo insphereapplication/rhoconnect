@@ -10,8 +10,8 @@ class UnhandledExceptionCheck < HealthCheck
   def run
     log_run
     HealthCheckUtil.users.each do |user|
-      log_and_continue do
-        log "*"*10 + "Checking for unhandled client expections #{user}"
+      ExceptionUtil.rescue_and_continue do
+        InsiteLogger.info "*"*10 + "Checking for unhandled client expections #{user}"
         client_exception_data = HealthCheckUtil.get_rhosync_source_data( user, 'ClientException')
         client_exception_counter = 0
         client_exception_data.each do |id, client_exception|
@@ -24,7 +24,7 @@ class UnhandledExceptionCheck < HealthCheck
           end
         end
       
-        log "#{user} has #{client_exception_counter} unhandled E400/E500 errors in the last 24 hours."
+        InsiteLogger.info "#{user} has #{client_exception_counter} unhandled E400/E500 errors in the last 24 hours."
 
         @results[user] = {:passed => (client_exception_counter == 0), :unhandled_exception_counter => client_exception_counter}
       end

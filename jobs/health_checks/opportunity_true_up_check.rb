@@ -10,8 +10,8 @@ class OpportunityTrueUpCheck < HealthCheck
   def run
     log_run
     HealthCheckUtil.users.each do |user|
-      log_and_continue do
-        log "*"*10 + "Checking user #{user}"
+      ExceptionUtil.rescue_and_continue do
+        InsiteLogger.info "*"*10 + "Checking user #{user}"
         opp_data = HealthCheckUtil.get_rhosync_source_data(user, 'Opportunity')
         opp_ids_rhosync = opp_data.keys
     
@@ -20,17 +20,17 @@ class OpportunityTrueUpCheck < HealthCheck
         opp_ids_crm = HealthCheckUtil.get_crm_data('opportunity', user, HealthCheckUtil.credentials[user]).map { |i| i['opportunityid'] }  
 
         opp_ids_in_rhosync_not_crm = opp_ids_rhosync.reject { |id| opp_ids_crm.include?(id) or expiring_opp_ids.include?(id) }
-        log "Opportunities in Rhosync not in CRM: #{opp_ids_in_rhosync_not_crm.count}"
-        log "#{opp_ids_in_rhosync_not_crm.inspect}"
+        InsiteLogger.info "Opportunities in Rhosync not in CRM: #{opp_ids_in_rhosync_not_crm.count}"
+        InsiteLogger.info "#{opp_ids_in_rhosync_not_crm.inspect}"
         
         opp_ids_in_crm_not_rhosync = opp_ids_crm.reject { |id| opp_ids_rhosync.include?(id) }
-        log "Opportunities in CRM not in Rhosync: #{opp_ids_in_crm_not_rhosync.count}"
-        log "#{opp_ids_in_crm_not_rhosync.inspect}"
+        InsiteLogger.info "Opportunities in CRM not in Rhosync: #{opp_ids_in_crm_not_rhosync.count}"
+        InsiteLogger.info "#{opp_ids_in_crm_not_rhosync.inspect}"
 
 
         user_passed = !HealthCheckUtil.source_initialized?(user, 'opportunity') || (opp_ids_in_rhosync_not_crm.count == 0 && opp_ids_in_crm_not_rhosync.count == 0)        
         
-        log "Result: #{user_passed ? 'PASS' : 'FAIL'}"
+        InsiteLogger.info "Result: #{user_passed ? 'PASS' : 'FAIL'}"
         
         @results[user] = {:passed => user_passed, :extra_rhosync_opps => opp_ids_in_rhosync_not_crm, :extra_crm_opps => opp_ids_in_crm_not_rhosync}
       end

@@ -1,14 +1,22 @@
 class ExceptionUtil
-  def self.rescue_and_reraise
+  def self.rescue_and_reraise(&block)
+    resque_and_log(false, &block)
+  end
+  
+  def self.rescue_and_continue(&block)
+    resque_and_log(true, &block)
+  end
+  
+  def self.resque_and_log(continue=false, &block)
     begin
       yield if block_given?
     rescue Exception => e
       print_exception(e)
-      raise e
-    ensure 
+      raise e unless continue
+    ensure
       @context = []
     end
-  end # rescue_and_reraise
+  end
   
   def self.context(context)
     (@context ||= []) << context
