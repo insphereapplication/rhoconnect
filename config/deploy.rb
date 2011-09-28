@@ -168,7 +168,7 @@ namespace :resque do
   end
   
   task :start_workers, :roles => :resque do 
-    QUEUE_NAMES.each{|queue| run "cd #{current_release}/jobs; VVERBOSE=1 QUEUE=#{queue} rake resque:work --trace >> #{shared_path}/log/jobs/#{queue}.log &"}
+    QUEUE_NAMES.each{|queue| run "cd #{current_release}/jobs; QUEUE=#{queue} rake resque:work &"}
   end
   
   task :start_console, :roles => :resque do 
