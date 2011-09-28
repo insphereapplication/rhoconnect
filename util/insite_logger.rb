@@ -47,14 +47,15 @@ module InsiteLogger
     @logger
   end
   
-  def self.init_logger
+  def self.init_logger(log_path = nil)
     log_conf = CONFIG[:log]
+    log_path ||= log_conf[:path] 
     
     if log_conf[:mode] == 'file' 
-      Dir.mkdir(File.dirname(log_conf[:path])) unless File.exists?(File.dirname(log_conf[:path]))
+      Dir.mkdir(File.dirname(log_path)) unless File.exists?(File.dirname(log_path))
       # Create a new logger instance at the configured logging path
       # Don't automatically archive/shift logs; logrotate will handle this.
-      @logger = Logger.new(log_conf[:path], 0)
+      @logger = Logger.new(log_path, 0)
     end
   end
   

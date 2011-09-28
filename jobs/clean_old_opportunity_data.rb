@@ -9,10 +9,10 @@ class CleanOldOpportunityData
   OPEN_UNSCHEDULED_ACTIVTY_AGE_IN_DAYS = 61
   SECONDS_IN_A_DAY = 86400
   @queue = :clean_old_opportunity_data
+
+  include RhosyncResqueJob
   
   class << self
-    include RhosyncResqueJob
-    
     def get_doc_ids(doc)
       doc.map{|item| item[0]}
     end

@@ -5,9 +5,9 @@ class LimitClientExceptions
   CLIENT_EXCEPTION_LIMIT = 100
   @queue = :limit_client_exceptions
   
+  include RhosyncResqueJob
+  
   class << self
-    include RhosyncResqueJob
-    
     def perform
       InsiteLogger.info "Initiating resque job LimitClientExceptions..."
       ExceptionUtil.rescue_and_reraise do

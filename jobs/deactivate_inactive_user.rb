@@ -6,11 +6,10 @@ class DeactivateInactiveUser
   MAX_USER_INACTIVE_DAYS = 14
   SECONDS_IN_A_DAY = 86400
   @queue = :deactivate_inactive_user
+
+  include RhosyncResqueJob
   
   class << self
-    include RhosyncResqueJob
-    
-    
     def perform
       InsiteLogger.info "Initiating resque job decactivate inactive users"
       ExceptionUtil.rescue_and_reraise do

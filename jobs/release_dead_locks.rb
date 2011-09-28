@@ -5,9 +5,9 @@ require 'set'
 class ReleaseDeadLocks
   @queue = :release_dead_locks
   
+  include RhosyncResqueJob
+  
   class << self
-    include RhosyncResqueJob
-    
     def perform
       environment = CONFIG[:env]
       start_time = Time.now

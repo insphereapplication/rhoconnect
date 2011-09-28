@@ -7,6 +7,8 @@ Dir[File.join(File.dirname(__FILE__),'health_checks','**','*.rb')].each { |file|
 class ValidateRedisData
   @queue = :validate_redis_data
 
+  include RhosyncResqueJob
+  
   class << self
     def send_email(email_body)
       ExceptionUtil.rescue_and_reraise do
@@ -17,8 +19,8 @@ class ValidateRedisData
     end
 
     def perform
-      puts "*"*20 + "Starting Validate_Redis_Data job"
-      puts "Target rhosync host: #{CONFIG[:resque_worker_rhosync_api_host]}"
+      log "*"*20 + "Starting Validate_Redis_Data job"
+      log "Target rhosync host: #{CONFIG[:resque_worker_rhosync_api_host]}"
       
       checks = [
         DeadLockCheck.new,
@@ -32,7 +34,7 @@ class ValidateRedisData
       environment = CONFIG[:env]
       start_time = Time.now
           
-      puts "*"*15 + "Sending email with summary data"
+      log "*"*15 + "Sending email with summary data"
           
       # send an email with the results
       file_path = File.expand_path(File.join(File.dirname(__FILE__))) + '/templates/validation_email.erb'
@@ -40,7 +42,7 @@ class ValidateRedisData
       result = email_template.result(binding)
       send_email(result)
       
-      puts "*"*20 + "Done with Validate_Redis_Data!"
+      log "*"*20 + "Done with Validate_Redis_Data!"
     end
   end
 end

@@ -32,9 +32,9 @@ class HealthCheck
 end
 
 class HealthCheckUtil
+  include RhosyncResqueJob
+  
   class << self
-    include RhosyncResqueJob
-    
     def sync_status
       @sync_status ||= rhosync_api.get_sync_status("*")
     end
