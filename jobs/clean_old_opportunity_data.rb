@@ -11,7 +11,6 @@ class CleanOldOpportunityData
   @queue = :clean_old_opportunity_data
 
   include RhosyncResqueJob
-  set_log_file_name(@queue.to_s)
   
   class << self
     def get_doc_ids(doc)
@@ -19,6 +18,7 @@ class CleanOldOpportunityData
     end
     
     def perform
+      set_log_file_name(@queue.to_s)
       InsiteLogger.info "Initiating resque job CleanOldOpportunityData..."
       ExceptionUtil.rescue_and_reraise do
         
