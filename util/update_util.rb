@@ -20,7 +20,7 @@ class UpdateUtil
     PushHandler.handle_push(source.name, source.user_id, push_hash)
     InsiteLogger.info(:format_and_join => ["*"*10 + "Committing create/update to redis for model #{source.name} for user #{source.user_id}: ", push_hash])
     using_source_sync(source,reraise_lock_exception) do |source_sync|
-      source_sync.push_objects(push_hash)
+      source_sync.push_objects(push_hash,nil,nil,false)
     end
   end
   
@@ -28,7 +28,7 @@ class UpdateUtil
     PushHandler.handle_push(source.name, source.user_id, objects)
     InsiteLogger.info(:format_and_join => ["*"*10 + "Committing to redis for model #{source.name} for user #{source.user_id}: ", objects])
     using_source_sync(source,reraise_lock_exception) do |source_sync|
-      source_sync.push_objects(objects)
+      source_sync.push_objects(objects,nil,nil,false)
     end
   end
   
