@@ -269,7 +269,7 @@ namespace :server do
     abort "user_id, source_id and object_id must be specified" unless args[:user_id] and args[:source_id] and args[:object_id]
     rest_rescue do
       res = RestClient.post(
-        "#{$server}api/push_deletes",
+        "#{$server}api/push_deletes_custom",
         {
           :api_token => @token,
           :user_id => args[:user_id],

@@ -25,7 +25,7 @@ class RhosyncApiSession
       :objects => object_ids
     }
     RestClient.post(
-      "#{@server}api/push_deletes",
+      "#{@server}api/push_deletes_custom",
       params_hash.to_json,
       :content_type => :json
     )
