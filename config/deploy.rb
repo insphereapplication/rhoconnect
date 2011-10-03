@@ -168,7 +168,7 @@ namespace :resque do
   end
   
   task :start_workers, :roles => :resque do 
-    QUEUE_NAMES.each{|queue| run "cd #{current_release}/jobs; QUEUE=#{queue} rake resque:work >> /dev/null &"}
+    QUEUE_NAMES.each{|queue| run "cd #{current_release}/jobs; rake resque:work_with_logging['#{queue}'] &> /dev/null &"}
   end
   
   task :start_console, :roles => :resque do 

@@ -17,12 +17,6 @@ module RhosyncResqueJob
     def users
       rhosync_api.get_all_users
     end
-    
-    # stored in job logs path
-    def set_log_file_name(name)
-      root_path = File.expand_path("#{File.dirname(__FILE__)}/..")
-      InsiteLogger.init_logger(File.join(root_path,'/log/jobs',"#{name}.log"))
-    end
   end
   
   def rhosync_api

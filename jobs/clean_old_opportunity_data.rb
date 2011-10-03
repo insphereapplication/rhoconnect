@@ -18,7 +18,6 @@ class CleanOldOpportunityData
     end
     
     def perform
-      set_log_file_name(@queue.to_s)
       InsiteLogger.info "Initiating resque job CleanOldOpportunityData..."
       ExceptionUtil.rescue_and_reraise do
         

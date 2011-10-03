@@ -19,7 +19,6 @@ class ValidateRedisData
     end
 
     def perform
-      set_log_file_name(@queue.to_s)
       InsiteLogger.info "*"*20 + "Starting Validate_Redis_Data job"
       InsiteLogger.info "Target rhosync host: #{CONFIG[:resque_worker_rhosync_api_host]}"
       

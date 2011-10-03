@@ -12,8 +12,30 @@ require 'release_dead_locks'
 
 require File.expand_path("#{File.dirname(__FILE__)}/../util/config_file")
 
-namespace :resque do  
+namespace :resque do
+  task :work_with_logging, [:queue_name, :interval] do |t,args|
+    raise "Queue name must be given" unless args[:queue_name]
+    
+    ENV['QUEUE'] = args[:queue_name]
+    ENV['INTERVAL'] = args[:interval] || '5'
+    
+    root_path = File.expand_path("..")
+    InsiteLogger.init_logger(File.join(root_path,'/log/jobs',"#{args[:queue_name]}.log"))
+    
+    ExceptionUtil.rescue_and_reraise do
+      Rake::Task['resque:work'].execute
+    end
+  end
+  
   task :scheduler do
     Resque::Scheduler.run
+  end
+  
+  task :start_console do
+    exec "resque-web resque_config.rb -p 8282"
+  end
+  
+  task :start_scheduler do
+    exec "rake resque:scheduler"
   end
 end

@@ -11,7 +11,6 @@ class DeactivateInactiveUser
     
   class << self
     def perform
-      set_log_file_name(@queue.to_s)
       InsiteLogger.info "Initiating resque job decactivate inactive users"
       ExceptionUtil.rescue_and_reraise do
         

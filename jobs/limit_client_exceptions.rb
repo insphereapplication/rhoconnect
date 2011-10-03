@@ -9,7 +9,6 @@ class LimitClientExceptions
     
   class << self
     def perform
-      set_log_file_name(@queue.to_s)
       InsiteLogger.info "Initiating resque job LimitClientExceptions..."
       ExceptionUtil.rescue_and_reraise do
         users.each do |user| 

@@ -9,8 +9,6 @@ class ReleaseDeadLocks
     
   class << self
     def perform
-      set_log_file_name(@queue.to_s)
-      
       environment = CONFIG[:env]
       start_time = Time.now
       
