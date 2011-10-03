@@ -83,8 +83,7 @@ local_crm_proxy: http://192.168.51.128/ # Change this if you're running locally 
   :raise_on_expired_lock: true
   :lock_duration: 60
   :log:
-    :mode: 'file'
-  #:resque_worker_rhosync_api_host: 'http://127.0.0.1:9292/'
+    :mode: 'stdout'
 :development: 
   :crm_proxy: dev_crm_proxy
   :iphonecertfile: settings/apple_push_cert_sandbox.pem

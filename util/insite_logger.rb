@@ -22,12 +22,11 @@ module InsiteLogger
       input = format_for_logging(input)
     end
     
-    unless params[:no_stdout]
-      output_host_name
-      puts input
-    end
-    
-    insite_logger.add(level, "#{host_name}:#{release_dir} -- #{input}") if insite_logger
+    message = "#{host_name}:#{release_dir} -- #{input}"
+        
+    stdout_logger.add(level, message) if log_to_stdout? and params[:no_stdout].nil?
+
+    file_logger.add(level, message) if log_to_file? and file_logger
   end
   
   def self.info(input, params={})
@@ -42,21 +41,36 @@ module InsiteLogger
     add(Logger::DEBUG, input, params)
   end
   
-  def self.insite_logger
-    init_logger unless @logger
-    @logger
+  def self.file_logger
+    init_logger unless @file_logger
+    @file_logger
   end
   
-  def self.init_logger(log_path = nil)
+  def self.stdout_logger
+    @stdout_logger ||= Logger.new(STDOUT)
+    @stdout_logger
+  end
+  
+  def self.init_logger(log_path = nil)    
     log_conf = CONFIG[:log]
     log_path ||= log_conf[:path] 
     
-    if log_conf[:mode] == 'file' 
+    if log_to_file? 
       Dir.mkdir(File.dirname(log_path)) unless File.exists?(File.dirname(log_path))
       # Create a new logger instance at the configured logging path
       # Don't automatically archive/shift logs; logrotate will handle this.
-      @logger = Logger.new(log_path, 0)
+      @file_logger = Logger.new(log_path, 0)
     end
+  end
+  
+  def self.log_to_file?
+    @log_to_file ||= ['file','both'].include?(CONFIG[:log][:mode]) 
+    @log_to_file
+  end
+  
+  def self.log_to_stdout?
+    @log_to_stdout ||= ['stdout','both'].include?(CONFIG[:log][:mode])
+    @log_to_stdout
   end
   
   def self.output_host_name
