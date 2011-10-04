@@ -13,6 +13,7 @@ class ApplicationDetail < SourceAdapter
  
   def login
     ExceptionUtil.rescue_and_reraise do
+      UserUtil.enable_if_disabled(current_user.login)
       @username = Store.get_value("username:#{current_user.login.downcase}:username")
       
       encryptedPassword = Store.get_value("username:#{current_user.login.downcase}:password")

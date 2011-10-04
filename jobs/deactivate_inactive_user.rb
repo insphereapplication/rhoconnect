@@ -21,7 +21,7 @@ class DeactivateInactiveUser
           InsiteLogger.info("*"*10 + " Checking to see if #{user} is active")
           if device_infos.nil? || device_infos.count <=0 || is_inactive_user(device_infos)
             InsiteLogger.info("#{user} is inactive")
-            set_mobile_user(user)
+            disable_user(user)
             reset_sync_status(user)    
           else 
             InsiteLogger.info("#{user} is active")
@@ -65,10 +65,9 @@ class DeactivateInactiveUser
       end
     end
     
-    def set_mobile_user(user)
+    def disable_user(user)
       begin
-        crm_user_id = rhosync_api.get_user_crm_id("#{user}")
-        res = RestClient.post("#{CONFIG[:crm_path]}/session/SetMobileUser", { :userid => crm_user_id, :value => 'false' })
+        rhosync_api.set_user_status(user,'disabled')
       rescue Exception => e
         ExceptionUtil.print_exception(e)
         InsiteLogger.error("Error setting the mobile flag to false for:  #{user}")

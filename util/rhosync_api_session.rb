@@ -170,7 +170,7 @@ class RhosyncApiSession
   end
   
   def reset_sync_status(username)
-   res = JSON.parse(RestClient.post(
+    JSON.parse(RestClient.post(
       "#{@server}api/reset_sync_status", 
       { 
         :api_token => @token, 
@@ -178,6 +178,29 @@ class RhosyncApiSession
       }.to_json, 
       :content_type => :json
     ).body)
+  end
+  
+  def get_user_status(username)
+    JSON.parse(RestClient.post(
+      "#{@server}api/get_user_status", 
+      { 
+        :api_token => @token, 
+        :user_id => username
+      }.to_json, 
+      :content_type => :json
+    ).body)
+  end
+  
+  def set_user_status(username,status)
+    RestClient.post(
+      "#{@server}api/set_user_status", 
+      {
+        :api_token => @token, 
+        :user_id => username,
+        :status => status
+      }.to_json, 
+      :content_type => :json
+    ).body
   end
   
   def get_user_crm_id(username)

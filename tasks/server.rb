@@ -98,6 +98,17 @@ namespace :server do
     ap res.sort
   end
   
+  task :get_user_status, [:user_id] => [:set_token] do |t,args|
+    abort "User ID must be specified" unless args[:user_id]
+    ap @rhosync_api.get_user_status(args[:user_id])
+  end
+  
+  task :set_user_status, [:user_id, :status] => [:set_token] do |t,args|
+    abort "User ID and status must be specified" unless args[:user_id] and args[:status]
+    abort "Status must either be 'enabled' or 'disabled'" unless ['disabled','enabled'].include?(args[:status])
+    ap @rhosync_api.set_user_status(args[:user_id], args[:status])
+  end
+  
   desc "Get user's crm_user_id "
   task :get_user_crm_id, [:username] => [:set_token] do |t, args|
     abort "User name must be specified" unless args[:username]
