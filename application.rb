@@ -5,9 +5,8 @@ class Application < Rhosync::Base
   class << self
     def authenticate(username,password,session)
       ExceptionUtil.rescue_and_reraise do
-        InsiteLogger.info "Logging onto #{CONFIG[:crm_path]}session/logon"
+        InsiteLogger.info "Logging user #{username} onto #{CONFIG[:crm_path]}session/logon"
         response = RestClient.post "#{CONFIG[:crm_path]}session/logon", :username => username, :password => password
-        InsiteLogger.info "Response.code = #{response.inspect}"
         success = false
         if response && response.code == 200
           #get user's CRM ID, cache it for later use
