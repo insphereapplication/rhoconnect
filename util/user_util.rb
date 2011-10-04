@@ -38,7 +38,7 @@ class UserUtil
     def set_crm_mobile_user_flag(user_id, value)
       crm_id = get_crm_id(user_id)
       InsiteLogger.info("Setting crm mobile user flag to #{value} for user #{user_id} w/ ID #{crm_id}")
-      RestClient.post("#{CONFIG[:crm_path]}/session/SetMobileUser", { :userid => crm_id, :value => value.to_s }) if crm_id
+      RestClient.post("#{CONFIG[:crm_path]}session/SetMobileUser", { :userid => crm_id, :value => value.to_s }) if crm_id
     end
     
     def disabled_users_key
