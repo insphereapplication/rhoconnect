@@ -577,7 +577,7 @@ namespace :server do
         client_exception_type = client_exception['exception_type']
         begin
         parsed_created_on = Time.parse(client_exception['server_created_on'])
-        if (['E400','E500'].include?(client_exception_type) && (parsed_created_on + (60 * 60 * 72) > Time.now)) && client_exception['message'] != not_message
+        if (['E400','E500'].include?(client_exception_type) && (parsed_created_on + (60 * 60 * 24) > Time.now)) && client_exception['message'] != not_message
           puts "Error for user: #{user}"
           puts "!!!!!!Message:  #{client_exception['message']} "
           puts "#{client_exception}"
