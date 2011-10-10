@@ -1,6 +1,6 @@
 $settings_file = 'settings/settings.yml'
 $settings = YAML::load_file($settings_file)
-$target = :test
+$target = :onsite
 $config = ConfigFile.get_settings_for_environment($settings, $target)
 $app_path = File.expand_path(File.dirname(__FILE__))
 $server = ($config[:syncserver] || "").sub('/application', '')
@@ -562,6 +562,33 @@ namespace :server do
     }
     
     false
+  end
+  
+  
+  desc "Check for E400/E500 errors"
+  task :check_for_errors => [:set_token] do |t, args|
+    users = get_users
+    not_message = "undefined method `cssi_assigneddate' for nil:NilClass"
+ 
+    users.each do |user|
+      client_exceptions = get_md(user, 'ClientException')
+      #ap "#{client_exceptions.count} exceptions for user #{user}: "
+      client_exceptions.each do |id, client_exception|
+        client_exception_type = client_exception['exception_type']
+        begin
+        parsed_created_on = Time.parse(client_exception['server_created_on'])
+        if (['E400','E500'].include?(client_exception_type) && (parsed_created_on + (60 * 60 * 72) > Time.now)) && client_exception['message'] != not_message
+          puts "Error for user: #{user}"
+          puts "!!!!!!Message:  #{client_exception['message']} "
+          puts "#{client_exception}"
+        end  
+        rescue
+          #ignore client exceptions that don't have a server created on specified
+        end
+      end
+    end  
+    
+    
   end
   
   desc "shows all users matching regex pattern <user_pattern> that do not have a push pin for at least one of their devices"
