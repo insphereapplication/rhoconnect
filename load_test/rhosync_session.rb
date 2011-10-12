@@ -26,7 +26,7 @@ class RhosyncSession
   end
   
   def self.serialized_filename(login)
-    File.expand_path(".#{login}.session")
+    File.expand_path(".#{login}_session")
   end
   
   def self.load(login)
@@ -34,7 +34,7 @@ class RhosyncSession
   end
   
   def self.clear_local_serialized
-    `rm -f *_session`
+    `rm -f .*_session`
   end
   
   def persist_local
@@ -61,7 +61,7 @@ class RhosyncSession
   end
   
   def base_url_args
-    {'client_id' => client_id, 'p_size' => DATA_SIZE}
+    {'client_id' => client_id, 'p_size' => DATA_SIZE, :version => 3}
   end
   
   def base_post_args
@@ -77,17 +77,20 @@ class RhosyncSession
   end
   
   def get(args_hash={})
-    puts "Calling get for #{base_url}?#{url_args(args_hash)}"
-    puts "Headers:"
-    ap headers
-    RestClient.get "#{base_url}?#{url_args(args_hash)}", headers
+    #puts "Calling get for #{base_url}?#{url_args(args_hash)}"
+    #puts "Headers:"
+    #ap headers
+    start = Time.now
+    res = RestClient.get "#{base_url}?#{url_args(args_hash)}", headers
+    @request_stats.add({:action => "get", :time => Time.now - start, :args => args_hash})
+    res
   end
   
   def post(args_hash)
-    puts "Calling post for #{base_url}, with body:"
-    ap post_args(args_hash)
-    puts "Headers:"
-    ap post_headers
+    #puts "Calling post for #{base_url}, with body:"
+    #ap post_args(args_hash)
+    #puts "Headers:"
+    #ap post_headers
     start = Time.now
     res = RestClient.post(base_url, post_args(args_hash), post_headers)
     @request_stats.add({:action => "post", :time => Time.now - start, :args => args_hash})
@@ -114,9 +117,9 @@ class RhosyncSession
   def create(model, create_hash)
     raise "No session established" unless session_established
     # first post the create
-    puts "Creating new #{model}..."
+    puts "#{Process.pid} Creating new #{model} for user #{@login}..."
     post({:source_name => model, :create => create_hash})
-    puts "Getting #{model} links hash..."
+    #puts "Getting #{model} links hash..."
     # next get the links hash from a query call -- the links has the new guid from the last create action
     res = get({'source_name' => model})
     # get the token for acking
@@ -124,41 +127,55 @@ class RhosyncSession
     ack_token = last_result[1]['token']
     raise "Create error raised: #{last_result[5]['create-error'].map{|k,v| v['message'] if k='message'}.first}" if last_result[5]['create-error']
     raise "No ack token given after #{model} create for #{login}" unless ack_token
-    raise "No links given after #{model} create for #{login}" unless last_result[5]['links']
+    #raise "No links given after #{model} create for #{login}" unless last_result[5]['links']
     
-    model_id = last_result[5]['links'].values.first['l']
+    #model_id = last_result[5]['links'].values.first['l']
     
-    puts "Links:"
-    ap last_result[5]['links']
+    #puts "Links:"
+    #ap last_result[5]['links']
     
-    puts "New #{model} id: #{model_id}"
+    #puts "New #{model} id: #{model_id}"
 
-    puts "acking the create..."
+    #puts "acking the create..."
     get({'source_name' => model, 'token' => ack_token})
-    puts "acked, done"
-    model_id
+    #puts "acked, done"
+    #model_id
   end
   
   def update(model, update_hash)
-    puts "Updating #{model}..."
+    puts "#{Process.pid} Updating #{model} for user #{@login}..."
     post({:source_name => model, :update => update_hash})
-    puts "Updated #{model}"
+    res = get({:source_name => model})
+    # get the token for acking
+    last_result = JSON.parse(res)
+    #ap last_result
+    ack_token = last_result[1]['token']
+    raise "No ack token given after #{model} update for #{login}" if ack_token.nil? or ack_token.empty?
+    
+    #puts "acking the update..."
+    get({:source_name => model, :token => ack_token})
+    #puts "acked, done"
+    #puts "Updated #{model}"
   end
   
   def query(model)
     raise "No session established" unless session_established
-    puts "Querying #{model}..."
-    raw = get({'source_name' => model} )
+    puts "#{Process.pid} Querying #{model} for user #{@login}..."
+    raw = get({:source_name => model})
     result = JSON.parse(raw)
-    insert_array = result.select{|hsh| hsh.keys.include?('insert') }
-    puts "Parsed query result, building hash..."
-    unless insert_array.size > 0
-      puts "No #{model}(s) returned from query"
+    #ap result
+    new_records = result[5]['insert']
+    #puts "Parsed query result, building hash..."
+    if new_records.nil?
+      #puts "No #{model}(s) returned from query"
       return
     end
-    opps = insert_array.first['insert'].values
-    puts "Done query"
-    opps
+    ack_token = result[1]['token']
+    raise "No ack token given after #{model} query with new records for #{login}" if ack_token.nil? or ack_token.empty?
+    #puts "Acking query with new records"
+    get({:source_name => model, :token => ack_token})
+    #puts "Done query"
+    new_records
   end
   
   def session_established
