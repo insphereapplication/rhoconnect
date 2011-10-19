@@ -75,8 +75,6 @@ class ActivityMapper < Mapper
         }) unless data['parent_contact_id'].blank?
       data.reject!{|k,v| k == 'parent_contact_id'}
     end
-    
-    if data['parent_contact_id'] && data['parent_type' == 'Contact']
 
     
     # If mapper context is given, add organizer/from attribute for appointment/phonecall create, respectively
