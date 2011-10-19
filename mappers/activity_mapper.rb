@@ -3,6 +3,9 @@ class ActivityMapper < Mapper
   LOOKUPS = [
     Lookup.new('regardingobjectid', 'parent_type', 'parent_id')
   ]
+  LOOKUPS_PARENT_CONTACT = [
+     Lookup.new('regardingobjectid', 'parent_type', 'parent_contact_id')
+   ]
   
   def map_from_source_hash(activity_array)
     activity_array.map! do |value| 
@@ -41,7 +44,11 @@ class ActivityMapper < Mapper
     #reject fields that shouldn't be sent to the proxy. these are read-only from CRM and should not be ever be included in a create/update message
     data.reject!{|key, value| REJECT_FIELDS.include?(key.to_s)}
     
-    LOOKUPS.each{|lookup| lookup.inject_crm_lookups!(data)}
+    if data['parent_contact_id'] && data['parent_type' == 'contact']
+      LOOKUPS_PARENT_CONTACT.each{|lookup| lookup.inject_crm_lookups!(data)}
+    else  
+      LOOKUPS.each{|lookup| lookup.inject_crm_lookups!(data)}
+    end
     
     email_to_value = data['email_to']
     unless email_to_value.nil?
@@ -68,6 +75,9 @@ class ActivityMapper < Mapper
         }) unless data['parent_contact_id'].blank?
       data.reject!{|k,v| k == 'parent_contact_id'}
     end
+    
+    if data['parent_contact_id'] && data['parent_type' == 'Contact']
+
     
     # If mapper context is given, add organizer/from attribute for appointment/phonecall create, respectively
     if mapper_context[:user_id]
