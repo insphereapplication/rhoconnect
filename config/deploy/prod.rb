@@ -4,4 +4,4 @@ set :env, :onsite
 role :app, "nrhrho101.pinsp.dom", "nrhrho102.pinsp.dom"
 role :resque, "nrhrho101.pinsp.dom"
 set :server_name, "https://rhosync.insphereis.net"
-set :branch,      "v2.1.4_prod"
+set :branch,      "v3.0.1_prod"
