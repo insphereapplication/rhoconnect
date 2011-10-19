@@ -44,7 +44,7 @@ class ActivityMapper < Mapper
     #reject fields that shouldn't be sent to the proxy. these are read-only from CRM and should not be ever be included in a create/update message
     data.reject!{|key, value| REJECT_FIELDS.include?(key.to_s)}
     
-    if data['parent_contact_id'] && data['parent_type' == 'contact']
+    if data['parent_contact_id'] && data['parent_type' == 'Contact']
       LOOKUPS_PARENT_CONTACT.each{|lookup| lookup.inject_crm_lookups!(data)}
     else  
       LOOKUPS.each{|lookup| lookup.inject_crm_lookups!(data)}
