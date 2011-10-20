@@ -141,9 +141,7 @@ end
 
 namespace :resque do 
   
-  QUEUE_NAMES = ["limit_client_exceptions","clean_old_opportunity_data","validate_redis_data", "release_dead_locks"]
-  # Add the "deactivate_inactive_user" queue back to the script when we are ready to runn
-  # QUEUE_NAMES = ["limit_client_exceptions","clean_old_opportunity_data","validate_redis_data", "deactivate_inactive_user", "release_dead_locks"]
+  QUEUE_NAMES = ["limit_client_exceptions","clean_old_opportunity_data","validate_redis_data", "deactivate_inactive_user", "release_dead_locks"]
   
   desc "Restart the resque jobs"  
   task :restart, :roles => :resque do 
