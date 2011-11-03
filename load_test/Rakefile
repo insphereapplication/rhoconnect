@@ -1,9 +1,27 @@
 require 'rhosync_session'
 require 'test_data'
+require 'time'
 
 # agent = {:login => 'stephen.pillow', :password => 'Pariveda1'}
-base_url = 'http://localhost:9292/application'
+base_url = 'https://rhosync.dev.insphereis.net/application'
+#base_url = 'http://localhost:9292/application'
 $CURRENT_LOGIN
+
+class RhosyncSession
+  def device_info_created?
+    @device_info_created && @device_info_created == true
+  end
+  
+  def create_device_info
+    create('DeviceInfo', {client_id => {:client_id => client_id, :last_sync => Time.now.utc.strftime("%Y-%m-%d %H:%M:%S UTC"), :os_platform => "LOAD_TEST"}})
+    @device_info_created = true
+  end
+  
+  def update_device_info
+    create_device_info unless device_info_created?
+    update('DeviceInfo', {client_id => {:last_sync => Time.now.utc.strftime("%Y-%m-%d %H:%M:%S UTC")}})
+  end
+end
 
 namespace :client do 
   task :login, [:login, :password, :force_reload] do |t, args|
@@ -68,6 +86,87 @@ namespace :client do
     session.end_test
     session.persist_local
     session.show_stats
+  end
+  
+  desc "Run the load test assuming node_count nodes are running the same test, where the current node has ID node_id. Valid node IDs range from 0 to (node_count - 1); any given node running the test should not share a node ID with any other node."
+  task :query_load_test, [:node_count, :node_id] do |t,args|
+
+    raise "Node count and ID must be provided" unless args[:node_count] and args[:node_id]
+    node_count = args[:node_count].to_i
+    node_id = args[:node_id].to_i
+    raise "Node ID must be less than the node count" unless node_id < node_count
+    
+    sources = ['AppInfo','DeviceInfo','StaticEntity','SearchContacts','Contact','Opportunity','Activity','Note','Policy','Dependent','ApplicationDetail','CryptKey','ClientException']
+    #test_agents = ['a11412','a11231','a11242','a12884','a10708','a13209','a12876','a11185','a10121','a10936']
+    test_agents = [
+      'a10936','a11242','a12884','a10708','a13209','a12876','a10121',
+      'a15081','a10001','a10326','a15122','a15119','a15114','a15106',
+      'a15104','a15103','a15102','a15101','a15099','a15097','a15077',
+      'a15068','a15061','a15060','a15054','a15050','a15048','a14996',
+      'a14995','a10121','a14073','a11131','a14270','a14089','a14069',
+      'a14068','a14067','a14060','a12382','a10533'
+    ]
+    test_users = test_agents.uniq.reduce([]){|sum,test_agent| sum << {:username => test_agent, :password => 'p@55abcd'}; sum}
+    
+    puts "Testing with #{test_users.count} users"
+    
+    node_users = []
+    
+    test_users.each_with_index{|test_user,index| node_users << test_user if index % node_count == node_id}
+    
+    puts "Node #{node_id} has #{node_users.count} users to test: #{node_users.map{|node_user| node_user[:username]}.join(", ")}"
+    
+    my_user = nil
+    is_parent_process = false
+    child_pids = []
+    
+    start = Time.now
+    
+    node_users.each do |user|
+      my_user = user
+      forked_pid = fork
+      if forked_pid.nil?
+        is_parent_process = false
+        break
+      else
+        child_pids << forked_pid
+        is_parent_process = true
+      end
+    end
+    
+    
+      
+    if is_parent_process
+      child_pids.each{|child_pid| Process.waitpid(child_pid)}
+      puts "Total time: #{Time.now - start} seconds"
+    else
+      begin
+        puts "Process #{Process.pid} has user #{my_user[:username]}"
+        session = RhosyncSession.load_or_create(base_url, my_user[:username], my_user[:password])
+        session.start_test
+            
+        20.times do
+          sources.each do |source|
+            if source=='DeviceInfo'
+              session.update_device_info
+            else
+              session.query(source)
+            end
+          end
+        end
+        session.end_test
+        session.persist_local
+        session.show_stats
+      rescue Exception => exception
+        puts "Process #{Process.pid} error encountered while processing user #{my_user[:username]}"
+        exception_detail = {
+          :message => exception.message, 
+          :class => exception.class,
+          :backtrace => exception.backtrace
+        }
+        ap exception_detail
+      end
+    end
   end
   
   
