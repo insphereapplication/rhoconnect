@@ -22,7 +22,7 @@ namespace :resque do
     root_path = File.expand_path("..")
     InsiteLogger.init_logger(File.join(root_path,'/log/jobs',"#{args[:queue_name]}.log"))
     
-    ExceptionUtil.rescue_and_reraise do
+    ExceptionUtil.rescue_and_continue do
       Rake::Task['resque:work'].execute
     end
   end

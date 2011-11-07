@@ -10,7 +10,7 @@ class LimitClientExceptions
   class << self
     def perform
       InsiteLogger.info "Initiating resque job LimitClientExceptions..."
-      ExceptionUtil.rescue_and_reraise do
+      ExceptionUtil.rescue_and_continue do
         users.each do |user| 
           client_exceptions = rhosync_api.get_db_doc("source:application:#{user}:ClientException:md")
           InsiteLogger.info "Limiting client exceptions for user #{user}"

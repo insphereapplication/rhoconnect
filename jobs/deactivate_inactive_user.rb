@@ -12,7 +12,7 @@ class DeactivateInactiveUser
   class << self
     def perform
       InsiteLogger.info "Initiating resque job decactivate inactive users"
-      ExceptionUtil.rescue_and_reraise do
+      ExceptionUtil.rescue_and_continue do
         
         users.each do |user|
           #If none of the user devices are active
@@ -88,7 +88,7 @@ class DeactivateInactiveUser
           true
         end
 
-      end
+      end:
     end
     
     def get_doc_ids(doc)

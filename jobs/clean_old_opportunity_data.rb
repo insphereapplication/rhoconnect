@@ -19,7 +19,7 @@ class CleanOldOpportunityData
     
     def perform
       InsiteLogger.info "Initiating resque job CleanOldOpportunityData..."
-      ExceptionUtil.rescue_and_reraise do
+      ExceptionUtil.rescue_and_continue do
         
         users.each do |user|
           begin
