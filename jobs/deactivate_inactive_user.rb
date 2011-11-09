@@ -88,7 +88,7 @@ class DeactivateInactiveUser
           true
         end
 
-      end:
+      end
     end
     
     def get_doc_ids(doc)
