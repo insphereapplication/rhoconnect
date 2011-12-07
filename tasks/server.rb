@@ -662,25 +662,28 @@ namespace :server do
      abort "!!! User regex pattern must be specified (i.e. 'server:check_device_pins[\"a[0-9]\"]' to gather device stats for all users that match the agent code pattern)" unless args[:user_pattern]
      #get all users from RhoSync, filter based on pattern given
      filtered_users = get_users.reject{|user| user[Regexp.new(args.user_pattern)].nil?}
+     
 
      # get clients & params for users
-       puts "user,device_id,client_id,phone_id,os_platform,os_version,app_version,last_sync,push_pin"
+       puts "user,device_id,registered_device_pin,client_id,phone_id,os_platform,os_version,app_version,last_sync,push_pin"
        user_client_params = filtered_users.reduce({}){|sum,user_id|
          user_clients = get_clients(user_id)
          user_device_info = get_md(user_id, 'DeviceInfo')
-         user_clients.each {|key, device|
-         #device_id = get_client_param_value(client, 'object')
+         user_clients.each {|key|
          device_info = user_device_info.find{|id,info| info["client_id"] == key} 
+         user_device = get_client_params(key)
+         registered_device_pin = get_client_param_value(user_device, 'device_pin')
          if device_info
-           puts "#{user_id},#{key},#{device_info[1]["client_id"]},#{device_info[1]["phone_id"]},#{device_info[1]["os_platform"]},#{device_info[1]["os_version"]},#{device_info[1]["app_version"]},#{device_info[1]["last_sync"]},#{device_info[1]["push_pin"]}"
+           puts "#{user_id},#{key},#{registered_device_pin},#{device_info[1]["client_id"]},#{device_info[1]["phone_id"]},#{device_info[1]["os_platform"]},#{device_info[1]["os_version"]},#{device_info[1]["app_version"]},#{device_info[1]["last_sync"]},#{device_info[1]["push_pin"]}"
          else
-           puts "#{user_id},#{key}"
+           puts "#{user_id},#{key},#{registered_device_pin}"
          end
        }
      }
-     puts "Platform breakdown:"
 
    end
+   
+  
   
   task :client_exception_stats, [:user_pattern] => [:set_token] do |t,args|
     filtered_users = get_users.reject{|user| user[Regexp.new(args[:user_pattern])].nil?}
