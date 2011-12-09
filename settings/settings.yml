@@ -33,7 +33,7 @@
 # use one of the following keys for the :crm_proxy: value in the environment sections below to determine which crm deployment Rhosync will use, i.e., ':crm_proxy: model_crm_proxy'
 model_crm_proxy: https://mobileproxy.model.insphereis.net/
 #dev_crm_proxy: https://devmobileproxy.insphereis.net/
-dev_crm_proxy: http://10.174.40.67:5000
+dev_crm_proxy: http://10.174.40.67:5000/
 dev_integrated_crm_proxy: http://nrhwwwd403.insp.dom:2195/crm/ActivityCenter/MobileProxy/
 prod_crm_proxy: https://mobileproxy.insphereis.net/
 local_crm_proxy: http://192.168.51.128/ # Change this if you're running locally and use below
