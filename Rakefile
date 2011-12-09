@@ -1,4 +1,4 @@
-
+require 'rubygems'
 begin
   require 'vendor/rhosync/lib/rhosync/tasks'
   require 'vendor/rhosync/lib/rhosync'
