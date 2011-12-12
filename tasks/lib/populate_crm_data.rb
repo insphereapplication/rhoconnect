@@ -192,7 +192,8 @@ def get_fake_policy_data(identity, policy_status)
     'cssi_statusreason' => status_reason,
     'cssi_insuredtype' => rand_insured_type,
     'cssi_annualpremium' => Faker::Base.numerify('####.##'),
-    'cssi_decisionclassification' => rand_decision_classification
+    'cssi_decisionclassification' => rand_decision_classification,
+    'cssi_statusdate' => "2011/11/#{rand_day}"
   };
   
   fake_data
