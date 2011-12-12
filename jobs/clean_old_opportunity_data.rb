@@ -7,6 +7,7 @@ class CleanOldOpportunityData
   CLOSED_ACTIVITY_AGE_IN_DAYS = 15
   OPEN_SCHEDULED_ACTIVITY_AGE_IN_DAYS = 61
   OPEN_UNSCHEDULED_ACTIVTY_AGE_IN_DAYS = 61
+  TERMINATED_POLICES_AGE_IN_DAYS = 31
   SECONDS_IN_A_DAY = 86400
   @queue = :clean_old_opportunity_data
 
@@ -45,18 +46,24 @@ class CleanOldOpportunityData
             # get a set of the remaining opportunities so we don't reject a contact that may be related to more than one opportunity
             current_opportunities = opportunities.reject{|k,v| old_opportunity_ids.include?(k) || reassigned_opportunity_ids.include?(k) }
             current_activities = activities.reject{|k,v| old_activity_ids.include?(k)}
+            
+            # find policies that are expired
+            old_policies = get_expired_policies(policies)
+            old_policies_ids = get_doc_ids(old_policies)
+            current_policies = policies.reject{|k,v| old_policies_ids.include?(k)}
           
             # look for contacts on expired activities and expired opportunities that are eligible to be deleted
-            old_contacts = get_expired_contacts(current_opportunities, current_activities, contacts, policies)
+            old_contacts = get_expired_contacts(current_opportunities, current_activities, contacts, current_policies)
             old_contact_ids = get_doc_ids(old_contacts)
 
-            InsiteLogger.info(:format_and_join => ["Deleting for user #{user}: old_opps: ",old_opportunity_ids,", reassign_opps: ",reassigned_opportunity_ids, ", contacts: ",old_contact_ids,", activities: ",old_activity_ids])
+            InsiteLogger.info(:format_and_join => ["Deleting for user #{user}: old_opps: ",old_opportunity_ids,", reassign_opps: ",reassigned_opportunity_ids, ", contacts: ",old_contact_ids,", activities: ",old_activity_ids, ", policies: ", old_policies_ids])
           
             # delete expired records for all models 
             rhosync_api.push_deletes('Activity',user,old_activity_ids) unless old_activity_ids.empty?
             rhosync_api.push_deletes('Opportunity',user,old_opportunity_ids) unless old_opportunity_ids.empty?
             rhosync_api.push_deletes('Opportunity',user,reassigned_opportunity_ids) unless reassigned_opportunity_ids.empty?
             rhosync_api.push_deletes('Contact',user,old_contact_ids) unless old_contact_ids.empty?
+            rhosync_api.push_deletes('Policy',user,old_policies_ids) unless old_policies_ids.empty?
           rescue Exception => e
             ExceptionUtil.print_exception(e)
             InsiteLogger.info("*"*10 + "exception occured during cleanup job for #{user}")
@@ -131,6 +138,30 @@ class CleanOldOpportunityData
         rescue
           # If time parsing or other logic fails, assume expired
           expired = true
+        end
+        expired
+      end
+    end
+    
+    def get_expired_policies(policies, offset_days=0)
+      policies.select do |key, pol|
+        expired = false
+        begin
+          case pol['statuscode']
+          when "Terminated"
+            check_date = pol['cssi_statusdate'] 
+            #InsiteLogger.info( "1. Is #{pol['statuscode']} policy #{key} expired: #{Time.now.to_i - Time.parse(check_date).to_i > (TERMINATED_POLICES_AGE_IN_DAYS + offset_days)*SECONDS_IN_A_DAY}")
+            expired = Time.now.to_i - Time.parse(check_date).to_i > (TERMINATED_POLICES_AGE_IN_DAYS + offset_days)*SECONDS_IN_A_DAY
+          else
+            # For all other state codes (i.e. Lost), mark as expired
+            #InsiteLogger.info(" #{pol['statuscode']} policy #{key} is not TERMINATED and not expired")
+            expired = false
+          end
+        rescue Exception => e
+          # If time parsing or other logic fails, assume expired
+            ExceptionUtil.print_exception(e)
+            InsiteLogger.info( "error on policy #{key}")
+          expired = false
         end
         expired
       end
