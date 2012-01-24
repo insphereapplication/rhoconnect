@@ -665,7 +665,7 @@ namespace :server do
      
 
      # get clients & params for users
-       puts "user,device_id,registered_device_pin,client_id,phone_id,os_platform,os_version,app_version,last_sync,push_pin"
+       puts "user,device_id,registered_device_pin,client_id,phone_id,os_platform,os_version,app_version,last_sync,push_pin,dev_model"
        user_client_params = filtered_users.reduce({}){|sum,user_id|
          user_clients = get_clients(user_id)
          user_device_info = get_md(user_id, 'DeviceInfo')
@@ -674,7 +674,7 @@ namespace :server do
          user_device = get_client_params(key)
          registered_device_pin = get_client_param_value(user_device, 'device_pin')
          if device_info
-           puts "#{user_id},#{key},#{registered_device_pin},#{device_info[1]["client_id"]},#{device_info[1]["phone_id"]},#{device_info[1]["os_platform"]},#{device_info[1]["os_version"]},#{device_info[1]["app_version"]},#{device_info[1]["last_sync"]},#{device_info[1]["push_pin"]}"
+           puts "#{user_id},#{key},#{registered_device_pin},#{device_info[1]["client_id"]},#{device_info[1]["phone_id"]},#{device_info[1]["os_platform"]},#{device_info[1]["os_version"]},#{device_info[1]["app_version"]},#{device_info[1]["last_sync"]},#{device_info[1]["push_pin"]},#{device_info[1]["device_name"]}"
          else
            puts "#{user_id},#{key},#{registered_device_pin}"
          end
