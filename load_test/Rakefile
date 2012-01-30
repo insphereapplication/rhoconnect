@@ -1,3 +1,4 @@
+require 'rubygems'
 require 'rhosync_session'
 require 'test_data'
 require 'time'
@@ -89,17 +90,21 @@ namespace :client do
   end
   
   desc "Run the load test assuming node_count nodes are running the same test, where the current node has ID node_id. Valid node IDs range from 0 to (node_count - 1); any given node running the test should not share a node ID with any other node."
-  task :query_load_test, [:node_count, :node_id] do |t,args|
+  task :query_load_test, [:node_count, :node_id, :syncs_per_user, :create_data_mod, :update_data_mod] do |t,args|
 
     raise "Node count and ID must be provided" unless args[:node_count] and args[:node_id]
     node_count = args[:node_count].to_i
     node_id = args[:node_id].to_i
     raise "Node ID must be less than the node count" unless node_id < node_count
     
+    syncs_per_user = args[:syncs_per_user] ? args[:syncs_per_user].to_i : 1
+    create_data_mod = args[:create_data_mod] ? args[:create_data_mod].to_i : 0
+    update_data_mod = args[:update_data_mod] ? args[:update_data_mod].to_i : 0
+    
     sources = ['AppInfo','DeviceInfo','StaticEntity','SearchContacts','Contact','Opportunity','Activity','Note','Policy','Dependent','ApplicationDetail','CryptKey','ClientException']
     #test_agents = ['a11412','a11231','a11242','a12884','a10708','a13209','a12876','a11185','a10121','a10936']
     test_agents = [
-      'a10936','a11242','a12884','a10708','a13209','a12876','a10121',
+      'dwayne.smith','a11242','a12884','a10708','a13209','a12876','a10121',
       'a15081','a10001','a10326','a15122','a15119','a15114','a15106',
       'a15104','a15103','a15102','a15101','a15099','a15097','a15077',
       'a15068','a15061','a15060','a15054','a15050','a15048','a14996',
@@ -122,6 +127,7 @@ namespace :client do
     
     start = Time.now
     
+    
     node_users.each do |user|
       my_user = user
       forked_pid = fork
@@ -138,25 +144,80 @@ namespace :client do
       
     if is_parent_process
       child_pids.each{|child_pid| Process.waitpid(child_pid)}
-      puts "Total time: #{Time.now - start} seconds"
+      total_time = Time.now - start
+      puts "Total time: #{total_time} seconds"
+      
+      combine_results = RhosyncSession.combine_results;
+      user_error_list = []
+      
+      node_users.each { |user|
+        result_session = RhosyncSession.load(my_user[:username])
+        if result_session && result_session.get_stats
+          combine_results.start_time = combine_results.start_time ? [combine_results.start_time,result_session.start_time].min : result_session.start_time
+          combine_results.end_time = combine_results.end_time ? [combine_results.end_time,result_session.end_time].max : result_session.end_time
+          combine_results.add_stats(result_session.get_stats)
+        else
+          user_error_list.add(my_user[:username])
+        end
+     
+      }
+
+         combine_results.show
+         puts "User with errors:  #{user_error_list}"
+
     else
       begin
         puts "Process #{Process.pid} has user #{my_user[:username]}"
         session = RhosyncSession.load_or_create(base_url, my_user[:username], my_user[:password])
         session.start_test
             
-        20.times do
+        contact_id = ''
+        opportunity_id = ''
+        
+        store_contact_id = true
+        store_opportunity_id = true
+            
+        syncs_per_user.times { |i|
+          
+          #Create data every call where mod is 0
+          if create_data_mod > 0 && rand(syncs_per_user) % create_data_mod == 0
+             contact = TestData.get_fake_contact_data()
+             contact_id = session.create('Contact', TestData.get_fake_contact_data())
+             puts "!!!!!!contact id is: #{contact_id}"
+             opportunity_id = session.create('Opportunity', TestData.get_fake_opportunity_data(contact_id))
+             
+             if store_contact_id  || store_opportunity_id
+               session.persist_local_contact(contact_id)
+               session.persist_local_opportunity(opportunity_id)
+               store_contact_id = false
+               store_opportunity_id = false
+             end
+             
+          end
+          
+          # Update an opportunity to left message
+          if update_data_mod > 0 &&  rand(syncs_per_user) % update_data_mod == 0
+            if contact_id == '' || opportunity_id == ''
+               contact_id = session.loadguid("contact")
+               opportunity_id = session.loadguid("opportunity")
+            end
+            puts "******update contact id is: #{contact_id}"
+            #puts "update oppportunity id is: #{opportunity_id}"
+            session.update('Opportunity', TestData.update_opportunity_left_message(opportunity_id))
+            session.create('Activity', TestData.create_left_message_phone_call_data(opportunity_id,contact_id))
+          end
+          
           sources.each do |source|
             if source=='DeviceInfo'
               session.update_device_info
             else
-              session.query(source)
+              session.query_new(source)
             end
           end
-        end
+        }
         session.end_test
         session.persist_local
-        session.show_stats
+        #session.show_stats
       rescue Exception => exception
         puts "Process #{Process.pid} error encountered while processing user #{my_user[:username]}"
         exception_detail = {
@@ -166,6 +227,7 @@ namespace :client do
         }
         ap exception_detail
       end
+      
     end
   end
   
@@ -187,7 +249,8 @@ namespace :client do
     end
     @session.end_test
     @session.persist_local
-    @session.show_stats
+    #@session.show_stats 
+  
   end
   
   task :stats => [:login] do

@@ -29,8 +29,25 @@ class RhosyncSession
     File.expand_path(".#{login}_session")
   end
   
+  def self.serialized_results_filename()
+    File.expand_path("final_results")
+  end
+  
+  def self.combine_results
+    @request_stats = SessionStats.new
+  end
+  
+  def self.filename(name)
+    File.expand_path(name)
+  end
+  
   def self.load(login)
     YAML::load(File.read(serialized_filename(login))) 
+  end
+  
+  
+  def loadguid(type)
+    File.read(RhosyncSession.filename(".#{@login}_#{type}")) 
   end
   
   def self.clear_local_serialized
@@ -40,6 +57,22 @@ class RhosyncSession
   def persist_local
     File.open(RhosyncSession.serialized_filename(@login), 'w+') {|f| f.write(YAML::dump(self)) }
   end
+  
+  def persist_local_results
+    File.open(RhosyncSession.serialized_results_filename(), 'w+') {|f| f.write(YAML::dump(self)) }
+  end
+  
+  def persist_local_contact(contact_id)
+    File.open(RhosyncSession.filename(".#{@login}_contact"), 'w+') {|f| f.write(contact_id) }
+  end
+  
+  def persist_local_opportunity(opportunity_id)
+    File.open(RhosyncSession.filename(".#{@login}_opportunity"), 'w+') {|f| f.write(opportunity_id)}
+  end
+  
+  def initialize()
+     @request_stats = SessionStats.new
+  end  
   
   def initialize(base_url, login, password)
     @base_url = base_url
@@ -102,12 +135,25 @@ class RhosyncSession
     @request_stats.start_time = Time.now
   end
   
+  def start_time
+    @request_stats.start_time
+  end
+  
   def end_test
     @request_stats.end_time = Time.now
   end
   
+  def end_time
+    @request_stats.end_time
+  end  
+  
   def show_stats
     @request_stats.show
+  end
+  
+  
+  def get_stats
+     @request_stats.get_stats
   end
   
   def post_headers
@@ -129,17 +175,17 @@ class RhosyncSession
     raise "No ack token given after #{model} create for #{login}" unless ack_token
     #raise "No links given after #{model} create for #{login}" unless last_result[5]['links']
     
-    #model_id = last_result[5]['links'].values.first['l']
-    
+    model_id = last_result[5]['links'].values.first['l']
+    puts "model id #{model_id}"
     #puts "Links:"
-    #ap last_result[5]['links']
+    #puts "links #{last_result[5]['links']}"
     
     #puts "New #{model} id: #{model_id}"
 
     #puts "acking the create..."
     get({'source_name' => model, 'token' => ack_token})
     #puts "acked, done"
-    #model_id
+    model_id
   end
   
   def update(model, update_hash)
@@ -158,16 +204,16 @@ class RhosyncSession
     #puts "Updated #{model}"
   end
   
-  def query(model)
+  def query_new(model)
     raise "No session established" unless session_established
     puts "#{Process.pid} Querying #{model} for user #{@login}..."
     raw = get({:source_name => model})
     result = JSON.parse(raw)
-    #ap result
+    #puts "#{model} found #{result}"
     new_records = result[5]['insert']
     #puts "Parsed query result, building hash..."
     if new_records.nil?
-      #puts "No #{model}(s) returned from query"
+       puts "No #{model}(s) returned from query"
       return
     end
     ack_token = result[1]['token']
@@ -176,6 +222,26 @@ class RhosyncSession
     get({:source_name => model, :token => ack_token})
     #puts "Done query"
     new_records
+  end
+  
+  def query_all(model)
+    raise "No session established" unless session_established
+    puts "#{Process.pid} Querying #{model} for user #{@login}..."
+    raw = get({:source_name => model})
+    result = JSON.parse(raw)
+    #puts "#{model} found #{result}"
+    new_records = result[5]['insert']
+    #puts "Parsed query result, building hash..."
+    #if new_records.nil?
+    #    puts "No #{model}(s) returned from query"
+    #return
+    # end
+    # ack_token = result[1]['token']
+    #     raise "No ack token given after #{model} query with new records for #{login}" if ack_token.nil? or ack_token.empty?
+    #     puts "Acking query with new records"
+    #     get({:source_name => model, :token => ack_token})
+    puts "Done query"
+    result
   end
   
   def session_established
