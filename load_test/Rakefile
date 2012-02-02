@@ -4,7 +4,8 @@ require 'test_data'
 require 'time'
 
 # agent = {:login => 'stephen.pillow', :password => 'Pariveda1'}
-base_url = 'https://rhosync.dev.insphereis.net/application'
+#base_url = 'https://rhosync.dev.insphereis.net/application'
+base_url = 'https://rhosync.model.insphereis.net/application'
 #base_url = 'http://localhost:9292/application'
 $CURRENT_LOGIN
 
