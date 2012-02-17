@@ -49,7 +49,10 @@ class SearchContacts < SourceAdapter
   end
  
   def sync
-#    super
+    ExceptionUtil.rescue_and_reraise do
+      InsiteLogger.info("*"*10 + "Syncing Search contacts for user #{current_user.login}.")
+      super
+    end
   end
  
   def create(create_hash,blob=nil)
