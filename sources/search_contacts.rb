@@ -64,6 +64,7 @@ class SearchContacts < SourceAdapter
   end
  
   def delete(delete_hash)
+    InsiteLogger.info("*"*10 + "Delete Search contacts for user #{current_user.login}.")
     #raise "Search adapter does not implement a Delete method"
   end
  
