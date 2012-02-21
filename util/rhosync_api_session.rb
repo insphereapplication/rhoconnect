@@ -103,6 +103,26 @@ class RhosyncApiSession
     users.gsub(/[\[\]]/, '').gsub('"','').split(",")
   end
   
+  def delete_user(username)
+      RestClient.post(
+        "#{$server}api/delete_user",
+        { :api_token => @token, 
+          :user_id => username }.to_json, 
+          :content_type => :json
+      )
+      
+  end    
+  
+  def delete_device(username, device_id)
+    RestClient.post(
+      "#{$server}api/delete_client",
+      { :api_token => @token, 
+        :user_id => username,
+        :client_id => device_id }.to_json, 
+        :content_type => :json
+    )
+  end
+  
   def get_sync_status(user_pattern)
     raw_sync_status = RestClient.post("#{@server}api/get_sync_status", 
       { :api_token => @token, 
