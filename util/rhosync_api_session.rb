@@ -105,22 +105,22 @@ class RhosyncApiSession
   
   def delete_user(username)
       RestClient.post(
-        "#{$server}api/delete_user",
+        "#{@server}api/delete_user",
         { :api_token => @token, 
           :user_id => username }.to_json, 
           :content_type => :json
-      )
+      ).body
       
   end    
   
   def delete_device(username, device_id)
     RestClient.post(
-      "#{$server}api/delete_client",
+      "#{@server}api/delete_client",
       { :api_token => @token, 
         :user_id => username,
         :client_id => device_id }.to_json, 
         :content_type => :json
-    )
+    ).body
   end
   
   def get_sync_status(user_pattern)
