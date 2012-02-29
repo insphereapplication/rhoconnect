@@ -39,9 +39,8 @@ class DeactivateInactiveUser
             old_devices.each {|old_device_id| rhosync_api.delete_device(user,old_device_id)} unless old_devices.empty?
           end
   
-          current_device_infos =  rhosync_api.get_db_doc("source:application:#{user}:DeviceInfo:md")
           current_devices = rhosync_api.get_user_devices(user)
-          if (current_device_infos.nil? || current_device_infos.count <=0) && (current_devices.nil? || current_devices.count <=0)
+          if (current_devices.nil? || current_devices.count <=0)
             InsiteLogger.info(:format_and_join => ["Deleting #{user} since there are no current devices"])
             rhosync_api.delete_user(user)
           end  
