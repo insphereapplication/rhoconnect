@@ -2,6 +2,7 @@ class Policy < SourceAdapter
   def initialize(source,credential)
     ExceptionUtil.rescue_and_reraise do
       @policy_url = "#{CONFIG[:crm_path]}policy"
+      @proxy_create_url = "#{@policy_url}/create"
       super(source,credential)
     end
   end
