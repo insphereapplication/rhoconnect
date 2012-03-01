@@ -126,6 +126,7 @@ class RhosyncSession
     #ap post_headers
     start = Time.now
     res = RestClient.post(base_url, post_args(args_hash), post_headers)
+    puts "res #{res}"
     @request_stats.add({:action => "post", :time => Time.now - start, :args => args_hash})
     res
   end
@@ -164,33 +165,39 @@ class RhosyncSession
     raise "No session established" unless session_established
     # first post the create
     puts "#{Process.pid} Creating new #{model} for user #{@login}..."
-    post({:source_name => model, :create => create_hash})
+    temp = post({:source_name => model, :create => create_hash})
+    puts "temp #{temp}"
     #puts "Getting #{model} links hash..."
     # next get the links hash from a query call -- the links has the new guid from the last create action
     res = get({'source_name' => model})
+    
     # get the token for acking
     last_result = JSON.parse(res)
+    #ap last_result
     ack_token = last_result[1]['token']
-    raise "Create error raised: #{last_result[5]['create-error'].map{|k,v| v['message'] if k='message'}.first}" if last_result[5]['create-error']
+    
+    #puts "11111 #{last_result[1]}"
+    
+    #raise "Create error raised: #{last_result[5]['create-error'].map{|k,v| v['message'] if k='message'}.first}" if last_result[5]['create-error']
     raise "No ack token given after #{model} create for #{login}" unless ack_token
     #raise "No links given after #{model} create for #{login}" unless last_result[5]['links']
-    
+ 
     model_id = last_result[5]['links'].values.first['l']
     puts "model id #{model_id}"
-    #puts "Links:"
-    #puts "links #{last_result[5]['links']}"
+    puts "Links:"
+    puts "links #{last_result[5]['links']}"
     
-    #puts "New #{model} id: #{model_id}"
+    puts "New #{model} id: #{model_id}"
 
-    #puts "acking the create..."
+    puts "acking the create..."
     get({'source_name' => model, 'token' => ack_token})
-    #puts "acked, done"
+    puts "acked, done"
     model_id
   end
   
   def update(model, update_hash)
     puts "#{Process.pid} Updating #{model} for user #{@login}..."
-    post({:source_name => model, :update => update_hash})
+   post({:source_name => model, :update => update_hash})
     res = get({:source_name => model})
     # get the token for acking
     last_result = JSON.parse(res)

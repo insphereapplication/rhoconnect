@@ -1,4 +1,6 @@
 class Policy < SourceAdapter
+  include ProxyUtil
+   
   def initialize(source,credential)
     ExceptionUtil.rescue_and_reraise do
       @policy_url = "#{CONFIG[:crm_path]}policy"
