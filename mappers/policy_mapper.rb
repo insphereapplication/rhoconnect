@@ -32,15 +32,6 @@ class PolicyMapper < Mapper
   
   def map_data_from_client(data, mapper_context={})
     data.reject!{|k,v| ['temp_id'].include?(k)}
-    if data['contact_id']
-      data.merge!({
-          data['cssi_contactid'] => [{
-            'type' => 'contact',
-            'id' => data['contact_id']
-          }]
-        }) 
-      data.reject!{|k,v| k == 'contact_id'}
-    end
     data
   end
 end

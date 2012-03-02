@@ -1,10 +1,7 @@
 class Policy < SourceAdapter
-  include ProxyUtil
-   
   def initialize(source,credential)
     ExceptionUtil.rescue_and_reraise do
       @policy_url = "#{CONFIG[:crm_path]}policy"
-      @proxy_create_url = "#{@policy_url}/create"
       super(source,credential)
     end
   end
@@ -58,19 +55,11 @@ class Policy < SourceAdapter
   end
  
   def create(create_hash,blob=nil)
-    #  Dwayne.Smith -  Create the method so that data can be populate through load test scripts
-    #raise "Please provide some code to create a single record in the backend data source using the create_hash"
-      ExceptionUtil.rescue_and_reraise do
-        InsiteLogger.info "CREATE Policy"
-        ExceptionUtil.context(:current_user => current_user.login, :create_hash => create_hash)
-
-          result = proxy_create(create_hash,{:user_id => Store.get_value(@user_id_key)})     
-
-        InsiteLogger.info result
-        result
-      end
+    # TODO: Create a new record in your backend data source
+    # If your rhodes rhom object contains image/binary data 
+    # (has the image_uri attribute), then a blob will be provided
+    raise "Please provide some code to create a single record in the backend data source using the create_hash"
   end
-  
  
   def update(update_hash)
     # TODO: Update an existing record in your backend data source
