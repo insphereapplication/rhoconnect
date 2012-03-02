@@ -4,8 +4,8 @@ require 'test_data'
 require 'time'
 
 # agent = {:login => 'stephen.pillow', :password => 'Pariveda1'}
-#base_url = 'https://rhosync.dev.insphereis.net/application'
-base_url = 'https://rhosync.model.insphereis.net/application'
+base_url = 'https://rhosync.dev.insphereis.net/application'
+#base_url = 'https://rhosync.model.insphereis.net/application'
 #base_url = 'http://localhost:9292/application'
 $CURRENT_LOGIN
 
@@ -115,7 +115,7 @@ namespace :client do
     
     # extra 'a10006','a10008','a10009','a10024','a10025',
     test_agents =[     
-'a10027','a10029','a10212','a10215','a10256','a11012','a11014','a11015','a11018','a11027',
+'a11412','a10029','a10212','a10215','a10256','a11012','a11014','a11015','a11018','a11027',
 'a11085','a11185','a11231','a11234','a11242','a11322','a11513','a11650','a11759','a11828',
 'a12419','a12485','a12613','a12869','a12876','a12884','a12895','a12896','a12899','a13394',
 'a12906','a12912','a13004','a13052','a13058','a13238','a13385','a13387','a13391','a13393',
@@ -202,7 +202,7 @@ namespace :client do
           if create_data_mod > 0 && rand(syncs_per_user) % create_data_mod == 0
              contact = TestData.get_fake_contact_data()
              contact_id = session.create('Contact', TestData.get_fake_contact_data())
-             puts "!!!!!!contact id is: #{contact_id}"
+             puts "!!!!!!Process #{Process.pid} contact id is: #{contact_id}"
              opportunity_id = session.create('Opportunity', TestData.get_fake_opportunity_data(contact_id))
              
              if store_contact_id  || store_opportunity_id
@@ -220,7 +220,7 @@ namespace :client do
                contact_id = session.loadguid("contact")
                opportunity_id = session.loadguid("opportunity")
             end
-            puts "******update contact id is: #{contact_id}"
+            puts "******Process #{Process.pid}update contact id is: #{contact_id}"
             #puts "update oppportunity id is: #{opportunity_id}"
             session.update('Opportunity', TestData.update_opportunity_left_message(opportunity_id))
             session.create('Activity', TestData.create_left_message_phone_call_data(opportunity_id,contact_id))
@@ -275,5 +275,164 @@ namespace :client do
   task :stats => [:login] do
     @session.show_stats
   end
+  
+  
+  desc "Creating CRM Data assuming node_count nodes are running the same test, where the current node has ID node_id. Valid node IDs range from 0 to (node_count - 1); any given node running the test should not share a node ID with any other node."
+  task :create_crm_test_data, [:node_count, :node_id, :syncs_per_user, :create_data_mod, :update_data_mod] do |t,args|
+
+    raise "Node count and ID must be provided" unless args[:node_count] and args[:node_id]
+    node_count = args[:node_count].to_i
+    node_id = args[:node_id].to_i
+    raise "Node ID must be less than the node count" unless node_id < node_count
+    
+    syncs_per_user = args[:syncs_per_user] ? args[:syncs_per_user].to_i : 1
+    create_data_mod = args[:create_data_mod] ? args[:create_data_mod].to_i : 0
+    update_data_mod = args[:update_data_mod] ? args[:update_data_mod].to_i : 0
+    
+    sources = ['AppInfo','DeviceInfo','StaticEntity','SearchContacts','Contact','Opportunity','Activity','Note','Policy','Dependent','ApplicationDetail','CryptKey','ClientException']
+    #test_agents = ['a11412','a11231','a11242','a12884','a10708','a13209','a12876','a11185','a10121','a10936']
+    # #test_agents = [
+    #    'dwayne.smith','a11242','a12884','a10708','a13209','a12876','a10121',
+    #    'a15081','a10001','a10326','a15122','a15119','a15114','a15106',
+    #    'a15104','a15103','a15102','a15101','a15099','a15097','a15077',
+    #    'a15068','a15061','a15060','a15054','a15050','a15048','a14996',
+    #    'a14995','a10121','a14073','a11131','a14270','a14089','a14069',
+    #    'a14068','a14067','a14060','a12382','a10533'
+    #  ]
+    
+    # extra 'a10006','a10008','a10009','a10024','a10025',
+    test_agents =[     
+'dwayne.smith','a10029','a10212','a10215','a10256','a11012','a11014','a11015','a11018','a11027',
+'a11085','a11185','a11231','a11234','a11242','a11322','a11513','a11650','a11759','a11828',
+'a12419','a12485','a12613','a12869','a12876','a12884','a12895','a12896','a12899','a13394',
+'a12906','a12912','a13004','a13052','a13058','a13238','a13385','a13387','a13391','a13393',
+'a13396','a13402','a13404','a13407','a13412','a13414','a13428','a13430','a13433','a13434',
+'a13435','a13438','a13440','a13448','a13450','a13452','a13461','a13464','a13470','a13477',
+'a13480','a13496','a14447','a14448','a14454','a14456','a14457','a14460','a14463','a14465',
+'a14467','a14471','a14475','a14482','a14483','a14484','a14485','a14489','a14492','a14493',
+'a14494','a14496','a14498','a14500','a14501','a14502','a14504','a14574','a14576','a14578',
+'a14579','a14582','a14584','a14588','a14589','a14592','a14593','a14596','a14602','a14603',
+'a14605','a14606','a14607','a14611','a14612','a14614','a14616','a14618','a14620','a14622',
+'a14623','a14627','a14632','a14906','a15124','a15224','a15364','a16071','a16072','a16290'
+      
+    ]
+    
+    test_users = test_agents.uniq.reduce([]){|sum,test_agent| sum << {:username => test_agent, :password => '!D0dgeram'}; sum}
+    
+    puts "Testing with #{test_users.count} users"
+    
+    node_users = []
+    
+    test_users.each_with_index{|test_user,index| node_users << test_user if index % node_count == node_id}
+    
+    puts "Node #{node_id} has #{node_users.count} users to test: #{node_users.map{|node_user| node_user[:username]}.join(", ")}"
+    
+    my_user = nil
+    is_parent_process = false
+    child_pids = []
+    
+    start = Time.now
+    
+    
+    node_users.each do |user|
+      my_user = user
+      forked_pid = fork
+      if forked_pid.nil?
+        is_parent_process = false
+        break
+      else
+        child_pids << forked_pid
+        is_parent_process = true
+      end
+    end
+    
+    
+      
+    if is_parent_process
+      child_pids.each{|child_pid| Process.waitpid(child_pid)}
+      total_time = Time.now - start
+      puts "Total time: #{total_time} seconds"
+      
+      combine_results = RhosyncSession.combine_results;
+      user_error_list = []
+      
+      node_users.each { |user|
+        result_session = RhosyncSession.load(my_user[:username])
+        if result_session && result_session.get_stats
+          combine_results.start_time = combine_results.start_time ? [combine_results.start_time,result_session.start_time].min : result_session.start_time
+          combine_results.end_time = combine_results.end_time ? [combine_results.end_time,result_session.end_time].max : result_session.end_time
+          combine_results.add_stats(result_session.get_stats)
+        else
+          user_error_list.add(my_user[:username])
+        end
+     
+      }
+
+         combine_results.show
+         puts "User with errors:  #{user_error_list}"
+
+    else
+      begin
+        puts "Process #{Process.pid} has user #{my_user[:username]}"
+        session = RhosyncSession.load_or_create(base_url, my_user[:username], my_user[:password])
+        session.start_test
+            
+        contact_id = ''
+        opportunity_id = ''
+        
+        store_contact_id = true
+        store_opportunity_id = true
+            
+        syncs_per_user.times { |i|
+          
+          #Create data every call where mod is 0
+          if create_data_mod > 0 && rand(syncs_per_user) % create_data_mod == 0
+             contact_id = session.create('Contact', TestData.get_fake_contact_data())
+             puts "!!!!!!Process #{Process.pid} contact id is: #{contact_id}"
+             opportunity_id = session.create('Opportunity', TestData.get_fake_opportunity_data(contact_id))
+             opportunity_id2 = session.create('Opportunity', TestData.get_fake_won_opportunity_data(contact_id,"Won","Sale"))
+             session.create('Activity', TestData.create_appointment(opportunity_id,contact_id,"Scheduled","Busy"))
+             data  = TestData.get_fake_policy_data(contact_id,"Active")
+             puts "data =  #{data}"
+             policy_id = session.create('Policy', TestData.get_fake_policy_data(contact_id,"Active"))
+             
+             if store_contact_id  || store_opportunity_id
+               session.persist_local_contact(contact_id)
+               session.persist_local_opportunity(opportunity_id)
+               store_contact_id = false
+               store_opportunity_id = false
+             end
+             
+          end
+          
+          # Update an opportunity to left message
+          if update_data_mod > 0 &&  rand(syncs_per_user) % update_data_mod == 0
+            if contact_id == '' || opportunity_id == ''
+               contact_id = session.loadguid("contact")
+               opportunity_id = session.loadguid("opportunity")
+            end
+            puts "******Process #{Process.pid}update contact id is: #{contact_id}"
+            #puts "update oppportunity id is: #{opportunity_id}"
+            session.update('Opportunity', TestData.update_opportunity_left_message(opportunity_id))
+            session.create('Activity', TestData.create_left_message_phone_call_data(opportunity_id,contact_id,"Scheduled","Busy"))
+          end
+          
+        }
+        session.end_test
+        session.persist_local
+        #session.show_stats
+      rescue Exception => exception
+        puts "Process #{Process.pid} error encountered while processing user #{my_user[:username]}"
+        exception_detail = {
+          :message => exception.message, 
+          :class => exception.class,
+          :backtrace => exception.backtrace
+        }
+        ap exception_detail
+      end
+      
+    end
+  end
+  
   
 end
