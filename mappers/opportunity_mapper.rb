@@ -12,15 +12,19 @@ class OpportunityMapper < Mapper
       data['ownerid'] = {:type => 'systemuser', :id => current_owner }
     end
     
+    if data['createdon']
+        data['overriddencreatedon'] = data['createdon']
+     end
+     data.reject!{|k,v|  ['createdon'].include?(k) }
     data  
   end
   
   def map_from_source_hash(opportunity_mapper)
     opportunity_mapper.map! do |value| 
       #always filter out attributes that are only set in RhoSync (avoids problems with fixed schema)
-      #these fields are not modified from rhodes and should only be injected in map_data_from_client as needed
+      #these fields are not modified from rhodes and should only be injected in map_data_from_client as neede
       
-      value.reject!{|k,v|  ['temp_id'].include?(k) }
+      value.reject!{|k,v|  ['temp_id','overriddencreatedon'].include?(k) }
 
       # the owner comes across as complex type with id type and name we convert it to id only
       value['ownerid'] = value['ownerid']['id'] if value['ownerid']

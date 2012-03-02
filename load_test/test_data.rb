@@ -177,7 +177,7 @@ module TestData
       res
     end
     
-    def get_fake_policy_data(contact_id, policy_status)
+    def get_fake_policy_data(contact_id, contact, policy_status)
       fake_data = {}
       if (policy_status.nil?)
         status_code = 'Active' 
@@ -192,11 +192,11 @@ module TestData
         'cssi_paymentmode' => 'Annually',
         'cssi_policynumber' => Faker::Base.bothify('##???#######').upcase,
         'cssi_submitteddate' => "#{rand_year}/#{rand_month}/#{rand_day}",
-        'contactid' => contact_id,
+        'contact_id' => contact_id,
         'cssi_effectivedate' => "#{rand_year}/#{rand_month}/#{rand_day}",
         'cssi_applicationnumber' => Faker::Base.numerify('#########'),
         'statuscode' => status_code,
-        'cssi_primaryinsured' => Faker::Name.name,
+        'cssi_primaryinsured' => "#{contact[1]['firstname']} #{contact[1]['lastname']}",
         'cssi_carrierstatusvalue' => 'Active and paying',
         'cssi_statusreason' => status_reason,
         'cssi_insuredtype' => 'Individual',
@@ -288,6 +288,7 @@ module TestData
      		'createdon' => rand_previous_create_date,
      		'statecode' => 'Open',
      		'statuscode' => 'New Opportunity',
+     		'cssi_assetownerid' => 'a6d565bd-f092-e011-b110-0050569c157c',
         'cssi_lastactivitydate' => Time.now.strftime("%Y-%m-%d %H:%M:%S")
      	};
      	fake_data
@@ -306,6 +307,7 @@ module TestData
      		'createdon' => Time.now.strftime("%Y-%m-%d %H:%M:%S"),
      		'statecode' => state_code,
      		'statuscode' => status_code,
+     		'cssi_assetownerid' => 'a6d565bd-f092-e011-b110-0050569c157c',
         'cssi_lastactivitydate' => Time.now.strftime("%Y-%m-%d %H:%M:%S")
      	};
      	fake_data

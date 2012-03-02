@@ -18,6 +18,7 @@ class Policy < SourceAdapter
       @password = Crypto.decrypt( encryptedPassword )
       
       @initialized_key = "username:#{current_user.login.downcase}:policy:initialized"
+      @user_id_key = "username:#{current_user.login.downcase}:crm_user_id"
     end
   end
  

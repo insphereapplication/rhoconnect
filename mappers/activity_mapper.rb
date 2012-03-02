@@ -32,7 +32,7 @@ class ActivityMapper < Mapper
       
       #always filter out attributes that are only set in RhoSync (avoids problems with fixed schema)
       #these fields are not modified from rhodes and should only be injected in map_data_from_client as needed
-      value.reject!{|k,v|  ['cssi_skipdispositionworkflow','organizer','from','cssi_fromrhosync', 'ownerid', 'to', 'bcc', 'cc', 'from', 'scheduleddurationminutes','category'].include?(k) }
+      value.reject!{|k,v|  ['cssi_skipdispositionworkflow','organizer','from','cssi_fromrhosync', 'ownerid', 'to', 'bcc', 'cc', 'from', 'scheduleddurationminutes','category','overriddencreatedon'].include?(k) }
       value
     end
     activity_array.reduce({}){|sum, value| sum[value["activityid"]] = value if value; sum }
@@ -42,7 +42,11 @@ class ActivityMapper < Mapper
   
   def map_data_from_client(data, mapper_context={})
     #reject fields that shouldn't be sent to the proxy. these are read-only from CRM and should not be ever be included in a create/update message
-    data.reject!{|key, value| REJECT_FIELDS.include?(key.to_s)}
+    #data.reject!{|key, value| REJECT_FIELDS.include?(key.to_s)}
+    
+    if data['createdon']
+       data['overriddencreatedon'] = data['createdon']
+    end  
     
     if data['parent_contact_id'] && data['parent_type'] == 'Contact'
       LOOKUPS_PARENT_CONTACT.each{|lookup| lookup.inject_crm_lookups!(data)}
@@ -88,7 +92,7 @@ class ActivityMapper < Mapper
     
     data['cssi_fromrhosync'] = 'true'
     
-    data.reject!{|k,v| ['temp_id'].include?(k)}
+    data.reject!{|k,v| ['temp_id','createdon'].include?(k)}
     data
   end
   

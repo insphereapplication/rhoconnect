@@ -33,14 +33,21 @@ class PolicyMapper < Mapper
   def map_data_from_client(data, mapper_context={})
     data.reject!{|k,v| ['temp_id'].include?(k)}
     if data['contact_id']
-      data.merge!({
-          data['cssi_contactid'] => [{
+      data.merge!(
+          data['cssi_contactid'] = {
             'type' => 'contact',
             'id' => data['contact_id']
-          }]
-        }) 
+          })
       data.reject!{|k,v| k == 'contact_id'}
     end
+    
+    if mapper_context[:user_id]
+       puts "In policy owner mapper"
+       data['ownerid'] = {:type => 'systemuser', :id => mapper_context[:user_id]}
+    else
+         puts "No owner being mapped policy owner mapper"
+     end
+     
     data
   end
 end

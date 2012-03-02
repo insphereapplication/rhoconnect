@@ -4,9 +4,9 @@ require 'test_data'
 require 'time'
 
 # agent = {:login => 'stephen.pillow', :password => 'Pariveda1'}
-base_url = 'https://rhosync.dev.insphereis.net/application'
+#base_url = 'https://rhosync.dev.insphereis.net/application'
 #base_url = 'https://rhosync.model.insphereis.net/application'
-#base_url = 'http://localhost:9292/application'
+base_url = 'http://localhost:9292/application'
 $CURRENT_LOGIN
 
 class RhosyncSession
@@ -302,7 +302,7 @@ namespace :client do
     
     # extra 'a10006','a10008','a10009','a10024','a10025',
     test_agents =[     
-'dwayne.smith','a10029','a10212','a10215','a10256','a11012','a11014','a11015','a11018','a11027',
+'dwayne.smith','a11412','a10029','a10212','a10215','a10256','a11012','a11014','a11015','a11018','a11027',
 'a11085','a11185','a11231','a11234','a11242','a11322','a11513','a11650','a11759','a11828',
 'a12419','a12485','a12613','a12869','a12876','a12884','a12895','a12896','a12899','a13394',
 'a12906','a12912','a13004','a13052','a13058','a13238','a13385','a13387','a13391','a13393',
@@ -317,7 +317,8 @@ namespace :client do
       
     ]
     
-    test_users = test_agents.uniq.reduce([]){|sum,test_agent| sum << {:username => test_agent, :password => '!D0dgeram'}; sum}
+    test_users = test_agents.uniq.reduce([]){|sum,test_agent| sum << {:username => test_agent, :password => 'p@55abcd'}; sum}
+    #test_users = test_agents.uniq.reduce([]){|sum,test_agent| sum << {:username => test_agent, :password => '!D0dgeram'}; sum}
     
     puts "Testing with #{test_users.count} users"
     
@@ -376,6 +377,7 @@ namespace :client do
         puts "Process #{Process.pid} has user #{my_user[:username]}"
         session = RhosyncSession.load_or_create(base_url, my_user[:username], my_user[:password])
         session.start_test
+        puts "id #{session.client_id}"
             
         contact_id = ''
         opportunity_id = ''
@@ -387,14 +389,16 @@ namespace :client do
           
           #Create data every call where mod is 0
           if create_data_mod > 0 && rand(syncs_per_user) % create_data_mod == 0
-             contact_id = session.create('Contact', TestData.get_fake_contact_data())
+             contact = TestData.get_fake_contact_data()
+             contact_id = session.create('Contact', contact)
              puts "!!!!!!Process #{Process.pid} contact id is: #{contact_id}"
              opportunity_id = session.create('Opportunity', TestData.get_fake_opportunity_data(contact_id))
-             opportunity_id2 = session.create('Opportunity', TestData.get_fake_won_opportunity_data(contact_id,"Won","Sale"))
-             session.create('Activity', TestData.create_appointment(opportunity_id,contact_id,"Scheduled","Busy"))
-             data  = TestData.get_fake_policy_data(contact_id,"Active")
-             puts "data =  #{data}"
-             policy_id = session.create('Policy', TestData.get_fake_policy_data(contact_id,"Active"))
+             #opportunity_id2 = session.create('Opportunity', TestData.get_fake_won_opportunity_data(contact_id,"Won","Sale"))
+             #opportunity_id3 = session.create('Opportunity', TestData.get_fake_opportunity_data(contact_id))
+             #session.create('Activity', TestData.create_appointment(opportunity_id3,contact_id,"Scheduled","Busy"))
+             policy = TestData.get_fake_policy_data(contact_id,contact,"Active")
+             ap policy
+             policy_id = session.create('Policy', policy)
              
              if store_contact_id  || store_opportunity_id
                session.persist_local_contact(contact_id)
