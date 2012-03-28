@@ -4,6 +4,7 @@
     :poll_interval: 1
   Contact: 
     :poll_interval: 86400
+    :retry_limit: 3
   Opportunity: 
     :poll_interval: 1
   ClientException: 
@@ -14,10 +15,12 @@
     :poll_interval: 1
   Policy:
     :poll_interval: 43200
+    :retry_limit: 3
   Dependent: 
     :poll_interval: 1
   StaticEntity: 
     :poll_interval: 3600
+    :retry_limit: 3
   ApplicationDetail:
     :poll_interval: 1
   SearchContacts:
