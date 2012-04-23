@@ -50,7 +50,13 @@ class DeactivateInactiveUser
     
     def is_inactive_user(device_infos)
      
-      last_sync_device = device_infos.max_by {|id,device_info| Time.parse(device_info['last_sync']).to_i }[1]
+      last_sync_device = device_infos.max_by {|id,device_info| 
+         if device_info['last_sync'] 
+           Time.parse(device_info['last_sync']).to_i
+         else
+           0
+         end
+           }[1]
 
         begin
           InsiteLogger.info( "Is #{last_sync_device['client_id']} last sync time inactive: #{Time.parse(last_sync_device['last_sync']).to_i < Time.now.to_i - SECONDS_IN_A_DAY*MAX_DEVICE_INACTIVE_DAYS}")
@@ -87,12 +93,12 @@ class DeactivateInactiveUser
       devices.select do |key, device|
         begin  
            device_info = device_infos.find{|id,info| info["client_id"] == key} 
-           InsiteLogger.info("Checking device: #{key} is expired: #{device_info.nil? || Time.parse(device_info[1]['last_sync']).to_i < Time.now.to_i - SECONDS_IN_A_DAY*MAX_DEVICE_INACTIVE_DAYS}")
-           device_info.nil? || Time.parse(device_info[1]['last_sync']).to_i < Time.now.to_i - SECONDS_IN_A_DAY*MAX_DEVICE_INACTIVE_DAYS
+           InsiteLogger.info("Checking device: #{key} is expired: #{device_info.nil?  || device_info[1]['last_sync'].nil? || Time.parse(device_info[1]['last_sync']).to_i < Time.now.to_i - SECONDS_IN_A_DAY*MAX_DEVICE_INACTIVE_DAYS}")
+           device_info.nil? || device_info[1]['last_sync'].nil? || Time.parse(device_info[1]['last_sync']).to_i < Time.now.to_i - SECONDS_IN_A_DAY*MAX_DEVICE_INACTIVE_DAYS
         rescue Exception => e
            ExceptionUtil.print_exception(e)
           # If time parsing or other logic fails, assume expired
-           InsiteLogger.info( "Is #{device['client_id']} device #{key} expired: True")
+           InsiteLogger.info( "Is #{device} device #{key} expired: True")
           true
         end
 
