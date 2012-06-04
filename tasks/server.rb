@@ -103,6 +103,7 @@ namespace :server do
     ap @rhosync_api.get_user_status(args[:user_id])
   end
   
+  desc "this is used to set enable/disable mobile status"
   task :set_user_status, [:user_id, :status] => [:set_token] do |t,args|
     abort "User ID and status must be specified" unless args[:user_id] and args[:status]
     abort "Status must either be 'enabled' or 'disabled'" unless ['disabled','enabled'].include?(args[:status])
