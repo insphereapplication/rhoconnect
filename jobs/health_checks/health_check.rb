@@ -1,9 +1,9 @@
 app_path = File.expand_path(File.join(File.dirname(__FILE__))) 
-require "#{app_path}/../../jobs/rhosync_resque_job"
+require "#{app_path}/../../jobs/rhoconnect_resque_job"
 require 'ap'
 
 class HealthCheck
-  include RhosyncResqueJob
+  include RhoconnectResqueJob
   
   def initialize(friendly_name)
     @passed = true
@@ -32,24 +32,24 @@ class HealthCheck
 end
 
 class HealthCheckUtil
-  include RhosyncResqueJob
+  include RhoconnectResqueJob
   
   class << self
     def sync_status
-      @sync_status ||= rhosync_api.get_sync_status("*")
+      @sync_status ||= rhoconnect_api.get_sync_status("*")
     end
     
     def users
-      @users ||= rhosync_api.get_all_users
+      @users ||= rhoconnect_api.get_all_users
     end
     
     def credentials
-      @credentials ||= users.reduce({}){ |sum,user| sum[user] = rhosync_api.get_user_password(user); sum }
+      @credentials ||= users.reduce({}){ |sum,user| sum[user] = rhoconnect_api.get_user_password(user); sum }
     end
       
-    def get_rhosync_source_data(user, docname)
-      docs = rhosync_api.list_source_docs(docname, user)      
-      data = rhosync_api.get_db_doc( docs['md'] )
+    def get_rhoconnect_source_data(user, docname)
+      docs = rhoconnect_api.list_source_docs(docname, user)      
+      data = rhoconnect_api.get_db_doc( docs['md'] )
     end
     
     def source_initialized?(user, source)

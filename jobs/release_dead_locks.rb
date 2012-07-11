@@ -1,11 +1,11 @@
-require File.expand_path("#{File.dirname(__FILE__)}/rhosync_resque_job")
+require File.expand_path("#{File.dirname(__FILE__)}/rhoconnect_resque_job")
 require 'time'
 require 'set'
 
 class ReleaseDeadLocks
   @queue = :release_dead_locks
   
-  include RhosyncResqueJob
+  include RhoconnectResqueJob
     
   class << self
     def perform
@@ -14,7 +14,7 @@ class ReleaseDeadLocks
       
       InsiteLogger.info("Initiating resque job ReleaseDeadLocks...")
       ExceptionUtil.rescue_and_reraise do
-        dead_locks = rhosync_api.get_dead_locks
+        dead_locks = rhoconnect_api.get_dead_locks
         InsiteLogger.info(:format_and_join => ["Found dead locks: ", dead_locks])
         
         users_to_reset = Set.new
@@ -22,7 +22,7 @@ class ReleaseDeadLocks
         dead_locks.each do |lock,expiration|
           ExceptionUtil.rescue_and_continue do
             InsiteLogger.info("Releasing lock #{lock}")
-            rhosync_api.release_lock(lock)
+            rhoconnect_api.release_lock(lock)
             
             user_match = lock.match(/^lock:[^:]+:[^:]+:([^:]+):/)
             users_to_reset.add(user_match[1]) if user_match
@@ -36,7 +36,7 @@ class ReleaseDeadLocks
         users_to_reset.each do |user|
           ExceptionUtil.rescue_and_continue do
             InsiteLogger.info("Resetting sync status for user #{user}")
-            rhosync_api.reset_sync_status(user)
+            rhoconnect_api.reset_sync_status(user)
           end
         end
         

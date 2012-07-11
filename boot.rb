@@ -12,7 +12,7 @@ require "#{app_path}/util/sync_status_util"
 require "#{app_path}/helpers/crypto"
 require 'resque_scheduler'
 require 'ap'
-require 'rhosync'
+require 'rhoconnect'
 require 'sinatra'
 
 [

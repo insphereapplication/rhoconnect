@@ -3,25 +3,25 @@ require "#{root_path}/initializers/object_extension"
 require "#{root_path}/util/insite_logger"
 require "#{root_path}/util/exception_util"
 require "#{root_path}/util/config_file"
-require "#{root_path}/util/rhosync_api_session"
+require "#{root_path}/util/rhoconnect_api_session"
 require "#{root_path}/util/email_util"
 
-module RhosyncResqueJob
+module RhoconnectResqueJob
   module ClassMethods  
-    @@rhosync_api = nil
+    @@rhoconnect_api = nil
   
-    def rhosync_api
-      @@rhosync_api ||= RhosyncApiSession.new(CONFIG[:resque_worker_rhosync_api_host], CONFIG[:resque_worker_rhosync_api_password])
+    def rhoconnect_api
+      @@rhoconnect_api ||= RhoconnectApiSession.new(CONFIG[:resque_worker_rhoconnect_api_host], CONFIG[:resque_worker_rhoconnect_api_password])
     end
   
     def users
-      rhosync_api.get_all_users
+      rhoconnect_api.get_all_users
     end
   end
   
-  def rhosync_api
+  def rhoconnect_api
     #call corresponding class method
-    self.class.rhosync_api
+    self.class.rhoconnect_api
   end
   
   def users

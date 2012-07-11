@@ -1,12 +1,12 @@
-********* Machine-specific Rhosync License Keys **********
+********* Machine-specific Rhoconnect License Keys **********
 
-The files in this folder are Rhosync license keys. They are named after the HOSTNAME of the machine they will be copied to as 'license.key' by the Capistrano deploy script 'config/deploy.rb' in the set_license task. 
+The files in this folder are Rhoconnect license keys. They are named after the HOSTNAME of the machine they will be copied to as 'license.key' by the Capistrano deploy script 'config/deploy.rb' in the set_license task. 
 
 Each production machine needs its own license key from RhoMobile.
 
 To add a new key for a new machine:
 
-* Add a new key file from Rhosync to this folder. 
+* Add a new key file from Rhoconnect to this folder. 
 * Rename that file to the target machine's HOSTNAME. (i.e., 'nrhrho103')
 * Add that machine's HOSTNAME as a deploy target of the 'role :app' setting in deploy.rb. 
 

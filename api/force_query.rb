@@ -1,4 +1,4 @@
-Rhosync::Server.api :force_query do |params,user|
+Rhoconnect::Server.api :force_query do |params,user|
   ExceptionUtil.rescue_and_reraise do
     user_id = params[:user_id]
     source_id = params[:source_id]

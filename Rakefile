@@ -1,12 +1,13 @@
 require 'rubygems'
 begin
-  require 'vendor/rhosync/lib/rhosync/tasks'
-  require 'vendor/rhosync/lib/rhosync'
+  require 'vendor/rhoconnect/lib/rhoconnect/tasks'
+  require 'vendor/rhoconnect/lib/rhoconnect'
 rescue LoadError
-  require 'rhosync/tasks'
-  require 'rhosync'
-  require 'rhosync/server'
+  require 'rhoconnect/tasks'
+  require 'rhoconnect'
+  require 'rhoconnect/server'
 end
+
 
 # ROOT_PATH = File.expand_path(File.dirname(__FILE__))
 

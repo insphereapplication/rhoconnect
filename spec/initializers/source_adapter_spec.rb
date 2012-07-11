@@ -1,7 +1,7 @@
 # require File.join(File.dirname(__FILE__),'..','spec_helper')
 require File.join(File.dirname(__FILE__), '../..', 'initializers/source_adapter_extensions')
 require File.join(File.dirname(__FILE__), '../..', 'util/exception_util')
-require 'rhosync'
+require 'rhoconnect'
 
 
 describe "SourceAdapter" do
@@ -9,7 +9,7 @@ describe "SourceAdapter" do
   it "should check the arity of the block passed to on_api_pushed" do 
     
     lambda {
-      class BadAdapter < Rhosync::SourceAdapter
+      class BadAdapter < Rhoconnect::SourceAdapter
         on_api_push do
           # no arg for this block is bad
         end
@@ -18,7 +18,7 @@ describe "SourceAdapter" do
   end
 end
 
-class TestAdapter < Rhosync::SourceAdapter
+class TestAdapter < Rhoconnect::SourceAdapter
   on_api_push do |user_id|
     TestAdapter.api_push_method
   end

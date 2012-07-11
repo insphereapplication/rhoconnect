@@ -4,11 +4,11 @@ class DataValidation
     
     puts "Environment: #{CONFIG[:env]}"
     
-    rhosyncApi = RhosyncApiSession.new CONFIG[:env]
+    rhoconnectApi = RhoconnectApiSession.new CONFIG[:env]
      
     users = []
     if username.nil?
-      users = rhosyncApi.get_all_users
+      users = rhoconnectApi.get_all_users
     else
       users << username
     end
@@ -16,7 +16,7 @@ class DataValidation
     #get user passwords to use during REST calls to the Proxy
     passwords = Hash.new
     users.each do |user|
-      encrypted_password = rhosyncApi.get_db_doc("username:#{user}:password", 'string')
+      encrypted_password = rhoconnectApi.get_db_doc("username:#{user}:password", 'string')
       passwords[user] = Crypto.decrypt(encrypted_password)
     end
         
@@ -27,10 +27,10 @@ class DataValidation
       #1.compare Contact data
       puts "\n"
       
-      contact_docs = rhosyncApi.list_source_docs('Contact', user)      
-      contact_data = rhosyncApi.get_db_doc( contact_docs['md'] )
-      contact_ids_rhosync = contact_data.keys
-      puts "Contacts in Rhosync: " + contact_ids_rhosync.count.to_s
+      contact_docs = rhoconnectApi.list_source_docs('Contact', user)      
+      contact_data = rhoconnectApi.get_db_doc( contact_docs['md'] )
+      contact_ids_rhoconnect = contact_data.keys
+      puts "Contacts in Rhoconnect: " + contact_ids_rhoconnect.count.to_s
             
       res = RestClient.post("#{CONFIG[:crm_path]}/contact",
         { :username => user, 
@@ -40,26 +40,26 @@ class DataValidation
       contact_ids_crm = JSON.parse(res).map { |i| i['contactid'] }  
       puts "Contacts in CRM: #{contact_ids_crm.count}"  
       
-      contact_ids_in_rhosync_not_crm = contact_ids_rhosync.reject do |id|
+      contact_ids_in_rhoconnect_not_crm = contact_ids_rhoconnect.reject do |id|
         contact_ids_crm.include?(id)
       end
-      puts "Contacts in Rhosync not in CRM: #{contact_ids_in_rhosync_not_crm.count}"
-      puts contact_ids_in_rhosync_not_crm.inspect unless contact_ids_in_rhosync_not_crm.count == 0
+      puts "Contacts in Rhoconnect not in CRM: #{contact_ids_in_rhoconnect_not_crm.count}"
+      puts contact_ids_in_rhoconnect_not_crm.inspect unless contact_ids_in_rhoconnect_not_crm.count == 0
   
-      contact_ids_in_crm_not_rhosync = contact_ids_crm.reject do |id|
-        contact_ids_rhosync.include?(id)
+      contact_ids_in_crm_not_rhoconnect = contact_ids_crm.reject do |id|
+        contact_ids_rhoconnect.include?(id)
       end
-      puts "Contacts in CRM not in Rhosync: #{contact_ids_in_crm_not_rhosync.count}"
-      puts contact_ids_in_crm_not_rhosync.inspect unless contact_ids_in_crm_not_rhosync.count == 0
+      puts "Contacts in CRM not in Rhoconnect: #{contact_ids_in_crm_not_rhoconnect.count}"
+      puts contact_ids_in_crm_not_rhoconnect.inspect unless contact_ids_in_crm_not_rhoconnect.count == 0
       
       
       #2.compare Opportunity data
       puts "\n"
       
-      opp_docs = rhosyncApi.list_source_docs('Opportunity', user)      
-      opp_data = rhosyncApi.get_db_doc( opp_docs['md'] )
-      opp_ids_rhosync = opp_data.keys
-      puts "Opportunities in Rhosync: " + opp_ids_rhosync.count.to_s
+      opp_docs = rhoconnectApi.list_source_docs('Opportunity', user)      
+      opp_data = rhoconnectApi.get_db_doc( opp_docs['md'] )
+      opp_ids_rhoconnect = opp_data.keys
+      puts "Opportunities in Rhoconnect: " + opp_ids_rhoconnect.count.to_s
             
       res = RestClient.post("#{CONFIG[:crm_path]}/opportunity",
         { :username => user, 
@@ -69,40 +69,40 @@ class DataValidation
       opp_ids_crm = JSON.parse(res).map { |i| i['opportunityid'] }  
       puts "Opportunities in CRM: #{opp_ids_crm.count}"  
       
-      opp_ids_in_rhosync_not_crm = opp_ids_rhosync.reject do |id|
+      opp_ids_in_rhoconnect_not_crm = opp_ids_rhoconnect.reject do |id|
         opp_ids_crm.include?(id)
       end
-      puts "Opportunities in Rhosync not in CRM: #{opp_ids_in_rhosync_not_crm.count}"
-      puts opp_ids_in_rhosync_not_crm.inspect unless opp_ids_in_rhosync_not_crm.count == 0
+      puts "Opportunities in Rhoconnect not in CRM: #{opp_ids_in_rhoconnect_not_crm.count}"
+      puts opp_ids_in_rhoconnect_not_crm.inspect unless opp_ids_in_rhoconnect_not_crm.count == 0
   
-      opp_ids_in_crm_not_rhosync = opp_ids_crm.reject do |id|
-        opp_ids_rhosync.include?(id)
+      opp_ids_in_crm_not_rhoconnect = opp_ids_crm.reject do |id|
+        opp_ids_rhoconnect.include?(id)
       end
-      puts "Opportunities in CRM not in Rhosync: #{opp_ids_in_crm_not_rhosync.count}"
-      puts opp_ids_in_crm_not_rhosync.inspect unless opp_ids_in_crm_not_rhosync.count == 0
+      puts "Opportunities in CRM not in Rhoconnect: #{opp_ids_in_crm_not_rhoconnect.count}"
+      puts opp_ids_in_crm_not_rhoconnect.inspect unless opp_ids_in_crm_not_rhoconnect.count == 0
       
       
-      #3.Integrity check for Rhosync data
+      #3.Integrity check for Rhoconnect data
       puts "\n"
 
-      opps_without_contacts = opp_ids_rhosync.reject do |id|
-        contact_ids_rhosync.include?( opp_data[id]['contact_id'] )
+      opps_without_contacts = opp_ids_rhoconnect.reject do |id|
+        contact_ids_rhoconnect.include?( opp_data[id]['contact_id'] )
       end
-      puts "Opportunities in Rhosync with no attached contacts: #{opps_without_contacts.count}"
+      puts "Opportunities in Rhoconnect with no attached contacts: #{opps_without_contacts.count}"
       puts opps_without_contacts.inspect unless opps_without_contacts.count == 0
             
       
       #4.Device key check
       puts "\n"
       
-      user_devices = rhosyncApi.get_user_devices(user)
+      user_devices = rhoconnectApi.get_user_devices(user)
       next if user_devices.empty?
       
-      puts "Devices in Rhosync: #{user_devices.count}"
+      puts "Devices in Rhoconnect: #{user_devices.count}"
       
       devices_missing_pin = []
       user_devices.each do |device_id|
-        device_pin = rhosyncApi.get_device_params(device_id).select{ |k| k['name'] == 'device_pin' }.first        
+        device_pin = rhoconnectApi.get_device_params(device_id).select{ |k| k['name'] == 'device_pin' }.first        
         devices_missing_pin << device_id if device_pin.nil? || (!device_pin.nil? && device_pin['value'].nil?)      
       end
       

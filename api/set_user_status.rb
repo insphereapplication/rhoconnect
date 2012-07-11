@@ -1,4 +1,4 @@
-Rhosync::Server.api :set_user_status do |params,user|
+Rhoconnect::Server.api :set_user_status do |params,user|
   ExceptionUtil.rescue_and_reraise do
     user_id = params[:user_id]
     status = params[:status]

@@ -1,5 +1,5 @@
-module Rhosync
+module Rhoconnect
   def log(*args)
-    InsiteLogger.debug("RhoSync log entry: #{args.join}")
+    InsiteLogger.debug("Rhoconnect log entry: #{args.join}")
   end
 end

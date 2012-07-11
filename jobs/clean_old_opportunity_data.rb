@@ -1,4 +1,4 @@
-require File.expand_path("#{File.dirname(__FILE__)}/../jobs/rhosync_resque_job")
+require File.expand_path("#{File.dirname(__FILE__)}/../jobs/rhoconnect_resque_job")
 require 'time'
 
 class CleanOldOpportunityData
@@ -11,7 +11,7 @@ class CleanOldOpportunityData
   SECONDS_IN_A_DAY = 86400
   @queue = :clean_old_opportunity_data
 
-  include RhosyncResqueJob
+  include RhoconnectResqueJob
   
   class << self
     def get_doc_ids(doc)
@@ -25,10 +25,10 @@ class CleanOldOpportunityData
         users.each do |user|
           begin
             InsiteLogger.info("*"*10 + "starting cleanup job for #{user}")
-            opportunities =  rhosync_api.get_db_doc("source:application:#{user}:Opportunity:md")
-            activities =  rhosync_api.get_db_doc("source:application:#{user}:Activity:md")
-            contacts = rhosync_api.get_db_doc("source:application:#{user}:Contact:md")
-            policies = rhosync_api.get_db_doc("source:application:#{user}:Policy:md")
+            opportunities =  rhoconnect_api.get_db_doc("source:application:#{user}:Opportunity:md")
+            activities =  rhoconnect_api.get_db_doc("source:application:#{user}:Activity:md")
+            contacts = rhoconnect_api.get_db_doc("source:application:#{user}:Contact:md")
+            policies = rhoconnect_api.get_db_doc("source:application:#{user}:Policy:md")
           
             # find the expired Opportunities
             old_opportunities = get_expired_opportunities(opportunities)          
@@ -59,11 +59,11 @@ class CleanOldOpportunityData
             InsiteLogger.info(:format_and_join => ["Deleting for user #{user}: old_opps: ",old_opportunity_ids,", reassign_opps: ",reassigned_opportunity_ids, ", contacts: ",old_contact_ids,", activities: ",old_activity_ids, ", policies: ", old_policies_ids])
           
             # delete expired records for all models 
-            rhosync_api.push_deletes('Activity',user,old_activity_ids) unless old_activity_ids.empty?
-            rhosync_api.push_deletes('Opportunity',user,old_opportunity_ids) unless old_opportunity_ids.empty?
-            rhosync_api.push_deletes('Opportunity',user,reassigned_opportunity_ids) unless reassigned_opportunity_ids.empty?
-            rhosync_api.push_deletes('Contact',user,old_contact_ids) unless old_contact_ids.empty?
-            rhosync_api.push_deletes('Policy',user,old_policies_ids) unless old_policies_ids.empty?
+            rhoconnect_api.push_deletes('Activity',user,old_activity_ids) unless old_activity_ids.empty?
+            rhoconnect_api.push_deletes('Opportunity',user,old_opportunity_ids) unless old_opportunity_ids.empty?
+            rhoconnect_api.push_deletes('Opportunity',user,reassigned_opportunity_ids) unless reassigned_opportunity_ids.empty?
+            rhoconnect_api.push_deletes('Contact',user,old_contact_ids) unless old_contact_ids.empty?
+            rhoconnect_api.push_deletes('Policy',user,old_policies_ids) unless old_policies_ids.empty?
           rescue Exception => e
             ExceptionUtil.print_exception(e)
             InsiteLogger.info("*"*10 + "exception occured during cleanup job for #{user}")
@@ -168,7 +168,7 @@ class CleanOldOpportunityData
     end
     
     def get_reassigned_opportunities(opportunities, user)
-       crm_user_id = rhosync_api.get_user_crm_id("#{user}")
+       crm_user_id = rhoconnect_api.get_user_crm_id("#{user}")
        opportunities.reject do |key, opp|
          opp["ownerid"].blank? || opp["ownerid"] == crm_user_id
        end 

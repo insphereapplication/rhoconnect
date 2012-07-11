@@ -1,15 +1,15 @@
 require 'rubygems'
-require 'rhosync_session'
+require 'rhoconnect_session'
 require 'test_data'
 require 'time'
 
 # agent = {:login => 'stephen.pillow', :password => 'Pariveda1'}
-#base_url = 'https://rhosync.dev.insphereis.net/application'
-base_url = 'https://rhosync.model.insphereis.net/application'
+#base_url = 'https://rhoconnect.dev.insphereis.net/application'
+base_url = 'https://rhoconnect.model.insphereis.net/application'
 #base_url = 'http://localhost:9292/application'
 $CURRENT_LOGIN
 
-class RhosyncSession
+class RhoconnectSession
   def device_info_created?
     @device_info_created && @device_info_created == true
   end
@@ -27,11 +27,11 @@ end
 
 namespace :client do 
   task :login, [:login, :password, :force_reload] do |t, args|
-    @session = RhosyncSession.load_or_create(base_url, (args.login || $CURRENT_LOGIN), args.password, args.force_reload)
+    @session = RhoconnectSession.load_or_create(base_url, (args.login || $CURRENT_LOGIN), args.password, args.force_reload)
   end
 
   task :clear_all_sessions do 
-    RhosyncSession.clear_local_serialized
+    RhoconnectSession.clear_local_serialized
   end
 
   task :load_opps, [:login] => :login do |t, args|
@@ -71,7 +71,7 @@ namespace :client do
   
   
   task :script_test, [:login, :password] do |t,args|
-    session = RhosyncSession.new(base_url, args.login, args.password)
+    session = RhoconnectSession.new(base_url, args.login, args.password)
     session.start_test
     opps = session.query('Opportunity')
     2.times do
@@ -166,11 +166,11 @@ namespace :client do
       total_time = Time.now - start
       puts "Total time: #{total_time} seconds"
       
-      combine_results = RhosyncSession.combine_results;
+      combine_results = RhoconnectSession.combine_results;
       user_error_list = []
       
       node_users.each { |user|
-        result_session = RhosyncSession.load(my_user[:username])
+        result_session = RhoconnectSession.load(my_user[:username])
         if result_session && result_session.get_stats
           combine_results.start_time = combine_results.start_time ? [combine_results.start_time,result_session.start_time].min : result_session.start_time
           combine_results.end_time = combine_results.end_time ? [combine_results.end_time,result_session.end_time].max : result_session.end_time
@@ -187,7 +187,7 @@ namespace :client do
     else
       begin
         puts "Process #{Process.pid} has user #{my_user[:username]}"
-        session = RhosyncSession.load_or_create(base_url, my_user[:username], my_user[:password])
+        session = RhoconnectSession.load_or_create(base_url, my_user[:username], my_user[:password])
         session.start_test
             
         contact_id = ''

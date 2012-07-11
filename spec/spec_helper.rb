@@ -8,23 +8,23 @@ ROOT_PATH = File.expand_path(File.join(File.dirname(__FILE__),'..'))
 require "#{ROOT_PATH}/util/config_file"
 
 
-# Try to load vendor-ed rhosync, otherwise load the gem
+# Try to load vendor-ed rhoconnect, otherwise load the gem
 begin
-  require 'vendor/rhosync/lib/rhosync'
+  require 'vendor/rhoconnect/lib/rhoconnect'
 rescue LoadError
-  require 'rhosync'
-  require 'rhosync/server'
+  require 'rhoconnect'
+  require 'rhoconnect/server'
 end
 
-# Load our rhosync application
-include Rhosync
+# Load our rhoconnect application
+include Rhoconnect
 require "#{ROOT_PATH}/application"
 
-require 'rhosync/test_methods'
+require 'rhoconnect/test_methods'
 require File.expand_path("#{ROOT_PATH}/boot.rb")
 
 describe "SpecHelper", :shared => true do
-  include Rhosync::TestMethods
+  include Rhoconnect::TestMethods
   
   before(:each) do
     Store.db.flushdb

@@ -12,14 +12,14 @@ class DevicePinCheck < HealthCheck
     HealthCheckUtil.users.each do |user|
       ExceptionUtil.rescue_and_continue do        
         InsiteLogger.info "*"*10 + "Checking user device pins #{user}"
-        user_devices = HealthCheckUtil.rhosync_api.get_user_devices(user)
+        user_devices = HealthCheckUtil.rhoconnect_api.get_user_devices(user)
         next if user_devices.empty?
 
-        InsiteLogger.info "Devices in Rhosync: #{user_devices.count}"
+        InsiteLogger.info "Devices in Rhoconnect: #{user_devices.count}"
 
         devices_missing_pin = []
         user_devices.each do |device_id|
-          device_pin = HealthCheckUtil.rhosync_api.get_device_params(device_id).select{ |k| k['name'] == 'device_pin' }.first        
+          device_pin = HealthCheckUtil.rhoconnect_api.get_device_params(device_id).select{ |k| k['name'] == 'device_pin' }.first        
           devices_missing_pin << device_id if device_pin.nil? || (!device_pin.nil? && device_pin['value'].nil?)      
         end
         InsiteLogger.info "#{user} has #{devices_missing_pin.count} device(s) missing pin of #{user_devices.count}: #{devices_missing_pin.inspect}"

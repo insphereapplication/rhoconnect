@@ -13,8 +13,8 @@ class PolicyIntegrityCheck < HealthCheck
       ExceptionUtil.rescue_and_continue do        
         InsiteLogger.info "*"*10 + "Checking user #{user}"
         
-        policies = HealthCheckUtil.get_rhosync_source_data(user, 'Policy')
-        contacts = HealthCheckUtil.get_rhosync_source_data(user, 'Contact')
+        policies = HealthCheckUtil.get_rhoconnect_source_data(user, 'Policy')
+        contacts = HealthCheckUtil.get_rhoconnect_source_data(user, 'Contact')
         
         policies_without_contacts = policies.reject{|id,policy| 
           policy['contact_id'].nil? || contacts.include?(policy['contact_id'])

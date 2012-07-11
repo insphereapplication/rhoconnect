@@ -7,7 +7,7 @@ require 'ap'
 require 'json'
 require 'yaml'
 
-class RhosyncApiSession
+class RhoconnectApiSession
   
   attr_reader :token
   

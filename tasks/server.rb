@@ -34,8 +34,8 @@ namespace :server do
   task :set_token do
     begin
       puts "authenticating at #{$server}..."
-      @rhosync_api = RhosyncApiSession.new($server, $password)
-      @token = @rhosync_api.token
+      @rhoconnect_api = RhoconnectApiSession.new($server, $password)
+      @token = @rhoconnect_api.token
       puts "login successful, token is #{@token}"
       Rake::Task['server:show'].invoke
     rescue Exception => e
@@ -100,14 +100,14 @@ namespace :server do
   
   task :get_user_status, [:user_id] => [:set_token] do |t,args|
     abort "User ID must be specified" unless args[:user_id]
-    ap @rhosync_api.get_user_status(args[:user_id])
+    ap @rhoconnect_api.get_user_status(args[:user_id])
   end
   
   desc "this is used to set enable/disable mobile status"
   task :set_user_status, [:user_id, :status] => [:set_token] do |t,args|
     abort "User ID and status must be specified" unless args[:user_id] and args[:status]
     abort "Status must either be 'enabled' or 'disabled'" unless ['disabled','enabled'].include?(args[:status])
-    ap @rhosync_api.set_user_status(args[:user_id], args[:status])
+    ap @rhoconnect_api.set_user_status(args[:user_id], args[:status])
   end
   
   desc "Get user's crm_user_id "
@@ -433,12 +433,12 @@ namespace :server do
     # Default to all sources
     source_pattern = args[:source_pattern] || '.'
     
-    filtered_users = @rhosync_api.get_all_users.reject{|user| user[Regexp.new(args[:user_pattern])].nil?}
-    filtered_sources = @rhosync_api.list_sources.reject{|source| source[Regexp.new(source_pattern)].nil?}
+    filtered_users = @rhoconnect_api.get_all_users.reject{|user| user[Regexp.new(args[:user_pattern])].nil?}
+    filtered_sources = @rhoconnect_api.list_sources.reject{|source| source[Regexp.new(source_pattern)].nil?}
     
     results = filtered_users.reduce({}) do |sum,user|
       sum[user] = filtered_sources.reduce({}) do |user_source_counts,source|
-        user_source_counts[source] = @rhosync_api.get_md(source,user).count
+        user_source_counts[source] = @rhoconnect_api.get_md(source,user).count
         user_source_counts
       end
       sum
@@ -539,7 +539,7 @@ namespace :server do
   end
   
 	
-	desc "Compares all the data in Rhosync with all the in-scope data in CRM"
+	desc "Compares all the data in Rhoconnect with all the in-scope data in CRM"
 	task :validate_user_data_against_crm, [:user_pattern] do |t,args|
 	  puts "\n*************Start validating Redis data against CRM:"
 
@@ -694,7 +694,7 @@ namespace :server do
     filtered_users.each do |user|
       exceptions = get_md(user, 'ClientException')
       
-      # relevant_exceptions = exceptions.select{|key,value| value['message'][/Could not find rhosync-2.1.7 in any of the sources/]}
+      # relevant_exceptions = exceptions.select{|key,value| value['message'][/Could not find rhoconnect-2.1.7 in any of the sources/]}
       relevant_exceptions = exceptions
       
       total_matches += relevant_exceptions.count
@@ -890,7 +890,7 @@ namespace :server do
   task :fix_bootstrap do
     ENV['REDIS'] = "redis://nrhrho103:6379"
     ROOT_PATH = '.'
-    require 'rhosync/server'
+    require 'rhoconnect/server'
     require 'application'
   end
 end

@@ -10,16 +10,17 @@ if CONFIG[:redis_boot]
   ENV['REDIS'] = "redis://#{CONFIG[:redis]}"
 end
 
-# This line specifies the section from which the RhoSync framework will load its settings.
+# This line specifies the section from which the RhoConnect framework will load its settings.
 ENV['RACK_ENV'] = CONFIG[:env].to_s
 
-# Try to load vendor-ed rhosync, otherwise load the gem
+# Try to load vendor-ed rhoconnect otherwise load the gem
 begin
-  require 'vendor/rhosync/lib/rhosync/server'
-  require 'vendor/rhosync/lib/rhosync/console/server'
+  require 'vendor/rhoconnect/lib/rhoconnect/server'
+  require 'vendor/rhoconnect/lib/rhoconnect/web-console/server'
+  require 'rhoconnect/console/server'
 rescue LoadError
-  require 'rhosync/server'
-  require 'rhosync/console/server'
+  require 'rhoconnect/server'
+  require 'rhoconnect/web-console/server'
 end
 
 # By default, turn on the resque web console
@@ -38,30 +39,34 @@ set :raise_errors, true
 
 ROOT_PATH = File.expand_path(File.dirname(__FILE__))
 
-# Rhosync server flags
-# Rhosync::Server.enable  :stats
-Rhosync::Server.disable :run
-Rhosync::Server.disable :clean_trace
-Rhosync::Server.enable  :raise_errors
+# Rhoconnect server flags
+# Rhoconnect::Server.enable  :stats
+Rhoconnect::Server.disable :run
+Rhoconnect::Server.disable :clean_trace
+Rhoconnect::Server.enable  :raise_errors
 
-Rhosync::Server.set     :secret,      '8b885f195f8561e9738cec8f1e280af467722366a28128af0a61310eeeb23d5e1c59b1726711ca2e87ebc744781a4e7c47c7b52697f6d80c52f49a8152b0a7ab'
-Rhosync::Server.set     :root,        ROOT_PATH
-Rhosync::Server.use     Rack::Static, :urls => ["/data"], :root => Rhosync::Server.root
+Rhoconnect::Server.set     :secret,      '8b885f195f8561e9738cec8f1e280af467722366a28128af0a61310eeeb23d5e1c59b1726711ca2e87ebc744781a4e7c47c7b52697f6d80c52f49a8152b0a7ab'
+Rhoconnect::Server.set     :root,        ROOT_PATH
+Rhoconnect::Server.use     Rack::Static, :urls => ["/data"], :root => Rhoconnect::Server.root
 
 # Force SSL
 if CONFIG[:ssl]
   require 'rack/ssl-enforcer'
-  Rhosync::Server.use         Rack::SslEnforcer
-  RhosyncConsole::Server.use  Rack::SslEnforcer
+  Rhoconnect::Server.use         Rack::SslEnforcer
+  RhoconnectConsole::Server.use  Rack::SslEnforcer
   Resque::Server.use          Rack::SslEnforcer
 end
 
-# Load our rhosync application
-require 'application'
+# disable Async mode if Debugger is used
+  Rhoconnect::Server.set :use_async_model, false
+
+
+# Load our rhoconnect application
+require './application'
 
 # Setup the url map
 run Rack::URLMap.new \
-	"/"         => Rhosync::Server.new,
-	"/console"  => RhosyncConsole::Server.new # If you don't want rhosync frontend, disable it here
+	"/"         => Rhoconnect::Server.new,
+	"/console"  => RhoconnectConsole::Server.new # If you don't want rhoconnect frontend, disable it here
 	
-InsiteLogger.info(:format_and_join => ["Rhosync.environment after bootstrap: #{Rhosync.environment}, CONFIG: ",CONFIG])
+InsiteLogger.info(:format_and_join => ["Rhoconnect.environment after bootstrap: #{Rhoconnect.environment}, CONFIG: ",CONFIG])

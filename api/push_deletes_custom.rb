@@ -1,4 +1,4 @@
-Rhosync::Server.api :push_deletes_custom do |params,user|
+ Rhoconnect::Server.api :push_deletes_custom do |params,user|
   ExceptionUtil.rescue_and_reraise do
     deleted_objects = params[:objects]
     InsiteLogger.info(:format_and_join => ["PUSH DELETES #{params[:source_id]} FOR #{params[:user_id]}: ",deleted_objects])

@@ -12,7 +12,7 @@ class UnhandledExceptionCheck < HealthCheck
     HealthCheckUtil.users.each do |user|
       ExceptionUtil.rescue_and_continue do
         InsiteLogger.info "*"*10 + "Checking for unhandled client expections #{user}"
-        client_exception_data = HealthCheckUtil.get_rhosync_source_data( user, 'ClientException')
+        client_exception_data = HealthCheckUtil.get_rhoconnect_source_data( user, 'ClientException')
         client_exception_counter = 0
         client_exception_data.each do |id, client_exception|
           client_exception_type = client_exception['exception_type']

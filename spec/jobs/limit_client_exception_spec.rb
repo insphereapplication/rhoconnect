@@ -6,21 +6,21 @@ describe LimitClientExceptions do
   before(:each) do
     username = "huddie.ledbetter"
     @exception_key = "source:application:#{username}:ClientException:md"
-    Rhosync::Store.put_data(@exception_key, EXCEPTIONS)
-    Rhosync::Store.put_value("user:#{username}:rho__id", username)
+    Rhoconnect::Store.put_data(@exception_key, EXCEPTIONS)
+    Rhoconnect::Store.put_value("user:#{username}:rho__id", username)
     LimitClientExceptions.stub(:client_exception_limit).and_return(@limit = 3)
   end
   
   it "should remove clients exceptions past the given limit" do
-    Rhosync::Store.get_data(@exception_key).size.should == 5
+    Rhoconnect::Store.get_data(@exception_key).size.should == 5
     LimitClientExceptions.perform
-    Rhosync::Store.get_data(@exception_key).size.should == @limit
+    Rhoconnect::Store.get_data(@exception_key).size.should == @limit
   end
   
   it "should remove the oldest exceptions first" do
-    Rhosync::Store.get_data(@exception_key).size.should == 5
+    Rhoconnect::Store.get_data(@exception_key).size.should == 5
     LimitClientExceptions.perform
-    Rhosync::Store.get_data(@exception_key).keys.should == ["1306527343", "1306527344", "1306527404"]
+    Rhoconnect::Store.get_data(@exception_key).keys.should == ["1306527343", "1306527344", "1306527404"]
   end
   
   it "should reset the count value" do

@@ -1,12 +1,14 @@
 app_path = File.expand_path(File.join(File.dirname(__FILE__))) 
 require "#{app_path}/boot.rb"
 
-class Application < Rhosync::Base
+
+class Application < Rhoconnect::Base
   class << self
     def authenticate(username,password,session)
       ExceptionUtil.rescue_and_reraise do
         InsiteLogger.info "Logging user #{username} onto #{CONFIG[:crm_path]}session/logon"
-        response = RestClient.post "#{CONFIG[:crm_path]}session/logon", :username => username, :password => password
+        response = RestClient.post("#{CONFIG[:crm_path]}session/logon", { :username => username, :password => password })
+
         success = false
         if response && response.code == 200
           #get user's CRM ID, cache it for later use

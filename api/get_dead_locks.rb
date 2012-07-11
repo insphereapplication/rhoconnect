@@ -1,4 +1,4 @@
-Rhosync::Server.api :get_dead_locks do |params,user|
+Rhoconnect::Server.api :get_dead_locks do |params,user|
   ExceptionUtil.rescue_and_reraise do    
     dead_locks = LockUtil.get_dead_locks
     

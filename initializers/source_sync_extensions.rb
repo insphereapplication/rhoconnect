@@ -1,4 +1,4 @@
-module Rhosync
+module Rhoconnect
   class SourceSync    
     def push_object_updates(data)
       rejected_creates = []

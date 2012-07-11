@@ -1,4 +1,4 @@
-module Rhosync
+module Rhoconnect
   class SourceAdapter
     def self.on_api_push(&block)
       ExceptionUtil.rescue_and_reraise do

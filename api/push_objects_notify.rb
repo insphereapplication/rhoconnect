@@ -1,4 +1,4 @@
-Rhosync::Server.api :push_objects_notify do |params,user|
+Rhoconnect::Server.api :push_objects_notify do |params,user|
   ExceptionUtil.rescue_and_reraise do
     begin
       InsiteLogger.info "#"*80

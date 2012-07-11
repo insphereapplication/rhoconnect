@@ -1,4 +1,4 @@
-Rhosync::Server.api :get_sync_status do |params,user|
+Rhoconnect::Server.api :get_sync_status do |params,user|
   ExceptionUtil.rescue_and_reraise do
     user_pattern = params[:user_pattern]
     init_key_pattern = "username:#{user_pattern}:[^:]*:initialized"

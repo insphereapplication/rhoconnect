@@ -84,9 +84,9 @@ namespace :deploy do
   
   # The set_license task assumes that there is a license key file named "<hostname*>" in the settings/host_keys directory
   # in source control for every deployment target defined above in "role :app, '<hostname1>', '<hostname2>'", etc.
-  # It will copy the server-specific license key to the /settings/license.key file which Rhosync will use
+  # It will copy the server-specific license key to the /settings/license.key file which Rhoconnect will use
   # for that server.
-  desc "Set the Rhosync license key for the particular host machine"
+  desc "Set the Rhoconnect license key for the particular host machine"
   task :set_license , :roles => :app do
     run "mv #{current_release}/settings/host_keys/$CAPISTRANO:HOST$ #{current_release}/settings/license.key"
   end
@@ -189,7 +189,7 @@ namespace :resque do
 end
 
 namespace :util do  
-  desc "Stream the rhosync log from all target servers in a single terminal" 
+  desc "Stream the rhoconnect log from all target servers in a single terminal" 
   task :stream_logs, :roles => :app do
     stream "tail -F #{shared_path}/log/insite_mobile.log"
   end

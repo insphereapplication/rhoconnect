@@ -1,26 +1,26 @@
 # a quick and dirty util class for getting data out of redis
 require 'ap'
-require 'rhosync'
+require 'rhoconnect'
 
 module RedisUtil
   class RecordNotFound < RuntimeError; end
   
-  # Rhosync::Store.extend(Rhosync)
-  # Rhosync::Store.db # need to call this to initialize the @db member of Store
+  # Rhoconnect::Store.extend(Rhoconnect)
+  # Rhoconnect::Store.db # need to call this to initialize the @db member of Store
   class << self
     
     def connect(host, port)
-      Rhosync::Store.db.client.disconnect if defined?(Rhosync::Store.db.client)
+      Rhoconnect::Store.db.client.disconnect if defined?(Rhoconnect::Store.db.client)
       puts "Connecting to redis at #{host}:#{port}"
-      Rhosync::Store.db = Redis.new(:thread_safe => true, :host => host, :port => port)
+      Rhoconnect::Store.db = Redis.new(:thread_safe => true, :host => host, :port => port)
     end
     
     def clear_md(model, user)
-      Rhosync::Store.put_data("source:application:#{user}:#{model}:md")
+      Rhoconnect::Store.put_data("source:application:#{user}:#{model}:md")
     end
     
     def get_md(model, user)
-      Rhosync::Store.get_data("source:application:#{user}:#{model}:md")
+      Rhoconnect::Store.get_data("source:application:#{user}:#{model}:md")
     end
     
     def get_attribute(model, user, id, attribute)
@@ -29,11 +29,11 @@ module RedisUtil
     end
     
     def get_keys(keymask)
-      Rhosync::Store.get_keys("#{keymask}*")
+      Rhoconnect::Store.get_keys("#{keymask}*")
     end
     
     def get_value(key)
-      Rhosync::Store.get_value(key)
+      Rhoconnect::Store.get_value(key)
     end
   
     def get_model(model, user, key)

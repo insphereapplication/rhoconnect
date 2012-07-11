@@ -13,8 +13,8 @@ class OpportunityIntegrityCheck < HealthCheck
       ExceptionUtil.rescue_and_continue do        
         InsiteLogger.info "*"*10 + "Checking user #{user}"
         
-        opportunities = HealthCheckUtil.get_rhosync_source_data(user, 'Opportunity')
-        contacts = HealthCheckUtil.get_rhosync_source_data(user, 'Contact')
+        opportunities = HealthCheckUtil.get_rhoconnect_source_data(user, 'Opportunity')
+        contacts = HealthCheckUtil.get_rhoconnect_source_data(user, 'Contact')
         
         opps_without_contacts = opportunities.reject{|id,opp| 
           contacts.include?(opp['contact_id'])

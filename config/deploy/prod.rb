@@ -1,4 +1,4 @@
-# env determines the environment section in settings/settings.yml that will be used by Rhosync
+# env determines the environment section in settings/settings.yml that will be used by Rhoconnect
 set :env, :onsite
 # target servers 
 role :app, "nrhrho101.pinsp.dom", "nrhrho102.pinsp.dom"

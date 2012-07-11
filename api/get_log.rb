@@ -1,4 +1,4 @@
-Rhosync::Server.api :get_log do |params,user|
+Rhoconnect::Server.api :get_log do |params,user|
   ExceptionUtil.rescue_and_reraise do
     log_file_path = CONFIG[:log][:path]
     log = ''

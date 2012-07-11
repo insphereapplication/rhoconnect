@@ -6,7 +6,7 @@ require 'json'
 require 'yaml'
 require "#{File.expand_path(File.dirname(__FILE__))}/session_stats"
 
-class RhosyncSession 
+class RhoconnectSession 
   attr_accessor :client_id
   attr_accessor :base_url
   attr_accessor :login
@@ -47,7 +47,7 @@ class RhosyncSession
   
   
   def loadguid(type)
-    File.read(RhosyncSession.filename(".#{@login}_#{type}")) 
+    File.read(RhoconnectSession.filename(".#{@login}_#{type}")) 
   end
   
   def self.clear_local_serialized
@@ -55,19 +55,19 @@ class RhosyncSession
   end
   
   def persist_local
-    File.open(RhosyncSession.serialized_filename(@login), 'w+') {|f| f.write(YAML::dump(self)) }
+    File.open(RhoconnectSession.serialized_filename(@login), 'w+') {|f| f.write(YAML::dump(self)) }
   end
   
   def persist_local_results
-    File.open(RhosyncSession.serialized_results_filename(), 'w+') {|f| f.write(YAML::dump(self)) }
+    File.open(RhoconnectSession.serialized_results_filename(), 'w+') {|f| f.write(YAML::dump(self)) }
   end
   
   def persist_local_contact(contact_id)
-    File.open(RhosyncSession.filename(".#{@login}_contact"), 'w+') {|f| f.write(contact_id) }
+    File.open(RhoconnectSession.filename(".#{@login}_contact"), 'w+') {|f| f.write(contact_id) }
   end
   
   def persist_local_opportunity(opportunity_id)
-    File.open(RhosyncSession.filename(".#{@login}_opportunity"), 'w+') {|f| f.write(opportunity_id)}
+    File.open(RhoconnectSession.filename(".#{@login}_opportunity"), 'w+') {|f| f.write(opportunity_id)}
   end
   
   def initialize()
@@ -80,7 +80,7 @@ class RhosyncSession
     @login = login
     puts "Logging into #{base_url}/clientlogin..."
     res = RestClient.post "#{base_url}/clientlogin", {:login => login, :password => password}, :content_type => :json
-    res.cookies['rhosync_session'] = CGI.escape(res.cookies['rhosync_session'])  
+    res.cookies['rhoconnect_session'] = CGI.escape(res.cookies['rhoconnect_session'])  
     puts "Logged in, getting client id..."
     @headers = {}
     @headers[:cookies] = res.cookies
@@ -245,6 +245,6 @@ class RhosyncSession
   end
   
   def session_established
-    @client_id && @headers && @headers[:cookies] && @headers[:cookies]['rhosync_session']
+    @client_id && @headers && @headers[:cookies] && @headers[:cookies]['rhoconnect_session']
   end
 end

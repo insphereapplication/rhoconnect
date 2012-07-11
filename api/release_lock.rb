@@ -1,4 +1,4 @@
-Rhosync::Server.api :release_lock do |params,user|
+Rhoconnect::Server.api :release_lock do |params,user|
   ExceptionUtil.rescue_and_reraise do
     lock = params[:lock]
     InsiteLogger.info("Releasing lock '#{lock}'")

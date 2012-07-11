@@ -7,20 +7,20 @@ Dir[File.join(File.dirname(__FILE__),'health_checks','**','*.rb')].each { |file|
 class ValidateRedisData
   @queue = :validate_redis_data
 
-  include RhosyncResqueJob
+  include RhoconnectResqueJob
     
   class << self
     def send_email(email_body)
       ExceptionUtil.rescue_and_reraise do
         to = CONFIG[:resque_data_validation_email_group]
-        subject = "RhoSync Data Validation Results - " + Time.now.strftime("%m%d%Y")
+        subject = "Rhoconnect Data Validation Results - " + Time.now.strftime("%m%d%Y")
         EmailUtil.send_mail(to, subject, email_body)
       end
     end
 
     def perform
       InsiteLogger.info "*"*20 + "Starting Validate_Redis_Data job"
-      InsiteLogger.info "Target rhosync host: #{CONFIG[:resque_worker_rhosync_api_host]}"
+      InsiteLogger.info "Target rhoconnect host: #{CONFIG[:resque_worker_rhoconnect_api_host]}"
       
       checks = [
         DeadLockCheck.new,

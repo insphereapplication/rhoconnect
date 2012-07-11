@@ -33,16 +33,17 @@
 # !!! env defines the global context for the server !!!
 :env: test
 
-# use one of the following keys for the :crm_proxy: value in the environment sections below to determine which crm deployment Rhosync will use, i.e., ':crm_proxy: model_crm_proxy'
+# use one of the following keys for the :crm_proxy: value in the environment sections below to determine which crm deployment Rhoconnect will use, i.e., ':crm_proxy: model_crm_proxy'
 model_crm_proxy: https://mobileproxy.model.insphereis.net/
 dev_crm_proxy: https://mobileproxy.dev.insphereis.net/
+#dev_crm_proxy: http://nrhwwwd403.insp.dom:5000/
 dev_integrated_crm_proxy: http://nrhwwwd403.insp.dom:2195/crm/ActivityCenter/MobileProxy/
 prod_crm_proxy: https://mobileproxy.insphereis.net/
 local_crm_proxy: http://192.168.51.128/ # Change this if you're running locally and use below
 
 # global settings are given to all environments as defaults, and can be overridden in specific environment sections below (:test, :model, etc.) 
-# !!! However, DO NOT use any of the following Rhosync values in global: redis, licensefile, authtoken, iphone*, rhoadmin_password, syncserver.
-# Those values are used internally by Rhosync and have to be duplicated in each section.   
+# !!! However, DO NOT use any of the following Rhoconnect values in global: redis, licensefile, authtoken, iphone*, rhoadmin_password, syncserver.
+# Those values are used internally by Rhoconnect and have to be duplicated in each section.   
 :global:
   :crypt_key: "61AA71C0AB689FAEE09CD9310CB59A809D688652C78AA1CAB65B961D2FFAF7D1"
   :ssl: true
@@ -67,12 +68,12 @@ local_crm_proxy: http://192.168.51.128/ # Change this if you're running locally 
     :android_soft_upgrade_url: 'https://m.model.insphereis.net/insitemobile'
     :mobile_crypt_key: "HFAGIEH777837776KFKHHSJJJFHEUUGF"
     :model_limits: '{"Activity":"2500","Opportunity":"300","Contact":"1100","Policy":"2000","Note":"600"}'
-  :resque_worker_rhosync_api_host: 'http://127.0.0.1/'
-  :resque_worker_rhosync_api_password: ''
+  :resque_worker_rhoconnect_api_host: 'http://127.0.0.1/'
+  :resque_worker_rhoconnect_api_password: ''
   :resque_data_validation_email_group: test@test.com # change this to your own debug value; it will be overwritten automatically in Prod
   :conflict_management_threshold: 900 # interval in seconds used by conflict management to account for differences between RhoSync and phone time
 # The following sections inherit from the global section and will override any values duplicated from global (:ssl:, etc.)
-# The :env: value above determines which of these sections is used by the Rhosync environment.
+# The :env: value above determines which of these sections is used by the Rhoconnect environment.
 :test: 
   :crm_proxy: dev_crm_proxy
   :redis: localhost:6379
@@ -112,7 +113,7 @@ local_crm_proxy: http://192.168.51.128/ # Change this if you're running locally 
   :licensefile: settings/license.key
   :iphoneserver: gateway.push.apple.com
   :iphoneport: 2195
-  :syncserver: https://rhosync.insphereis.net/application/
+  :syncserver: https://rhoconnect.insphereis.net/application/
   :authtoken: 'DQAAAOkBAACJxJJdpcp9E3EbdPfckLTCw6o0IgXF-nI-NL1ofcVCH9D4H4vBQpUSrKoL8rCrqiqPsvm2K_FaZADhgW1w9GBMp4pQNyeuCzpfKYmIO_ma37kamSqGWtbF0g8bB5I9H-b6hmFEFkGrkB6x6SllMrAPQN-BUacj42mawhVcqCChpeIgznDfO7y2eGqAvtShFDlNmUJF5Ie-ZkN6bC9TPmuj6WKyM5IXdB_F5Wdcbo18qjiMTv8pzH8WzU_Z5OhhT1V8wmROMKmvNE1-3keRpM_1Supjw9xWGSb8s3_T7StS6hAmPFKnpiaretYObkiRTivzabR4T-yAV_ak0zdqk_46vlTn3FWdrfoO4_ztYFsCJd6dP-x-wTABUFo0TsH3HFhQTVYurFFdTxowkMN0oWLH9Eq3SvcuHX95thSsPEgLxRlRhhzKwPZdVpMWawMVLeU17xtzRzOsqW3d02t0Fy7zb7Dy8dFWmOWCWrLe4njwmBzGD9Gn4TWwvHiHwQoI8j6qsCbvd7u0IGqyzd1fQa3euelTjFerCjNM1XWmEyztViMvE6uJoxDSrLWgq-SoHiqi2aMtZ1q61CcFF7uVKZqZg0tmWe1USwCH_V9Hc5iDCnxxIXhlCwFIn9fO2a8EvcX1RZgcOvBqwHHyQc1AlRx5'
   :rhoadmin_password: aW9wVhyU84Sj
   :ssl: false
@@ -121,7 +122,7 @@ local_crm_proxy: http://192.168.51.128/ # Change this if you're running locally 
   :lock_duration: 60
   :log:
     :mode: 'file'
-  :resque_worker_rhosync_api_password: aW9wVhyU84Sj
+  :resque_worker_rhoconnect_api_password: aW9wVhyU84Sj
   :resque_data_validation_email_group: InsphereMobileSupport@inspherehq.com
   :app_info:
     :apple_force_upgrade_url: 'itms-services://?action=download-manifest&amp;url=http://m.insphereis.net/InSiteMobile/Documents/InSite_Mobile.plist'
@@ -138,7 +139,7 @@ local_crm_proxy: http://192.168.51.128/ # Change this if you're running locally 
   :licensefile: settings/license.key
   :iphoneserver: gateway.sandbox.push.apple.com
   :iphoneport: 2195
-  :syncserver: https://rhosync.model.insphereis.net/application/
+  :syncserver: https://rhoconnect.model.insphereis.net/application/
   :authtoken: 'DQAAAOkBAACJxJJdpcp9E3EbdPfckLTCw6o0IgXF-nI-NL1ofcVCH9D4H4vBQpUSrKoL8rCrqiqPsvm2K_FaZADhgW1w9GBMp4pQNyeuCzpfKYmIO_ma37kamSqGWtbF0g8bB5I9H-b6hmFEFkGrkB6x6SllMrAPQN-BUacj42mawhVcqCChpeIgznDfO7y2eGqAvtShFDlNmUJF5Ie-ZkN6bC9TPmuj6WKyM5IXdB_F5Wdcbo18qjiMTv8pzH8WzU_Z5OhhT1V8wmROMKmvNE1-3keRpM_1Supjw9xWGSb8s3_T7StS6hAmPFKnpiaretYObkiRTivzabR4T-yAV_ak0zdqk_46vlTn3FWdrfoO4_ztYFsCJd6dP-x-wTABUFo0TsH3HFhQTVYurFFdTxowkMN0oWLH9Eq3SvcuHX95thSsPEgLxRlRhhzKwPZdVpMWawMVLeU17xtzRzOsqW3d02t0Fy7zb7Dy8dFWmOWCWrLe4njwmBzGD9Gn4TWwvHiHwQoI8j6qsCbvd7u0IGqyzd1fQa3euelTjFerCjNM1XWmEyztViMvE6uJoxDSrLWgq-SoHiqi2aMtZ1q61CcFF7uVKZqZg0tmWe1USwCH_V9Hc5iDCnxxIXhlCwFIn9fO2a8EvcX1RZgcOvBqwHHyQc1AlRx5'
   :rhoadmin_password: U5PgMPngu27j
   :ssl: false
@@ -147,7 +148,7 @@ local_crm_proxy: http://192.168.51.128/ # Change this if you're running locally 
   :lock_duration: 60
   :log:
     :mode: 'file'
-  :resque_worker_rhosync_api_password: U5PgMPngu27j
+  :resque_worker_rhoconnect_api_password: U5PgMPngu27j
 :onsite_dev: 
   :redis_boot: true
   :crm_proxy: dev_crm_proxy
@@ -157,7 +158,7 @@ local_crm_proxy: http://192.168.51.128/ # Change this if you're running locally 
   :licensefile: settings/license.key
   :iphoneserver: gateway.sandbox.push.apple.com
   :iphoneport: 2195
-  :syncserver: https://rhosync.dev.insphereis.net/application/
+  :syncserver: https://rhoconnect.dev.insphereis.net/application/
   :authtoken: 'DQAAAOkBAACJxJJdpcp9E3EbdPfckLTCw6o0IgXF-nI-NL1ofcVCH9D4H4vBQpUSrKoL8rCrqiqPsvm2K_FaZADhgW1w9GBMp4pQNyeuCzpfKYmIO_ma37kamSqGWtbF0g8bB5I9H-b6hmFEFkGrkB6x6SllMrAPQN-BUacj42mawhVcqCChpeIgznDfO7y2eGqAvtShFDlNmUJF5Ie-ZkN6bC9TPmuj6WKyM5IXdB_F5Wdcbo18qjiMTv8pzH8WzU_Z5OhhT1V8wmROMKmvNE1-3keRpM_1Supjw9xWGSb8s3_T7StS6hAmPFKnpiaretYObkiRTivzabR4T-yAV_ak0zdqk_46vlTn3FWdrfoO4_ztYFsCJd6dP-x-wTABUFo0TsH3HFhQTVYurFFdTxowkMN0oWLH9Eq3SvcuHX95thSsPEgLxRlRhhzKwPZdVpMWawMVLeU17xtzRzOsqW3d02t0Fy7zb7Dy8dFWmOWCWrLe4njwmBzGD9Gn4TWwvHiHwQoI8j6qsCbvd7u0IGqyzd1fQa3euelTjFerCjNM1XWmEyztViMvE6uJoxDSrLWgq-SoHiqi2aMtZ1q61CcFF7uVKZqZg0tmWe1USwCH_V9Hc5iDCnxxIXhlCwFIn9fO2a8EvcX1RZgcOvBqwHHyQc1AlRx5'
   :rhoadmin_password: iGyz5rk6JVYA
   :ssl: false
@@ -166,5 +167,5 @@ local_crm_proxy: http://192.168.51.128/ # Change this if you're running locally 
   :lock_duration: 60
   :log:
     :mode: 'file'
-  :resque_worker_rhosync_api_host: 'http://nrhrhod401/'
-  :resque_worker_rhosync_api_password: iGyz5rk6JVYA
+  :resque_worker_rhoconnect_api_host: 'http://nrhrhod401/'
+  :resque_worker_rhoconnect_api_password: iGyz5rk6JVYA

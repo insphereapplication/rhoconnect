@@ -1,4 +1,4 @@
-module Rhosync
+module Rhoconnect
   class Server
     def do_login
       begin
