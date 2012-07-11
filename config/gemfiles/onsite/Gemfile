@@ -1,13 +1,14 @@
-# This Gemfile is for deploying to onsite -- we have to require rhoconnect  in the onsite environment, 
+# This Gemfile is for deploying to onsite -- we have to require rhosync 2.1.3 in the onsite environment, but in Rhohub 
+# you can't explicitly require Rhosync
+#  Do not change this file to use rhoconnect until you are ready to deploy using rhoconnect
 
 source "http://rubygems.org"
 gem "faker"
 gem "awesome_print"
 gem "exceptional"
 gem "resque-scheduler"
+gem "SystemTimer"
 gem "crypt"
 gem "rack-ssl-enforcer"
 gem "awesome_print"
-gem "rhoconnect"
-gem "sqlite3"
-gem "thin"
+gem "rhosync"
