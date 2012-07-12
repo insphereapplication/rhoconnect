@@ -75,18 +75,21 @@ namespace :deploy do
   
   desc "Copy the onsite Gemfile/Gemfile.lock files up to the server"
   task :gemfile, :roles => :app do 
-    gemfiles_path = File.expand_path(File.dirname(__FILE__)) + "/gemfiles/onsite/"
-    gemfile = File.read(gemfiles_path + "Gemfile")
-    gemfile_lock = File.read(gemfiles_path + "Gemfile.lock")
-    put(gemfile, "#{current_release}/Gemfile")
-    put(gemfile_lock, "#{current_release}/Gemfile.lock")
+    # Modifiying theis step on 07-12-2012 as the code Gemfiles should be deployed from source and not local machine
+    run "mv #{current_release}/config/gemfiles/onsite/Gemfile #{current_release}/Gemfile"
+    run "mv #{current_release}/config/gemfiles/onsite/Gemfile.lock #{current_release}/Gemfile.lock"
+    # gemfiles_path = File.expand_path(File.dirname(__FILE__)) + "/gemfiles/onsite/"
+    # gemfile = File.read(gemfiles_path + "Gemfile")
+    # gemfile_lock = File.read(gemfiles_path + "Gemfile.lock")
+    # put(gemfile, "#{current_release}/Gemfile")
+    # put(gemfile_lock, "#{current_release}/Gemfile.lock")
   end
   
   # The set_license task assumes that there is a license key file named "<hostname*>" in the settings/host_keys directory
   # in source control for every deployment target defined above in "role :app, '<hostname1>', '<hostname2>'", etc.
-  # It will copy the server-specific license key to the /settings/license.key file which Rhosync will use
+  # It will copy the server-specific license key to the /settings/license.key file which Rhoconnect will use
   # for that server.
-  desc "Set the Rhosync license key for the particular host machine"
+  desc "Set the Rhoconnect license key for the particular host machine"
   task :set_license , :roles => :app do
     run "mv #{current_release}/settings/host_keys/$CAPISTRANO:HOST$ #{current_release}/settings/license.key"
   end
@@ -189,7 +192,7 @@ namespace :resque do
 end
 
 namespace :util do  
-  desc "Stream the rhosync log from all target servers in a single terminal" 
+  desc "Stream the rhoconnect log from all target servers in a single terminal" 
   task :stream_logs, :roles => :app do
     stream "tail -F #{shared_path}/log/insite_mobile.log"
   end
