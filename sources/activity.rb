@@ -2,6 +2,7 @@ class Activity < SourceAdapter
 
   # proxy util mixin
   include ProxyUtil
+  include ReplaceTempID
   
   def initialize(source,credential)
     @activity_url = "#{CONFIG[:crm_path]}activity"
@@ -62,6 +63,9 @@ class Activity < SourceAdapter
       ExceptionUtil.context(:current_user => current_user.login, :create_hash => create_hash )
             
       start_proxy = Time.now
+      create_hash = replace_with_guid(create_hash,"parent_id",create_hash['parent_type'])
+      create_hash = replace_with_guid(create_hash,"parent_contact_id","Contact")
+
       result = proxy_create(create_hash,{:user_id => Store.get_value(@user_id_key)}) # Include user ID context needed by mapper on creates
       InsiteLogger.info "ACTIVITY PROXY CREATE IN : #{Time.now - start_proxy} Seconds"
       InsiteLogger.info "Activity Create Result: #{result}"
