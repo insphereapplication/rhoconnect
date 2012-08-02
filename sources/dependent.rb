@@ -2,6 +2,7 @@ class Dependent < SourceAdapter
 
   # proxy util mixin
   include ProxyUtil
+  include ReplaceTempID
   
   def initialize(source,credential)
     ExceptionUtil.rescue_and_reraise do
@@ -55,7 +56,7 @@ class Dependent < SourceAdapter
     ExceptionUtil.rescue_and_reraise do
       InsiteLogger.info "CREATE DEPENDENT"
       ExceptionUtil.context(:current_user => current_user.login, :create_hash => create_hash)
-      
+      create_hash = replace_with_guid(create_hash,"contact_id","Contact")
       result = proxy_create(create_hash)
       
       InsiteLogger.info result

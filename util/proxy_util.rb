@@ -20,6 +20,27 @@ module DuplicateDetectionUtil
   end
 end
 
+module ReplaceTempID
+  def replace_with_guid(create_hash,temp_id_name,type)
+    temp_id = create_hash[temp_id_name]
+    if (!temp_id.blank? && !temp_id.upcase.match('[A-Z0-9]{8}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{12}'))
+      InsiteLogger.info(:format_and_join => ["Replacing Tempid for : #{temp_id_name}, temp_id:  #{temp_id}."])
+      result = Store.db.hget(find_hash_key(type), temp_id)
+      InsiteLogger.info(:format_and_join => ["Temp id result lookup: ",result])
+      if (result)     
+        create_hash[temp_id_name] = result  
+        InsiteLogger.info(:format_and_join => ["Replaced Tempid for : #{temp_id_name}, temp_id:  #{temp_id} with #{result}."])
+      end
+    end  
+    create_hash
+  end
+  
+  def find_hash_key(type)
+    "create_links:#{@source.user_id}:#{type}"
+  end
+  
+end
+
 module ProxyUtil
   #assumes that @username, @password, @mapper_context and @source are defined
   include DuplicateDetectionUtil

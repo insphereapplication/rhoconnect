@@ -2,6 +2,7 @@ class Opportunity < SourceAdapter
   
   # proxy util mixin
   include ProxyUtil
+  include ReplaceTempID
   
   on_api_push do |user_id|
     ExceptionUtil.rescue_and_reraise do
@@ -70,7 +71,9 @@ class Opportunity < SourceAdapter
     ExceptionUtil.rescue_and_reraise do
       InsiteLogger.info "CREATE OPPORTUNITY"
       ExceptionUtil.context(:current_user => current_user.login, :create_hash => create_hash)     
-       
+
+      create_hash = replace_with_guid(create_hash,"contact_id","Contact")
+
       #include user_id context needed by mapper on create
       result = proxy_create(create_hash,{:user_id => Store.get_value(@user_id_key)})    
       InsiteLogger.info result

@@ -2,6 +2,7 @@ class Note < SourceAdapter
 
   # proxy util mixin
   include ProxyUtil
+  include ReplaceTempID
   
   def initialize(source,credential)
     ExceptionUtil.rescue_and_reraise do
@@ -52,7 +53,8 @@ class Note < SourceAdapter
     ExceptionUtil.rescue_and_reraise do
       InsiteLogger.info "CREATE NOTE"
       ExceptionUtil.context(:current_user => current_user.login, :create_hash => create_hash)
-      
+
+      create_hash = replace_with_guid(create_hash,"parent_id",create_hash['parent_type'])
       result = proxy_create(create_hash)
       
       InsiteLogger.info result
