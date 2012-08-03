@@ -67,6 +67,18 @@ class Note < SourceAdapter
       InsiteLogger.info "UPDATE NOTE"
       ExceptionUtil.context(:current_user => current_user.login, :update_hash => update_hash )
             
+      #It should be rare that we use if statement below since this should only occur if Rhodes parent id is not updated correctly
+      if (!update_hash['parent_id'].blank? && update_hash['parent_type'].blank?)
+        begin
+          note = RedisUtil.get_model('Note', current_user.login, update_hash['id'])
+          update_hash['parent_type'] = note['parent_type'] 
+        rescue RedisUtil::RecordNotFound
+          # Note doesn't exist in redis, stop. Activity will be deleted on client after this sync.
+          InsiteLogger.info(:format_and_join => ["Couldn't find existing note in redis, rejecting update: ", update_hash])
+          return
+        end
+      end        
+            
       result = proxy_update(update_hash)
       
       InsiteLogger.info result
