@@ -87,7 +87,7 @@ class Activity < SourceAdapter
         return
       end
       update_hash['type'] = activity['type']
-      update_hash['parent_type'] = activity['parent_type']  if (!update['parent_id'].blank? && update_hash['parent_type'].blank?)
+      update_hash['parent_type'] = activity['parent_type']  if (!update_hash['parent_id'].blank? && update_hash['parent_type'].blank?)
       
       ExceptionUtil.context(:current_user => current_user.login, :update_hash => update_hash )
       
