@@ -427,6 +427,7 @@ namespace :server do
     JSON.parse(res)
   end
   
+  desc "Count records for user model"
   task :count_records, [:user_pattern, :source_pattern] => [:set_token] do |t,args|
     abort "User pattern must be specified" unless args[:user_pattern]
     
@@ -445,6 +446,31 @@ namespace :server do
     end
     
     ap results
+  end
+  
+  desc "Count records for user model"
+  task :count_records_csv, [:user_pattern, :source_pattern] => [:set_token] do |t,args|
+    abort "User pattern must be specified" unless args[:user_pattern]
+    
+    # Default to all sources
+    source_pattern = args[:source_pattern] || '.'
+    
+    filtered_users = @rhoconnect_api.get_all_users.reject{|user| user[Regexp.new(args[:user_pattern])].nil?}
+    filtered_sources = @rhoconnect_api.list_sources.reject{|source| source[Regexp.new(source_pattern)].nil?}
+    
+    results = filtered_users.reduce({}) do |sum,user|
+      sum[user] = filtered_sources.reduce({}) do |user_source_counts,source|
+        user_source_counts[source] = @rhoconnect_api.get_md(source,user).count
+        user_source_counts
+      end
+      sum
+    end
+     puts "user, CryptKey,Contact,DeviceInfo,Activity,Opportunity,AppInfo,ClientException,Policy,StaticEntity,SearchContacts,Note,Dependent,ApplicationDetail"
+     results.each do |user, data|
+       
+         puts "#{user},#{data["CryptKey"]},#{data["Contact"]},#{data["DeviceInfo"]},#{data["Activity"]},#{data["Opportunity"]},#{data["AppInfo"]},#{data["ClientException"]},#{data["Policy"]},#{data["StaticEntity"]},#{data["SearchContacts"]},#{data["Note"]},#{data["Dependent"]},#{data["ApplicationDetail"]}"
+      end
+  
   end
   
   task :check_duplicate_activities, [:user_pattern] => [:set_token] do |t, args|
