@@ -40,6 +40,22 @@ class Activity < SourceAdapter
         InsiteLogger.info "ACTIVITY PROXY QUERY IN : #{Time.now - start} Seconds"
         @result = Mapper.map_source_data(res, 'Activity')
         
+
+
+        #activity work around for blank description error on phone
+        @result.each do |id, activity|
+          activity_type = activity['type']
+          activity_description = activity['description']
+          if (['Task','Appointment'].include?(activity_type) && activity_description.nil?)
+             InsiteLogger.debug "Activity description is nil for user: #{current_user.login} activity: #{id}"
+             activity['description'] =  ''
+           end
+           activity
+         end
+         InsiteLogger.info @result
+         #end of workaround
+         
+        
         ExceptionUtil.context(:result => res, :mapped_result => @result )
       end
     end
