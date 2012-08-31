@@ -1,6 +1,6 @@
 $settings_file = 'settings/settings.yml'
 $settings = YAML::load_file($settings_file)
-$target = :onsite
+$target = :onsite_dev
 $config = ConfigFile.get_settings_for_environment($settings, $target)
 $app_path = File.expand_path(File.dirname(__FILE__))
 $server = ($config[:syncserver] || "").sub('/application', '')
@@ -582,6 +582,28 @@ namespace :server do
           puts "Error for user: #{user}"
           puts "!!!!!!Message:  #{client_exception['message']} "
           puts "#{client_exception}"
+        end  
+        rescue
+          #ignore client exceptions that don't have a server created on specified
+        end
+      end
+    end      
+  end
+  
+  desc "Check for Activities (Task/Appointments) with no description"
+  task :check_for_activity_no_description => [:set_token] do |t, args|
+    users = get_users
+    not_message = "undefined method `cssi_assigneddate' for nil:NilClass"
+ 
+    users.each do |user|
+      activities = get_md(user, 'Activity')
+      #ap "#{client_exceptions.count} exceptions for user #{user}: "
+      activities.each do |id, activity|
+        activity_type = activity['type']
+        activity_description = activity['description']
+        begin
+        if (['Task','Appointment'].include?(activity_type) && activity_description.nil?)
+          puts "Activity description is nil for user: #{user} activity: #{id}"
         end  
         rescue
           #ignore client exceptions that don't have a server created on specified
