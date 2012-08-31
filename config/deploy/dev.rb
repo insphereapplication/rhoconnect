@@ -4,4 +4,4 @@ set :env, :onsite_dev
 role :app, "nrhrhod401.uicnrh.dom"
 role :resque, "nrhrhod401.uicnrh.dom"
 set :server_name, "https://rhosync.dev.insphereis.net"
-set :branch,      "3.5"
+set :branch,      "master"
