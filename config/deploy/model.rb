@@ -4,4 +4,4 @@ set :env, :onsite_model
 role :app, "nrhrho201.uicnrh.dom", "nrhrho202.uicnrh.dom"
 role :resque, "nrhrho201.uicnrh.dom"
 set :server_name, "https://rhosync.model.insphereis.net"
-set :branch,      "master"
+set :branch,      "3.6"
