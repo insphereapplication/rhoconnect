@@ -2,6 +2,7 @@ class ApplicationDetail < SourceAdapter
 
   # proxy util mixin
   include ProxyUtil
+  include ReplaceTempID
   
   def initialize(source,credential)
     @application_detail_url = "#{CONFIG[:crm_path]}application"
