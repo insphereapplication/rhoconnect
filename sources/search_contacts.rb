@@ -3,10 +3,10 @@ require "#{app_path}/../util/redis_util"
 
 class SearchContacts < SourceAdapter
   
-  def initialize(source,credential)
+  def initialize(source)
     ExceptionUtil.rescue_and_reraise do
       @search_contact_url = "#{CONFIG[:crm_path]}contact/search"
-      super(source,credential)
+      super(source)
     end
   end
   

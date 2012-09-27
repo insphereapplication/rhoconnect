@@ -1,6 +1,6 @@
 class AppInfo < SourceAdapter
-  def initialize(source,credential)
-    super(source,credential)
+  def initialize(source)
+    super(source)
   end
  
   def login

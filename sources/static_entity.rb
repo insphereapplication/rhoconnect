@@ -1,8 +1,8 @@
 class StaticEntity < SourceAdapter
-  def initialize(source,credential)
+  def initialize(source)
     ExceptionUtil.rescue_and_reraise do
       @staticentity_url = "#{CONFIG[:crm_path]}staticentity"
-      super(source,credential)
+      super(source)
     end
   end
  

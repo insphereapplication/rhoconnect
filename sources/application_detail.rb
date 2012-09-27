@@ -3,12 +3,12 @@ class ApplicationDetail < SourceAdapter
   # proxy util mixin
   include ProxyUtil
   
-  def initialize(source,credential)
+  def initialize(source)
     @application_detail_url = "#{CONFIG[:crm_path]}application"
     @proxy_create_url = "#{@application_detail_url}/create"
     @proxy_update_url = "#{@application_detail_url}/update"
     @proxy_delete_url = "#{@application_detail_url}/delete"
-    super(source,credential)
+    super(source)
   end
  
   def login

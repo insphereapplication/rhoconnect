@@ -4,12 +4,12 @@ class Note < SourceAdapter
   include ProxyUtil
   include ReplaceTempID
   
-  def initialize(source,credential)
+  def initialize(source)
     ExceptionUtil.rescue_and_reraise do
       @note_url = "#{CONFIG[:crm_path]}annotation"
       @proxy_update_url = "#{@note_url}/update"
       @proxy_create_url = "#{@note_url}/create"
-      super(source,credential)
+      super(source)
     end
   end
  

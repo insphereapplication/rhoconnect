@@ -3,12 +3,12 @@ class Contact < SourceAdapter
   # proxy util mixin
   include ProxyUtil
   
-  def initialize(source,credential)
+  def initialize(source)
     ExceptionUtil.rescue_and_reraise do
       @contact_url = "#{CONFIG[:crm_path]}contact"
       @proxy_update_url = "#{@contact_url}/update"
       @proxy_create_url = "#{@contact_url}/create"
-      super(source,credential)
+      super(source)
     end
   end
  

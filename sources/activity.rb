@@ -4,11 +4,11 @@ class Activity < SourceAdapter
   include ProxyUtil
   include ReplaceTempID
   
-  def initialize(source,credential)
+  def initialize(source)
     @activity_url = "#{CONFIG[:crm_path]}activity"
     @proxy_update_url = "#{@activity_url}/update"
     @proxy_create_url = "#{@activity_url}/create"
-    super(source,credential)
+    super(source)
   end
  
   def login

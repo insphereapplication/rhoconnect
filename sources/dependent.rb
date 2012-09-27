@@ -4,13 +4,13 @@ class Dependent < SourceAdapter
   include ProxyUtil
   include ReplaceTempID
   
-  def initialize(source,credential)
+  def initialize(source)
     ExceptionUtil.rescue_and_reraise do
       @dependent_url = "#{CONFIG[:crm_path]}dependents"
       @proxy_update_url = "#{@dependent_url}/update"
       @proxy_create_url = "#{@dependent_url}/create"
       @proxy_delete_url = "#{@dependent_url}/delete"
-      super(source,credential)
+      super(source)
     end
   end
  

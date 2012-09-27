@@ -15,12 +15,12 @@ class Opportunity < SourceAdapter
      end
   end
   
-  def initialize(source,credential)
+  def initialize(source)
     ExceptionUtil.rescue_and_reraise do
       @opportunity_url = "#{CONFIG[:crm_path]}opportunity"
       @proxy_update_url = "#{@opportunity_url}/update"
       @proxy_create_url = "#{@opportunity_url}/create"
-      super(source,credential)
+      super(source)
     end
   end
  

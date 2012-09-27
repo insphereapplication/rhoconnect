@@ -1,8 +1,8 @@
 class Policy < SourceAdapter
-  def initialize(source,credential)
+  def initialize(source)
     ExceptionUtil.rescue_and_reraise do
       @policy_url = "#{CONFIG[:crm_path]}policy"
-      super(source,credential)
+      super(source)
     end
   end
  
