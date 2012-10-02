@@ -33,6 +33,7 @@ class ExceptionUtil
       "Exception! ",
       {
         :message => exception.message, 
+        :inspect => exception.inspect,
         :class => exception.class, 
         :context => @context, 
         :given_string => exception_string, 
