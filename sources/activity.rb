@@ -102,14 +102,31 @@ class Activity < SourceAdapter
         InsiteLogger.info(:format_and_join => ["Couldn't find existing activity in redis, rejecting update: ", update_hash])
         return
       end
-      update_hash['type'] = activity['type']
-      update_hash['parent_type'] = activity['parent_type']  if (!update_hash['parent_id'].blank? && update_hash['parent_type'].blank?)
       
-      ExceptionUtil.context(:current_user => current_user.login, :update_hash => update_hash )
+      if activity['statecode'] == 'Completed'
+        InsiteLogger.info "ACTIVITY STATECODE COMPLETE in Rhosync for #{update_hash['id']} cannot apply changes"
+        result = update_hash['id']
+        
+      else
+        update_hash['type'] = activity['type']
+        update_hash['parent_type'] = activity['parent_type']  if (!update_hash['parent_id'].blank? && update_hash['parent_type'].blank?)
       
-      start = Time.now
-      result = proxy_update(update_hash)
-      InsiteLogger.info "ACTIVITY PROXY UPDATE IN : #{Time.now - start} Seconds"
+        ExceptionUtil.context(:current_user => current_user.login, :update_hash => update_hash )
+      
+        start = Time.now
+        begin
+          result = proxy_update(update_hash)
+        rescue Exception => ex
+                  
+          raise ex unless ex.inspect &&ex.inspect.index("Cannot update Closed or Cancelled Activity")
+          #Do nothing if the Activity is already closed.
+          InsiteLogger.info "ACTIVITY STATECODE COMPLETE in CRM for #{update_hash['id']} cannot apply changes"
+          result = update_hash['id']
+        
+        end
+        InsiteLogger.info "ACTIVITY PROXY UPDATE IN : #{Time.now - start} Seconds"
+      end
+      
       
       InsiteLogger.info result
     end
