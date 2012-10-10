@@ -9,7 +9,7 @@ gem "rack-ssl-enforcer"
 # Include mogrel gem for local
 #gem "mongrel"
 gem "rhoconnect"
-gem "sqlite3"
+#gem "sqlite3"
 gem "thin"
 gem 'rack-fiber_pool'
 gem 'async-rack'
