@@ -174,19 +174,26 @@ class RhoconnectApiSession
   end
 
   def login()
-    res = RestClient.post("#{@server}login", { :login => 'rhoadmin', :password => @password }.to_json, :content_type => :json)
-  
+    puts "post login: #{@server}rc/v1/system/login"
+     #@api_token = RestClient.post("#{@server}rc/v1/system/login", { :login => 'rhoadmin', :password => @password }.to_json, :content_type => :json)
+     res = RestClient.post("#{@server}/rc/v1/system/login", { :login => 'rhoadmin', :password => @password  }.to_json, :content_type => :json)
+     
+     puts "res: #{res}"
+     #RestClient.post("#{server}/rc/v1/system/login", { :login => login, :password => password }.to_json, :content_type => :json)
+   
     #The following fix is needed when using rest-client 1.6.1;
     #The make_headers function (lib/restclient/request.rb, line 86) uses CGI::unescape, but we want the cookies
     #submitted to RhoSync to remain escaped. The following code simply replaces all '%' characters with their
     #URL-encoded value of '%25' to prevent escaped characters in the given cookie from being unescaped by
     #rest-client. For example, a given cookie of "1234%3D%0A5" would have been unescaped and sent back to
     #RhoSync as "12345=\n5", but RhoSync expects the cookie to be in its original escaped format.
-    cookies = res.cookies.inject({}){ |h,(key,value)| 
-      h[key] = value.gsub('%', '%25')
-      h
-    }
-    @token = RestClient.post("#{@server}api/get_api_token",'',{ :cookies => cookies, })
+    # cookies = res.cookies.inject({}){ |h,(key,value)| 
+    #       h[key] = value.gsub('%', '%25')
+    #       h
+    #     }
+    #     post 
+    #    @token = RestClient.post("#{@server}rc/v1/system/get_api_token",'',{ :cookies => cookies, })
+     @token = res
   end
   
   def reset_sync_status(username)

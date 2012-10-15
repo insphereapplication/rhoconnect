@@ -159,7 +159,7 @@ local_crm_proxy: http://192.168.51.128/ # Change this if you're running locally 
   :iphoneserver: gateway.sandbox.push.apple.com
   :iphoneport: 2195
   #:syncserver: http://rhosync.dev.insphereis.net/application/
-  :syncserver: http://nrhrhod404:9292/application/
+  :syncserver: http://nrhrhod404/application/
   :authtoken: 'DQAAAOkBAACJxJJdpcp9E3EbdPfckLTCw6o0IgXF-nI-NL1ofcVCH9D4H4vBQpUSrKoL8rCrqiqPsvm2K_FaZADhgW1w9GBMp4pQNyeuCzpfKYmIO_ma37kamSqGWtbF0g8bB5I9H-b6hmFEFkGrkB6x6SllMrAPQN-BUacj42mawhVcqCChpeIgznDfO7y2eGqAvtShFDlNmUJF5Ie-ZkN6bC9TPmuj6WKyM5IXdB_F5Wdcbo18qjiMTv8pzH8WzU_Z5OhhT1V8wmROMKmvNE1-3keRpM_1Supjw9xWGSb8s3_T7StS6hAmPFKnpiaretYObkiRTivzabR4T-yAV_ak0zdqk_46vlTn3FWdrfoO4_ztYFsCJd6dP-x-wTABUFo0TsH3HFhQTVYurFFdTxowkMN0oWLH9Eq3SvcuHX95thSsPEgLxRlRhhzKwPZdVpMWawMVLeU17xtzRzOsqW3d02t0Fy7zb7Dy8dFWmOWCWrLe4njwmBzGD9Gn4TWwvHiHwQoI8j6qsCbvd7u0IGqyzd1fQa3euelTjFerCjNM1XWmEyztViMvE6uJoxDSrLWgq-SoHiqi2aMtZ1q61CcFF7uVKZqZg0tmWe1USwCH_V9Hc5iDCnxxIXhlCwFIn9fO2a8EvcX1RZgcOvBqwHHyQc1AlRx5'
   :rhoadmin_password: iGyz5rk6JVYA
   :ssl: false

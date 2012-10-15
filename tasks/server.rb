@@ -34,8 +34,12 @@ namespace :server do
   task :set_token do
     begin
       puts "authenticating at #{$server}..."
+      puts "server: #{$server},  pwd: #{$password}"
       @rhoconnect_api = RhoconnectApiSession.new($server, $password)
+      puts "rhoconnect_api #{@rhoconnect_api}"
+      
       @token = @rhoconnect_api.token
+      # @token = @rhoconnect_api
       puts "login successful, token is #{@token}"
       Rake::Task['server:show'].invoke
     rescue Exception => e
@@ -73,6 +77,17 @@ namespace :server do
     end
   end
   
+  desc "Get server license info"
+  task :license => [:set_token] do |t, args|
+    license_info = RestClient.get(
+        "#{$server}rc/v1/system/license",
+        {'X-RhoConnect-API-TOKEN' =>  @token}
+      ).body
+  
+    puts "license_info #{license_info}"
+  end
+
+
   desc "Lists all users in the system at #{$server}"
   task :list_users => [:set_token] do
     users = RestClient.post(
@@ -868,16 +883,15 @@ namespace :server do
   end
 
   namespace :contact do 
-    desc "Gives the number of contacts for the given user"
+    desc "RhoConnect: Gives the number of contacts for the given user"
     task :count, [:user_id] => [:set_token] do |t,args|
-      res = RestClient.post(
-        "#{$server}api/get_db_doc", 
+       res = RestClient.get(
+        "#{$server}rc/v1/users/#{args.user_id}/sources/Contact/docs/md", 
         { 
-          :api_token => @token, 
-          :doc => "source:application:#{args.user_id}:Contact:md"
-        }.to_json, 
-        :content_type => :json
+          'X-RhoConnect-API-TOKEN' => "db8a1c8c932842599b83eef433e0c61d"
+        }
       ).body
+      puts "here #{res}"
       puts "Contact count for #{args.user_id}: #{JSON.parse(res).count}"
     end
     
