@@ -1,6 +1,6 @@
 $settings_file = 'settings/settings.yml'
 $settings = YAML::load_file($settings_file)
-$target = :onsite
+$target = :onsite_dev
 $config = ConfigFile.get_settings_for_environment($settings, $target)
 $app_path = File.expand_path(File.dirname(__FILE__))
 $server = ($config[:syncserver] || "").sub('/application', '')
@@ -49,16 +49,18 @@ namespace :server do
   
   desc "Creates a user with the given password in the system at #{$server}"
   task :create_user, [:login, :password] => :set_token do |t, args|
-    RestClient.post("#{$server}api/create_user",
-      { 
-        :api_token => @token,
+    
+    RestClient.post("#{server}/rc/v1/users",
+      {
         :attributes => { 
           :login => args.login, 
           :password => args.password 
         } 
       }.to_json, 
-      :content_type => :json
+      {:content_type => :json,
+       'X-RhoConnect-API-TOKEN' => @token}
     )
+    
     puts "Created user #{args.login} with password #{args.password}"
   end
   
@@ -67,12 +69,13 @@ namespace :server do
     puts "Do you really want to delete #{args.user_id} from #{$server}?? (y/n)"
     if STDIN.gets.chomp == 'y' then
         puts "very well..."
-        RestClient.post(
-          "#{$server}api/delete_user",
-          { :api_token => @token, 
-            :user_id => args.user_id }.to_json, 
-            :content_type => :json
+        RestClient.delete(
+          "#{$server}/rc/v1/users/args.user_id",
+          { 
+            'X-RhoConnect-API-TOKEN' => @token
+          }
         )
+        
         puts "User #{args.user_id} deleted"
     end
   end
@@ -88,12 +91,15 @@ namespace :server do
   end
 
 
-  desc "Lists all users in the system at #{$server}"
+  desc "Rhoconnect - Lists all users in the system at #{$server}"
   task :list_users => [:set_token] do
-    users = RestClient.post(
-      "#{$server}api/list_users",
-      { :api_token => @token }.to_json, 
-      :content_type => :json
+    
+    puts "get user list from #{$server}/rc/v1/users"   
+    users = RestClient.get(
+      "#{$server}/rc/v1/users",
+      { 
+        'X-RhoConnect-API-TOKEN' => @token
+      }
     ).body
      puts "\nUSERS:"
     users.gsub(/[\[\]]/, '').split(",").each { |u| puts u }
@@ -105,10 +111,12 @@ namespace :server do
     res = JSON.parse(RestClient.post(
       "#{$server}api/reset_sync_status", 
       { 
-        :api_token => @token, 
         :user_pattern => args[:user_pattern]
       }.to_json, 
-      :content_type => :json
+        {
+          :content_type => :json,
+          'X-RhoConnect-API-TOKEN' => @token
+        }
     ).body)
     ap res.sort
   end
@@ -131,45 +139,50 @@ namespace :server do
     res = RestClient.post(
        "#{$server}api/get_user_crm_id", 
        { 
-         :api_token => @token, 
          :username => args[:username]
        }.to_json, 
-       :content_type => :json
+       {
+         :content_type => :json,
+         'X-RhoConnect-API-TOKEN' => @token
+       }
      ).body
     ap res
   end
   
-  desc "Forces an immediate query for the given source <source_id> for the given <user_id>"
-  task :force_query, [:user_id, :source_id] => [:set_token] do |t,args|
-    abort "User source id must be specified" unless args[:user_id] and args[:source_id]
-    rest_rescue do
-      ap RestClient.post(
-        "#{$server}api/force_query", 
-        { 
-          :api_token => @token, 
-          :user_id => args[:user_id],
-          :source_id => args[:source_id]
-        }.to_json, 
-        :content_type => :json
-      )
-    end
-  end
+
   
   desc "Reset the time that the given source for the given user will query the backend to now"
   task :reset_poll_time, [:source_name, :user_name] => [:set_token] do |t,args|
     abort "Source name & user name must be specified" unless args[:source_name] && args[:user_name]
     puts "Resetting poll interval for #{args[:source_name]} for user #{args[:user_name]}"
+    
+    puts "deprecated call #{$server}/api/set_refresh_time, {:source_name => #{args[:source_name]},:user_name => #{args[:user_name]},  :refresh_time => 0}"
     begin
-      ap RestClient.post(
-        "#{$server}api/set_refresh_time",
+       ap RestClient.post(
+        "#{$server}/api/set_refresh_time",
         { 
-          :api_token => @token,
           :source_name => args[:source_name], 
           :user_name => args[:user_name], 
           :refresh_time => 0
         }.to_json, 
-        :content_type => :json
+          {
+             :content_type => :json,
+             'X-RhoConnect-API-TOKEN' => @token
+          }
       ).body
+      
+      #   I am not been able to get the non deprecate version below to work.
+      #
+      # RestClient.post(
+      #   "#{$server}/rc/v1/read_state/users/#{args[:user_name]}/sources/#{args[:source_name]}", 
+      #   { 
+      #     :refresh_time => 100 
+      #   }.to_json, 
+      #   {:content_type => :json,
+      #    'X-RhoConnect-API-TOKEN' => @token}
+      # )
+      
+
     rescue RestClient::Exception => e
       puts "Got rest exception:"
       ap e
@@ -181,15 +194,13 @@ namespace :server do
   task :get_poll_time, [:source_name, :user_name] => [:set_token] do |t,args|
     abort "Source name & user name must be specified" unless args[:source_name] && args[:user_name]
     begin
-      res = RestClient.post(
-        "#{$server}api/get_db_doc", 
-        { 
-          :api_token => @token, 
-          :doc => "read_state:application:#{args[:user_name]}:#{args[:source_name]}:refresh_time",
-          :data_type => "string"
-        }.to_json, 
-        :content_type => :json
-      ).body
+        res = RestClient.get(
+              "#{$server}/rc/v1/store/read_state:application:#{args[:user_name]}:#{args[:source_name]}:refresh_time", 
+              { 
+                'X-RhoConnect-API-TOKEN' => @token
+              }
+            ).body
+      
       puts "Got response: #{res}"
       puts "Parsed to #{Time.at(Integer(res))}"
     rescue RestClient::Exception => e
@@ -211,10 +222,12 @@ namespace :server do
       res = JSON.parse(RestClient.post(
         "#{$server}api/get_dead_locks", 
         { 
-          :api_token => @token, 
           :user_pattern => "*"
         }.to_json, 
-        :content_type => :json
+        {
+          :content_type => :json,
+          'X-RhoConnect-API-TOKEN' => @token
+        }
       ).body)
       duration = Time.now-timer_start
       max = duration if max.nil? or duration > max
@@ -236,10 +249,12 @@ namespace :server do
     res = JSON.parse(RestClient.post(
       "#{$server}api/get_sync_status", 
       { 
-        :api_token => @token, 
         :user_pattern => args[:user_pattern]
       }.to_json, 
-      :content_type => :json
+      {
+        :content_type => :json,
+        'X-RhoConnect-API-TOKEN' => @token
+      }
     ).body)
     
     # ap res.sort
@@ -282,12 +297,14 @@ namespace :server do
     res = RestClient.post(
       "#{$server}api/push_objects_notify", 
       { 
-        :api_token => @token, 
         :user_id => args.user_id || 'dave', 
         :source_id => "Contact", 
         :objects => "objects!!!!"
       }.to_json, 
-      :content_type => :json
+      {
+        :content_type => :json,
+        'X-RhoConnect-API-TOKEN' => @token
+      }
     )
   end
   
@@ -298,12 +315,14 @@ namespace :server do
       res = RestClient.post(
         "#{$server}api/push_deletes_custom",
         {
-          :api_token => @token,
           :user_id => args[:user_id],
           :source_id => args[:source_id],
           :objects => [args[:object_id]]
         }.to_json,
-        :content_type => :json
+        {
+          :content_type => :json,
+          'X-RhoConnect-API-TOKEN' => @token
+        }
       )
       ap res
     end
@@ -317,10 +336,12 @@ namespace :server do
     res = RestClient.post(
       "#{$server}api/test_exception", 
       { 
-        :api_token => @token, 
         :message => args.message 
       }.to_json, 
-      :content_type => :json
+      {
+        :content_type => :json,
+        'X-RhoConnect-API-TOKEN' => @token
+      }
     )
   end
 
@@ -328,7 +349,6 @@ namespace :server do
   task :ping, [:user_id, :message, :source, :badge] => [:set_token] do |t, args|
     puts "token is #{@token}"
     ping_params = {
-      :api_token => @token,
       :user_id => args.user_id,
       :message => 'thusly have you been pinged',
       :sound => 'hello.mp3',
@@ -343,7 +363,10 @@ namespace :server do
       RestClient.post(
         "#{$server}api/ping",
         ping_params.to_json, 
-        :content_type => :json
+        {
+          :content_type => :json,
+          'X-RhoConnect-API-TOKEN' => @token
+        }
       ) 
       puts "#{args.user_id} has been duly pinged."
     rescue Exception => e
@@ -354,7 +377,6 @@ namespace :server do
   desc "Sends a badge number to a user: rake server:ping[*<username>,<badge_number>]"
   task :badge, [:user_id, :badge_number] => :set_token do |t, args|
     ping_params = {
-      :api_token => @token,
       :user_id => args.user_id,
       :sound => 'hello.mp3',
       :badge => args.badge_number
@@ -363,7 +385,10 @@ namespace :server do
     puts "Badging #{args.user_id}..."
     RestClient.post(
       "#{$server}api/ping",ping_params.to_json, 
-      :content_type => :json
+      {
+        :content_type => :json,
+        'X-RhoConnect-API-TOKEN' => @token
+      }
     ) 
     puts "#{args.name} has been duly badged."
   end
@@ -372,24 +397,24 @@ namespace :server do
   task :reset_db => [:set_token] do
     puts "do you really want to reset the db?? (y/n)"
     if STDIN.gets.chomp == 'y' then
-      puts "very well..."
-      RestClient.post("#{$server}api/reset",
-       { :api_token => @token }.to_json, 
-         :content_type => :json
+      puts "very well..."     
+      RestClient.post("#{$server}/rc/v1/system/reset",
+        {}.to_json, 
+        {:content_type => :json,
+         'X-RhoConnect-API-TOKEN' => @token}
       )
       puts "db has been reset"
     end
   end
   
-  desc "Gets the db_doc for the given user and model"
+  desc "RhoCoonect Gets the db_doc for the given user and model"
   task :get_db_doc, [:user_id, :model] => [:set_token] do |t, args|
-    res = RestClient.post(
-      "#{$server}api/get_db_doc", 
+    
+     res = RestClient.get(
+      "#{$server}rc/v1/users/#{args.user_id}/sources/#{args.model}/docs/md", 
       { 
-        :api_token => @token, 
-        :doc => "source:application:#{args.user_id}:#{args.model}:md"
-      }.to_json, 
-      :content_type => :json
+        'X-RhoConnect-API-TOKEN' => @token
+      }
     ).body
     ap JSON.parse(res)
   end
@@ -397,47 +422,45 @@ namespace :server do
   
   
   def get_md(username, model)
-    res = RestClient.post(
-      "#{$server}api/get_db_doc", 
+    
+     res = RestClient.get(
+      "#{$server}rc/v1/users/#{username}/sources/#{model}/docs/md", 
       { 
-        :api_token => @token, 
-        :doc => "source:application:#{username}:#{model}:md"
-      }.to_json, 
-      :content_type => :json
+        'X-RhoConnect-API-TOKEN' => @token
+      }
     ).body
+    
     JSON.parse(res)
   end
   
-  def get_users
-    res = RestClient.post(
-      "#{$server}api/list_users", 
+  def get_users  
+    res = RestClient.get(
+      "#{$server}rc/v1/users",
       { 
-        :api_token => @token
-      }.to_json, 
-      :content_type => :json
+        'X-RhoConnect-API-TOKEN' => @token
+      }
     ).body
     JSON.parse(res)
   end
   
   def get_clients(user_id)
-    res = RestClient.post("#{$server}api/list_clients", 
+
+    res = RestClient.get("#{$server}rc/v1/users/#{user_id}/clients", 
       { 
-        :api_token => @token, 
-        :user_id => user_id 
-      }.to_json, 
-     :content_type => :json
+        'X-RhoConnect-API-TOKEN' => @token
+      }
     ).body
+    puts  "clients: #{res}"
     JSON.parse(res)
   end
   
   def get_client_params(client_id)
-    res = RestClient.post(
-      "#{$server}api/get_client_params", 
-      { 
-        :api_token => @token, 
-        :client_id => client_id 
-      }.to_json, 
-      :content_type => :json
+
+    res = RestClient.get(
+      "#{$server}rc/v1/clients/#{client_id}", 
+      {
+       'X-RhoConnect-API-TOKEN' => @token
+      }
     ).body
     JSON.parse(res)
   end
@@ -709,7 +732,9 @@ namespace :server do
      # get clients & params for users
        puts "user,device_id,registered_device_pin,client_id,phone_id,os_platform,os_version,app_version,last_sync,push_pin,dev_model"
        user_client_params = filtered_users.reduce({}){|sum,user_id|
+         puts "getting clients"
          user_clients = get_clients(user_id)
+         puts "getting devices"
          user_device_info = get_md(user_id, 'DeviceInfo')
          user_clients.each {|key|
          device_info = user_device_info.find{|id,info| info["client_id"] == key} 
@@ -888,7 +913,7 @@ namespace :server do
        res = RestClient.get(
         "#{$server}rc/v1/users/#{args.user_id}/sources/Contact/docs/md", 
         { 
-          'X-RhoConnect-API-TOKEN' => "db8a1c8c932842599b83eef433e0c61d"
+          'X-RhoConnect-API-TOKEN' => @token
         }
       ).body
       puts "here #{res}"
