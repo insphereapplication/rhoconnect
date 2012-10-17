@@ -171,11 +171,11 @@ namespace :resque do
   end
   
   task :start_workers, :roles => :resque do 
-    QUEUE_NAMES.each{|queue| run "cd #{current_release}/jobs; rake resque:work_with_logging['#{queue}'] &> /dev/null &"}
+    QUEUE_NAMES.each{|queue| run "cd #{current_release}/jobs; /opt/rhoconnect/bin/rake resque:work_with_logging['#{queue}'] &> /dev/null &"}
   end
   
   task :start_console, :roles => :resque do 
-    run "cd #{current_release}/jobs; /opt/rhoconnect/bin/resque-web resque_config.rb -p 8282"
+   run "cd #{current_release}/jobs; /opt/rhoconnect/bin/resque-web resque_config.rb -p 8282"
   end
   
   task :stop_console, :roles => :resque do
@@ -183,7 +183,7 @@ namespace :resque do
   end
   
   task :start_scheduler, :roles => :resque do
-    run "cd #{current_release}/jobs; rake resque:scheduler >> #{shared_path}/log/jobs/resque_scheduler.log &"
+    run "cd #{current_release}/jobs;  /opt/rhoconnect/bin/rake resque:scheduler >> #{shared_path}/log/jobs/resque_scheduler.log &"
   end
   
   task :stop_scheduler, :roles => :resque do
