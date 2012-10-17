@@ -171,16 +171,17 @@ namespace :server do
           }
       ).body
       
-      #   I am not been able to get the non deprecate version below to work.
+      #   I have not been able to get the non deprecate version below to work.
       #
-      # RestClient.post(
-      #   "#{$server}/rc/v1/read_state/users/#{args[:user_name]}/sources/#{args[:source_name]}", 
-      #   { 
-      #     :refresh_time => 100 
-      #   }.to_json, 
-      #   {:content_type => :json,
-      #    'X-RhoConnect-API-TOKEN' => @token}
-      # )
+      puts "update reset refresh time: #{$server}/rc/v1/read_state/users/#{args[:user_name]}/sources/#{args[:source_name]}"
+      RestClient.post(
+        "#{$server}/rc/v1/read_state/users/#{args[:user_name]}/sources/#{args[:source_name]}", 
+        { 
+          :refresh_time => 100 
+        }.to_json, 
+        {:content_type => :json,
+         'X-RhoConnect-API-TOKEN' => @token}
+      )
       
 
     rescue RestClient::Exception => e
@@ -361,7 +362,7 @@ namespace :server do
     ap ping_params
     begin
       RestClient.post(
-        "#{$server}api/ping",
+        "#{$server}/rc/v1/users/ping",
         ping_params.to_json, 
         {
           :content_type => :json,
@@ -383,13 +384,14 @@ namespace :server do
     }
     ap ping_params
     puts "Badging #{args.user_id}..."
-    RestClient.post(
-      "#{$server}api/ping",ping_params.to_json, 
-      {
-        :content_type => :json,
-        'X-RhoConnect-API-TOKEN' => @token
-      }
-    ) 
+
+      RestClient.post(
+        "#{$server}/rc/v1/users/ping", ping_params.to_json, 
+        { :content_type => :json,
+          'X-RhoConnect-API-TOKEN' => @token }
+      )
+      
+
     puts "#{args.name} has been duly badged."
   end
 

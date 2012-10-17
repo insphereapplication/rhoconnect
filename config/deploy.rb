@@ -175,7 +175,7 @@ namespace :resque do
   end
   
   task :start_console, :roles => :resque do 
-    run "cd #{current_release}/jobs; resque-web resque_config.rb -p 8282"
+    run "cd #{current_release}/jobs; /opt/rhoconnect/bin/resque-web resque_config.rb -p 8282"
   end
   
   task :stop_console, :roles => :resque do

@@ -83,6 +83,7 @@ DEPENDENCIES
   faker
   rack-fiber_pool
   rack-ssl-enforcer
+  resque
   resque-scheduler
   rhoconnect
   thin

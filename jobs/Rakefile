@@ -1,31 +1,39 @@
-require 'rubygems'
-require 'bundler'
-Bundler.require
+#require 'rubygems'
+#require 'bundler'
+#Bundler.require
+root_path = File.expand_path("#{File.dirname(__FILE__)}/..")
 require 'resque/tasks'
 require 'resque_scheduler'
 require 'resque/scheduler'
-require 'resque_config'
-require 'limit_client_exceptions'
-require 'clean_old_opportunity_data'
-require 'validate_redis_data'
-require 'deactivate_inactive_user'
-require 'release_dead_locks'
-
+require 'resque/errors'
+require "#{root_path}/jobs/resque_config"
+require "#{root_path}/jobs/limit_client_exceptions"
+require "#{root_path}/jobs/clean_old_opportunity_data"
+require "#{root_path}/jobs/validate_redis_data"
+require "#{root_path}/jobs/deactivate_inactive_user"
+require "#{root_path}/jobs/release_dead_locks"
+# 
 require File.expand_path("#{File.dirname(__FILE__)}/../util/config_file")
 
 namespace :resque do
+  desc "Start the resque schedule job with queue name and poll internval"
   task :work_with_logging, [:queue_name, :interval] do |t,args|
     raise "Queue name must be given" unless args[:queue_name]
     
+    ENV['TERM_CHILD']='1'
+    ENV['RESQUE_TERM_TIMEOUT']='2'
+    ENV['VVERBOSE']='1'
     ENV['QUEUE'] = args[:queue_name]
     ENV['INTERVAL'] = args[:interval] || '60'
     
     root_path = File.expand_path("..")
-    InsiteLogger.init_logger(File.join(root_path,'/log/jobs',"#{args[:queue_name]}.log"))
+    puts "Root path: #{root_path}"
     
+   InsiteLogger.init_logger(File.join(root_path,'/log/jobs',"#{args[:queue_name]}.log"))
+
     ExceptionUtil.rescue_and_continue do
       Rake::Task['resque:work'].execute
-    end
+     end
   end
   
   task :scheduler do
