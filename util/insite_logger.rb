@@ -1,5 +1,5 @@
 require 'socket'
-require 'Logger'
+require 'logger'
 
 module InsiteLogger  
   
