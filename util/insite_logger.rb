@@ -57,14 +57,11 @@ module InsiteLogger
     log_path ||= log_conf[:path] 
     
     if log_to_file? 
-      puts "are going to attempt tp create a for: #{log_path}"
       Dir.mkdir(File.dirname(log_path)) unless File.exists?(File.dirname(log_path))
       # Create a new logger instance at the configured logging path
       # Don't automatically archive/shift logs; logrotate will handle this.
       # I think job are not doing this automatically so trying to set up rotate
-      puts "made here"
       @file_logger = Logger.new(log_path, 30,  'daily')
-      puts "made here???"
     end
   end
   
