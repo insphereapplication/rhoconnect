@@ -26,8 +26,6 @@ namespace :resque do
     ENV['QUEUE'] = args[:queue_name]
     ENV['INTERVAL'] = args[:interval] || '60'
     
-    root_path = File.expand_path("..")
-    puts "Root path: #{root_path}"
     
    InsiteLogger.init_logger(File.join(root_path,'/log/jobs',"#{args[:queue_name]}.log"))
 
