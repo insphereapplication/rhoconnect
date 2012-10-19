@@ -19,15 +19,15 @@ class RhoconnectApiSession
   
   def push_deletes(source_id, user_id, object_ids)
     params_hash = {
-      :api_token => @token,
       :user_id => user_id,
-      :source_id => source_id,
       :objects => object_ids
     }
+
     RestClient.post(
-      "#{@server}api/push_deletes_custom",
-      params_hash.to_json,
-      :content_type => :json
+      "#{@server}/app/v1/#{source_id}/push_deletes", 
+     params_hash.to_json, 
+     {:content_type => :json,
+       'X-RhoConnect-API-TOKEN' => @token}
     )
   end
     
@@ -36,14 +36,13 @@ class RhoconnectApiSession
     Crypto.decrypt(encrypted_password)
   end
   
-  def get_db_doc(doc, type=nil)
+  def get_db_doc(doc, type=nil)    
     
-    params_hash = { :api_token => @token, :doc => doc }
-    params_hash[:data_type] = 'string' if !type.nil? && type=='string'
-    
-    doc_data = RestClient.post("#{@server}api/get_db_doc", 
-      params_hash.to_json, 
-      :content_type => :json
+    doc_data = RestClient.get(
+      "#{@server}/rc/v1/store/#{doc}", 
+      { 
+        'X-RhoConnect-API-TOKEN' => @token
+      }
     ).body
     
     if type.nil?
@@ -53,74 +52,83 @@ class RhoconnectApiSession
     end
   end
   
+  # Not sure why this is used, I would think you could go directly to doc
   def list_source_docs(source_id, user_id)
-    docs = RestClient.post("#{@server}api/list_source_docs", 
-      { :api_token => @token, 
-        :source_id => source_id, 
-        :user_id => user_id }.to_json, 
-      :content_type => :json
+    RestClient.get(
+      "#{@server}/rc/v1/users/#{user_id}/sources/#{source_id}/docnames", 
+      { 
+        'X-RhoConnect-API-TOKEN' => @token
+      }
     ).body
     JSON.parse(docs)
   end
   
   def list_sources
-    sources = RestClient.post("#{@server}api/list_sources", 
+    sources = RestClient.get("#{@server}/rc/v1/sources/type/app", 
       { 
-        :api_token => @token 
-      }.to_json, 
-      :content_type => :json
+        'X-RhoConnect-API-TOKEN' => @token
+      }
     ).body
     sources.gsub(/[\[\]]/, '').gsub('"','').split(",")
   end
   
-  def get_md(source_id, user_id)
-    get_db_doc("source:application:#{user_id}:#{source_id}:md")
+  def get_md(source_id, user_id) 
+    res = RestClient.get(
+      "#{@server}/rc/v1/users/#{user_id}/sources/#{source_id}/docs/md", 
+      { 
+        'X-RhoConnect-API-TOKEN' => @token
+      }
+    ).body
   end
+  
 
   def get_device_params(id)
-    device_params = RestClient.post("#{@server}api/get_client_params", 
-      { :api_token => @token, 
-        :client_id => id }.to_json, 
-      :content_type => :json
+    client_attributes = RestClient.get(
+      "#{@server}/rc/v1/clients/#{id}", 
+      {
+       'X-RhoConnect-API-TOKEN' => @token
+      }
     ).body
-    JSON.parse(device_params)
+    JSON.parse(client_attributes)
   end
 
   def get_user_devices(username)
-    clients = RestClient.post("#{@server}api/list_clients", 
-      { :api_token => @token, 
-        :user_id => username }.to_json, 
-     :content_type => :json
+    clients = RestClient.get("#{@server}/rc/v1/users/#{username}/clients", 
+      { 
+        'X-RhoConnect-API-TOKEN' => @token
+      }
     ).body
     clients.gsub(/[\[\]]/, '').gsub('"','').split(",")
   end
 
   def get_all_users
-    users = RestClient.post("#{@server}api/list_users",
-      { :api_token => @token }.to_json, 
-      :content_type => :json
+    users = RestClient.get(
+      "#{@server}/rc/v1/users",
+      { 
+        'X-RhoConnect-API-TOKEN' => @token
+      }
     ).body
+    
     users.gsub(/[\[\]]/, '').gsub('"','').split(",")
   end
   
   def delete_user(username)
-      RestClient.post(
-        "#{@server}api/delete_user",
-        { :api_token => @token, 
-          :user_id => username }.to_json, 
-          :content_type => :json
-      ).body
+      RestClient.delete(
+        "#{@server}/rc/v1/users/#{username}",
+        { 
+          'X-RhoConnect-API-TOKEN' => @token
+        }
+      )
       
   end    
   
   def delete_device(username, device_id)
-    RestClient.post(
-      "#{@server}api/delete_client",
-      { :api_token => @token, 
-        :user_id => username,
-        :client_id => device_id }.to_json, 
-        :content_type => :json
-    ).body
+    RestClient.delete(
+      "#{@server}/rc/v1/users/#{username}/clients/#{device_id}",
+      { 
+        'X-RhoConnect-API-TOKEN' => @token
+      }
+    )
   end
   
   def get_sync_status(user_pattern)

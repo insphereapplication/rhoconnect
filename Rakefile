@@ -39,7 +39,7 @@ end
 
 app_path = File.expand_path(File.join(File.dirname(__FILE__)))
 require "#{app_path}/util/config_file"
-require "#{app_path}/util/rhosync_api_session"
+require "#{app_path}/util/rhoconnect_api_session"
 require "#{app_path}/helpers/crypto"
 
 Dir[File.join(File.dirname(__FILE__),'tasks/lib','*.rb')].each { |file| load file }
