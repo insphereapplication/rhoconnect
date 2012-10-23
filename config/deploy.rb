@@ -15,24 +15,27 @@ set :normalize_asset_timestamps, false
 
 # apache config properties -- see: templates/httpd.conf.erb
 set :admin_email, "admin@insphereis.net"
-set :apache_user, "apache"
-set :apache_group, "apache"
+#set :apache_user, "apache"
+#set :apache_group, "apache"
 set :document_root, "#{deploy_to}/current/public"
 set :web_port, "80"
 set :time, Time.now.strftime('%m/%d/%Y %r')
 
 # passenger config properties -- see: templates/httpd.conf.erb
-set :passenger_pool_idle_time, 0
-set :passenger_max_pool_size, 20
-set :passenger_min_instances, 10
-set :passenger_log_level, 1
-set :passenger_module, "/opt/ruby-enterprise-1.8.7-2011.03/lib/ruby/gems/1.8/gems/passenger-3.0.7/ext/apache2/mod_passenger.so"
-set :passenger_root, "/opt/ruby-enterprise-1.8.7-2011.03/lib/ruby/gems/1.8/gems/passenger-3.0.7"
-set :ruby_bin, "/opt/ruby-enterprise-1.8.7-2011.03/bin/ruby"
+# DTS-  Removing Passenger information for Rhoconnect.  It uses nginx/thin.   Nginx/thin configuration will need to be set by a system admin.
+#Main files /opt/nginx/conf/conf.d/rhoconnect.conf
+#           /etc/thin/rhoapp.yml
+#set :passenger_pool_idle_time, 0
+#set :passenger_max_pool_size, 20
+#set :passenger_min_instances, 10
+#set :passenger_log_level, 1
+#set :passenger_module, "/opt/ruby-enterprise-1.8.7-2011.03/lib/ruby/gems/1.8/gems/passenger-3.0.7/ext/apache2/mod_passenger.so"
+#set :passenger_root, "/opt/ruby-enterprise-1.8.7-2011.03/lib/ruby/gems/1.8/gems/passenger-3.0.7"
+set :ruby_bin, "/opt/rhoconnect/bin/ruby"
 
 after "deploy:update", "deploy:settings"
 after "deploy:update", "deploy:set_license"
-after "deploy:update", "deploy:httpd_conf"
+#after "deploy:update", "deploy:httpd_conf"
 after "deploy:update", "deploy:gemfile"
 
 before "deploy:update", "resque:stop"
@@ -101,13 +104,13 @@ namespace :deploy do
   #
   # To restart Apache, on all target machines: sudo apachectl -k graceful.
   #
-  desc "Generate the apache httpd.conf file from the config/templates/httpd.conf.template"
-  task :httpd_conf, :roles => :app do
-    require 'erb'
-    template = ERB.new(File.read('config/templates/httpd.conf.erb'), nil, '<>')
-    result = template.result(binding)
-    put(result, "#{current_release}/config/httpd.conf")
-  end
+  # desc "Generate the apache httpd.conf file from the config/templates/httpd.conf.template"
+  # task :httpd_conf, :roles => :app do
+  #   require 'erb'
+  #   template = ERB.new(File.read('config/templates/httpd.conf.erb'), nil, '<>')
+  #   result = template.result(binding)
+  #   put(result, "#{current_release}/config/httpd.conf")
+  # end
   
   desc "Sets the environment of settings/settings.yml to use the environment defined in 'env'"
   task :settings, :roles => :app do 

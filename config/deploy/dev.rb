@@ -3,5 +3,5 @@ set :env, :onsite_dev
 # target servers 
 role :app, "nrhrhod404.uicnrh.dom"
 role :resque, "nrhrhod404.uicnrh.dom"
-set :server_name, "http://nrhrhod406"
+set :server_name, "https://rhoconnect.dev.insphereis.net"
 set :branch,      "rhoconnect"
