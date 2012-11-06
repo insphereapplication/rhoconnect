@@ -50,7 +50,7 @@ Rhoconnect::Server.enable  :raise_errors
 Rhoconnect::Server.set     :secret,      '8b885f195f8561e9738cec8f1e280af467722366a28128af0a61310eeeb23d5e1c59b1726711ca2e87ebc744781a4e7c47c7b52697f6d80c52f49a8152b0a7ab'
 Rhoconnect::Server.set     :root,        ROOT_PATH
 Rhoconnect::Server.use     Rack::Static, :urls => ["/data"], :root => Rhoconnect::Server.root
-EventMachine.threadpool_size = 10 # default is 20
+EventMachine.threadpool_size = 4 # default is 20
 
 # Force SSL
 if CONFIG[:ssl]

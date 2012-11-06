@@ -51,7 +51,7 @@ local_crm_proxy: http://192.168.51.128/ # Change this if you're running locally 
   # the resque daemons have to be forked off of the main process in Rhohub, but not onsite (see boot.rb)
   :fork_resque: true
   :crm_proxy: dev_crm_proxy
-  :connection_pool_size: 10
+  :connection_pool_size: 4
   :connection_pool_timeout: 30
   :redis_timeout: 30
   :redis_boot: false
