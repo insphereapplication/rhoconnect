@@ -21,16 +21,7 @@ set :document_root, "#{deploy_to}/current/public"
 set :web_port, "80"
 set :time, Time.now.strftime('%m/%d/%Y %r')
 
-# passenger config properties -- see: templates/httpd.conf.erb
-# DTS-  Removing Passenger information for Rhoconnect.  It uses nginx/thin.   Nginx/thin configuration will need to be set by a system admin.
-#Main files /opt/nginx/conf/conf.d/rhoconnect.conf
-#           /etc/thin/rhoapp.yml
-#set :passenger_pool_idle_time, 0
-#set :passenger_max_pool_size, 20
-#set :passenger_min_instances, 10
-#set :passenger_log_level, 1
-#set :passenger_module, "/opt/ruby-enterprise-1.8.7-2011.03/lib/ruby/gems/1.8/gems/passenger-3.0.7/ext/apache2/mod_passenger.so"
-#set :passenger_root, "/opt/ruby-enterprise-1.8.7-2011.03/lib/ruby/gems/1.8/gems/passenger-3.0.7"
+
 set :ruby_bin, "/opt/rhoconnect/bin/ruby"
 
 after "deploy:update", "deploy:settings"
@@ -73,7 +64,7 @@ namespace :deploy do
 
   desc "Restart Application"
   task :restart, :roles => :app do
-     run "touch #{current_release}/tmp/restart.txt"
+     run_as_user_send_password(user, "sudo /etc/init.d/thin restart -e production --servers 10 --onebyone --wait 2")
   end
   
   desc "Copy the onsite Gemfile/Gemfile.lock files up to the server"
@@ -81,11 +72,6 @@ namespace :deploy do
     # Modifiying theis step on 07-12-2012 as the code Gemfiles should be deployed from source and not local machine
     run "mv #{current_release}/config/gemfiles/onsite/Gemfile #{current_release}/Gemfile"
     run "mv #{current_release}/config/gemfiles/onsite/Gemfile.lock #{current_release}/Gemfile.lock"
-    # gemfiles_path = File.expand_path(File.dirname(__FILE__)) + "/gemfiles/onsite/"
-    # gemfile = File.read(gemfiles_path + "Gemfile")
-    # gemfile_lock = File.read(gemfiles_path + "Gemfile.lock")
-    # put(gemfile, "#{current_release}/Gemfile")
-    # put(gemfile_lock, "#{current_release}/Gemfile.lock")
   end
   
   # The set_license task assumes that there is a license key file named "<hostname*>" in the settings/host_keys directory
@@ -97,20 +83,7 @@ namespace :deploy do
     run "mv #{current_release}/settings/host_keys/$CAPISTRANO:HOST$ #{current_release}/settings/license.key"
   end
 
-  # For this task to have an effect, all target servers need to replace /etc/httpd/conf/httpd.conf with a symlink pointing 
-  # to <current_release>/config/httpd.conf
-  #
-  # Apache needs to be restarted for changes in httpd.conf to be reflected. Running cap deploy:update only restarts Passenger.
-  #
-  # To restart Apache, on all target machines: sudo apachectl -k graceful.
-  #
-  # desc "Generate the apache httpd.conf file from the config/templates/httpd.conf.template"
-  # task :httpd_conf, :roles => :app do
-  #   require 'erb'
-  #   template = ERB.new(File.read('config/templates/httpd.conf.erb'), nil, '<>')
-  #   result = template.result(binding)
-  #   put(result, "#{current_release}/config/httpd.conf")
-  # end
+
   
   desc "Sets the environment of settings/settings.yml to use the environment defined in 'env'"
   task :settings, :roles => :app do 
@@ -249,12 +222,6 @@ namespace :util do
     end
     
     puts "Downloaded log files to #{timestamped_dump_path}"
-  end
-  
-  desc "Shows results of calling passenger-status as sudo on all app servers"
-  task :passenger_status, :roles => :app do
-    abort "Please provide a user w/ sudo to run this command as (i.e. cap deploy:passenger_status -s runas=<username>)" unless exists?(:runas)
-    run_as_user_send_password(runas, "sudo passenger-status")
   end
   
   desc "Shows statistics on sockets established from each app server to redis (include flag '-s raw_netstat' to see the raw netstat output)"
