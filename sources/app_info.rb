@@ -16,6 +16,8 @@ class AppInfo < SourceAdapter
                               'latest_version' => app_info_config[:latest_version],
                               'apple_upgrade_url' => app_info_config[:apple_force_upgrade_url],
                               'android_upgrade_url' => app_info_config[:android_force_upgrade_url] ,
+                              'apple_soft_upgrade_url' => app_info_config[:apple_soft_upgrade_url],
+                              'android_soft_upgrade_url' => app_info_config[:android_soft_upgrade_url],
                               'model_limits' => app_info_config[:model_limits],
                               'quick_quote_users' => app_info_config[:quick_quote_users]}
     
