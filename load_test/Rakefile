@@ -130,7 +130,7 @@ namespace :client do
 # 'a14623','a14627','a14632','a14906','a15124','a15224','a15364','a16071','a16072','a16290'
 #       
 #     ]
-    test_agents = ['a12884','a11412','a10708','a12876','a11185','a10121','a10936','a11231','a11242','a11759']
+    test_agents = ['a15097','a11412','a10708','a12876','a11185','a10121','a10936','a11231','a11242','a11759']
     test_users = test_agents.uniq.reduce([]){|sum,test_agent| sum << {:username => test_agent, :password => 'p@55abcd'}; sum}
     #test_users = test_agents.uniq.reduce([]){|sum,test_agent| sum << {:username => test_agent, :password => '!D0dgeram'}; sum}
     
