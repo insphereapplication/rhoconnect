@@ -16,16 +16,9 @@ class AppInfo < SourceAdapter
                               'latest_version' => app_info_config[:latest_version],
                               'apple_upgrade_url' => app_info_config[:apple_force_upgrade_url],
                               'android_upgrade_url' => app_info_config[:android_force_upgrade_url] ,
-                              'model_limits' => app_info_config[:model_limits]}
+                              'model_limits' => app_info_config[:model_limits],
+                              'quick_quote_users' => app_info_config[:quick_quote_users]}
     
-    # Uncomment this (and delete the above line) when we're ready to deploy soft upgrade
-    # static_app_info_attrs = { 'min_required_version' => app_info_config[:min_required_version], 
-    #                      'latest_version' => app_info_config[:latest_version],
-    #                      'apple_upgrade_url' => app_info_config[:apple_force_upgrade_url],
-    #                      'android_upgrade_url' => app_info_config[:android_force_upgrade_url],
-    #                      'apple_soft_upgrade_url' => app_info_config[:apple_soft_upgrade_url],
-    #                      'android_soft_upgrade_url' => app_info_config[:android_soft_upgrade_url],
-    #                      'mobile_crypt_key' => app_info_config[:mobile_crypt_key]  }
    
    
    # The only dynamic value in this model is the PIN -- all other values (min versions, upgrade URLS) are static and should be merged in from the settings.yml
