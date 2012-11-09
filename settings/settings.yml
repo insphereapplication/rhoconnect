@@ -106,7 +106,7 @@ local_crm_proxy: http://192.168.51.128/ # Change this if you're running locally 
   :log:
     :mode: 'file'
 :onsite: 
-  :bundler: true
+  #:bundler: true
   :redis_boot: true
   :crm_proxy: prod_crm_proxy
   :iphonecertfile: settings/apple_push_cert.pem
@@ -132,7 +132,7 @@ local_crm_proxy: http://192.168.51.128/ # Change this if you're running locally 
     :android_force_upgrade_url: 'https://m.insphereis.net/InSiteMobile'
     :android_soft_upgrade_url: 'https://m.insphereis.net/InSiteMobile'
 :onsite_model: 
-  :bundler: true
+  #:bundler: true
   :redis_boot: true
   :crm_proxy: model_crm_proxy
   :iphonecertfile: settings/apple_push_cert_sandbox.pem
