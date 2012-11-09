@@ -55,6 +55,7 @@ module InsiteLogger
   def self.init_logger(log_path = nil)    
     log_conf = CONFIG[:log]
     log_path ||= log_conf[:path] 
+    log_level = log_conf[:level] ? Integer(log_conf[:level]) : 0
     
     if log_to_file? 
       Dir.mkdir(File.dirname(log_path)) unless File.exists?(File.dirname(log_path))
@@ -62,6 +63,7 @@ module InsiteLogger
       # Don't automatically archive/shift logs; logrotate will handle this.
       # I think job are not doing this automatically so trying to set up rotate
       @file_logger = Logger.new(log_path, 30,  'daily')
+      @file_logger.level = log_level
     end
   end
   

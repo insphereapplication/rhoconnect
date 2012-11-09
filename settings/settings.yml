@@ -124,6 +124,7 @@ local_crm_proxy: http://192.168.51.128/ # Change this if you're running locally 
   :lock_duration: 60
   :log:
     :mode: 'file'
+    :level: 1
   :resque_worker_rhoconnect_api_password: aW9wVhyU84Sj
   :resque_data_validation_email_group: InsphereMobileSupport@inspherehq.com
   :app_info:
@@ -150,6 +151,7 @@ local_crm_proxy: http://192.168.51.128/ # Change this if you're running locally 
   :lock_duration: 60
   :log:
     :mode: 'file'
+    :level: 1
   :resque_worker_rhoconnect_api_password: U5PgMPngu27j
 :onsite_dev: 
   :redis_boot: true
@@ -170,5 +172,6 @@ local_crm_proxy: http://192.168.51.128/ # Change this if you're running locally 
   :lock_duration: 60
   :log:
     :mode: 'file'
+    :level: 0
   #:resque_worker_rhoconnect_api_host: 'http://nrhrhod404/'
   :resque_worker_rhoconnect_api_password: iGyz5rk6JVYA
