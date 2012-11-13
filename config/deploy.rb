@@ -72,6 +72,7 @@ namespace :deploy do
     # Modifiying theis step on 07-12-2012 as the code Gemfiles should be deployed from source and not local machine
     run "mv #{current_release}/config/gemfiles/onsite/Gemfile #{current_release}/Gemfile"
     run "mv #{current_release}/config/gemfiles/onsite/Gemfile.lock #{current_release}/Gemfile.lock"
+
   end
   
   # The set_license task assumes that there is a license key file named "<hostname*>" in the settings/host_keys directory

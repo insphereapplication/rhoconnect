@@ -2,6 +2,7 @@ class ApplicationDetail < SourceAdapter
 
   # proxy util mixin
   include ProxyUtil
+  include ReplaceTempID
   
   def initialize(source)
     @application_detail_url = "#{CONFIG[:crm_path]}application"
@@ -56,6 +57,7 @@ class ApplicationDetail < SourceAdapter
       InsiteLogger.info "CREATE APPLICATION DETAIL"
       ExceptionUtil.context(:current_user => current_user.login, :create_hash => create_hash)
       
+      create_hash = replace_with_guid(create_hash,"opportunity_id","Opportunity")
       result = proxy_create(create_hash)
       
       InsiteLogger.info result

@@ -24,6 +24,21 @@ class ActivityPushHandler < PushHandler
             update_history_util.touch(id,COMPLETED_HISTORY_FIELD)
           end
         end
+        
+        #  Begin of activity work around check - For missing description
+        begin
+          stored_activity = RedisUtil.get_model('Activity', user_id, id)
+        rescue RedisUtil::RecordNotFound      
+          #Activity does not exit in redis must be a create. activity work around for blank description error on phone  - Activity type should only be included on a create since can't change type        
+          activity_type = activity['type']
+          activity_description = activity['description']
+          if (id && activity_type && ['Task','Appointment'].include?(activity_type) && activity_description.nil?)
+             InsiteLogger.debug "Adding Activity description of blank for activity: #{id}"
+             activity['description'] =  ''
+          end
+        end
+        #end activity work around
+        
       else
         InsiteLogger.debug "Push for activity #{id} for user #{user_id} doesn't include updates to status fields."
       end
