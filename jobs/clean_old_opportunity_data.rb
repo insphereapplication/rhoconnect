@@ -81,12 +81,15 @@ class CleanOldOpportunityData
            # InsiteLogger.info( "1. Is #{activity['statecode']} activity #{key} valid: #{Time.parse(activity['actualend']).to_i >= Time.now.to_i - SECONDS_IN_A_DAY*CLOSED_ACTIVITY_AGE_IN_DAYS}")
             Time.parse(activity['actualend']).to_i >= Time.now.to_i - SECONDS_IN_A_DAY*CLOSED_ACTIVITY_AGE_IN_DAYS
           when "Open", "Scheduled"
-            if activity["scheduledend"].blank?
-            #  InsiteLogger.info( "2. Is #{activity['statecode']} activity #{key} valid: #{Time.parse(activity['createdon']).to_i >= Time.now.to_i - SECONDS_IN_A_DAY*OPEN_UNSCHEDULED_ACTIVTY_AGE_IN_DAYS}")
-              Time.parse(activity['createdon']).to_i >= Time.now.to_i - SECONDS_IN_A_DAY*OPEN_UNSCHEDULED_ACTIVTY_AGE_IN_DAYS
+            if !activity["scheduledend"].blank?
+              # InsiteLogger.info( "3. Is #{activity['statecode']} activity #{key} valid: #{Time.parse(activity['scheduledend']).to_i >= Time.now.to_i - SECONDS_IN_A_DAY*OPEN_SCHEDULED_ACTIVITY_AGE_IN_DAYS}")
+               Time.parse(activity['scheduledend']).to_i >= Time.now.to_i - SECONDS_IN_A_DAY*OPEN_SCHEDULED_ACTIVITY_AGE_IN_DAYS          
+            elsif !activity["scheduledstart"].blank?
+                 # InsiteLogger.info( "3. Is #{activity['statecode']} activity #{key} valid: #{Time.parse(activity['scheduledstart']).to_i >= Time.now.to_i - SECONDS_IN_A_DAY*OPEN_SCHEDULED_ACTIVITY_AGE_IN_DAYS}")
+                  Time.parse(activity['scheduledstart']).to_i >= Time.now.to_i - SECONDS_IN_A_DAY*OPEN_SCHEDULED_ACTIVITY_AGE_IN_DAYS
             else
-             # InsiteLogger.info( "3. Is #{activity['statecode']} activity #{key} valid: #{Time.parse(activity['scheduledend']).to_i >= Time.now.to_i - SECONDS_IN_A_DAY*OPEN_SCHEDULED_ACTIVITY_AGE_IN_DAYS}")
-              Time.parse(activity['scheduledend']).to_i >= Time.now.to_i - SECONDS_IN_A_DAY*OPEN_SCHEDULED_ACTIVITY_AGE_IN_DAYS
+               #  InsiteLogger.info( "2. Is #{activity['statecode']} activity #{key} valid: #{Time.parse(activity['createdon']).to_i >= Time.now.to_i - SECONDS_IN_A_DAY*OPEN_UNSCHEDULED_ACTIVTY_AGE_IN_DAYS}")
+               Time.parse(activity['createdon']).to_i >= Time.now.to_i - SECONDS_IN_A_DAY*OPEN_UNSCHEDULED_ACTIVTY_AGE_IN_DAYS
             end    
           else
             #  InsiteLogger.info("Missing activity statecode: #{activity['statecode']} activity #{key}" )
@@ -106,7 +109,7 @@ class CleanOldOpportunityData
       current_opportunities_contact_ids = current_opportunities.map{|k,v| v['contact_id']}
 
       current_activities_regarding_contacts = current_activities.select do |key,activity|
-        activity["parent_type"] == 'contact'
+        activity["parent_type"] != nil && activity["parent_type"].downcase == 'contact'
       end
 
       current_activities_contact_ids = current_activities_regarding_contacts.map{|k,v| v['parent_id']}
