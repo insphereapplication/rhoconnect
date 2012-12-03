@@ -164,8 +164,9 @@ local_crm_proxy: http://192.168.51.128/ # Change this if you're running locally 
   :iphoneport: 2195
   #:syncserver: http://rhosync.dev.insphereis.net/application/
   :syncserver: http://nrhrhod404/application/
-  :c2dm_username: insphereapplication@insphereis.com
-  :c2dm_passwd: 2U659954
+  #:c2dm_username: insphereapplication@insphereis.com
+  #:c2dm_passwd: 2U659954
+  :authtoken: 'DQAAAOcBAADl9A9fwcQRgR2U89II3lFA2AXRykLmnaFlAtInOR1Q_rD3md6WjC7MHAPOnaYrMjIOqR8zMbJf2whRqrfzM1vwXe4ylr0Vzv2ukajBJ1zeDUoMjKrN6zvM63rBD6JqiWTB42xRNqsHs9ivn1DC--NmRgeKb1iKbUubBeZTPx3z1QIfCaAix7wWKK1yXVqY_FexN4ZrbjgCPLJ9fQrgqZsZHfNvuuOdcrZ5wAHHl4Gz0VqkPE-bK2dr8fvw1qQAkocsct3LlwaGMMLq7F0EWrHvcM1zZqElkdrtSYSw5fJ-AFATpRzqJNqxAbHtuchyHn8oSHkwPv6OGoElQBeWVamhBcc7e1033fQ_XwWurCAN-J0oI2oxeVR7RZTMQASYQzvUYglt9Syl_GcBk6tzQR_mYkzNY4b7V7MMOKIAWYVSnWKfXgx6fp3xYZjQde85mm8l_YYdPDEc-VN9GsXCTu1T6MJMa3ODXzWO6UW53TAmUsntZHOtgfDKiMwEiM7ayaZxEDP3Vld5I4uLtcF50ujbNwzXSDGXNr4_WZKWGmm8pddmBXdjgVlmy3uHqr_DotMKsZI8U2SsVeoMOmp2980lj5_gvy5en8A5XKBfCeiIf3h_YCfNQ90N1vuJ6Zup4UBDYfkys_tBAJZbyk7lFk2s'
   :rhoadmin_password: iGyz5rk6JVYA
   :ssl: false
   :fork_resque: false
