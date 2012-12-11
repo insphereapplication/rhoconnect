@@ -164,7 +164,7 @@ namespace :resque do
   end
   
   task :stop_scheduler, :roles => :resque do
-    run "ps -ef | grep -P '^((?!grep).)*resque:scheduler.*$' | awk '{print $2}' | xargs -rt kill; true"
+    run "ps -ef | grep -P '^((?!grep).)*resque-scheduler.*$' | awk '{print $2}' | xargs -rt kill; true"
   end
 end
 
