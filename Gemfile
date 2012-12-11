@@ -9,6 +9,7 @@ gem "crypt19"
 gem "rack-ssl-enforcer"
 # Include mogrel gem for local
 #gem "mongrel"
+gem "connection_pool"
 gem "rhoconnect"
 #gem "sqlite3"
 gem "thin"
