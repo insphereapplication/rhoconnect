@@ -109,12 +109,12 @@ local_crm_proxy: http://192.168.51.128/ # Change this if you're running locally 
   :redis_boot: true
   :crm_proxy: prod_crm_proxy
   :iphonecertfile: settings/apple_push_cert.pem
-  :redis: nrhrho103:6379
+  :redis: nrhrhop106:6379
   :iphonepassphrase: Pariveda1
   :licensefile: settings/license.key
   :iphoneserver: gateway.push.apple.com
   :iphoneport: 2195
-  :syncserver: http://nrhrho102/application/
+  :syncserver: http://nrhrhop104/application/
   :c2dm_username: insphereapplication@insphereis.com
   :c2dm_passwd: 2U659954
   :rhoadmin_password: aW9wVhyU84Sj
