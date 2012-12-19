@@ -173,26 +173,30 @@ class RhoconnectSession
     
     # get the token for acking
     last_result = JSON.parse(res)
-    #ap last_result
+    ap last_result
     ack_token = last_result[1]['token']
+    
+    puts "ack_token #{ack_token}"
     
     #puts "11111 #{last_result[1]}"
     
     #raise "Create error raised: #{last_result[5]['create-error'].map{|k,v| v['message'] if k='message'}.first}" if last_result[5]['create-error']
     raise "No ack token given after #{model} create for #{login}" unless ack_token
     #raise "No links given after #{model} create for #{login}" unless last_result[5]['links']
- 
-    model_id = last_result[5]['links'].values.first['l']
-    puts "model id #{model_id}"
-    puts "Links:"
-    puts "links #{last_result[5]['links']}"
     
-    puts "New #{model} id: #{model_id}"
+    puts "Here #{last_result}"
+       puts "links: #{last_result[5]['links'].values.first['l']}"
+       model_id = last_result[5]['links'].values.first['l']
+       puts "model id #{model_id}"
+    puts "Links:"
+       puts "links #{last_result[5]['links']}"
+    
+    #puts "New #{model} id: #{model_id}"
 
     puts "acking the create..."
     get({'source_name' => model, 'token' => ack_token})
     puts "acked, done"
-    model_id
+     model_id
   end
   
   def update(model, update_hash)

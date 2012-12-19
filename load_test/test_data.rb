@@ -288,7 +288,7 @@ module TestData
      		'createdon' => rand_previous_create_date,
      		'statecode' => 'Open',
      		'statuscode' => 'New Opportunity',
-     		'cssi_assetownerid' => 'a6d565bd-f092-e011-b110-0050569c157c',
+     		#'cssi_assetownerid' => 'a6d565bd-f092-e011-b110-0050569c157c',
         'cssi_lastactivitydate' => Time.now.strftime("%Y-%m-%d %H:%M:%S")
      	};
      	fake_data
