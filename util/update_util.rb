@@ -8,8 +8,7 @@ class UpdateUtil
     rejected_creates = []
     
     using_source_sync(source,reraise_lock_exception) do |source_sync|
-      rejected_creates = source_sync.push_object_updates(push_hash)
-      InsiteLogger.info(:format_and_join => ["Objects ", rejected_creates, " do not exist in redis; updates to these objects were rejected for user #{source.user_id}."]) if rejected_creates.count > 0
+      rejected_creates = source_sync.push_objects(push_hash,nil,nil,false)
     end
     
     rejected_creates
