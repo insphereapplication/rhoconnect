@@ -46,7 +46,7 @@ class ReleaseDeadLocks
           email_template = ERB.new( File.read(file_path), nil, '<>')
           email_body = email_template.result(binding)
           to = CONFIG[:resque_data_validation_email_group]
-          subject = "RhoSync - #{dead_locks.count} dead lock(s) detected!"
+          subject = "RhoConnect - #{dead_locks.count} dead lock(s) detected!"
           EmailUtil.send_mail(to, subject, email_body)
         end
         
