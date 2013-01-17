@@ -60,7 +60,7 @@ class RhoconnectApiSession
         'X-RhoConnect-API-TOKEN' => @token
       }
     ).body
-    JSON.parse(docs)
+
   end
   
   def list_sources
