@@ -43,5 +43,12 @@ module RedisUtil
       end
       record
     end
+    
+    def get_existing_keys(model, user, keys)
+      md = get_md(model, user)    
+      keys = [] unless md     
+      keys.reject!{|key| md[key].nil?}
+      keys
+    end
   end
 end
