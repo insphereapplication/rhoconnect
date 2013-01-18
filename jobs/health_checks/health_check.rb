@@ -48,8 +48,8 @@ class HealthCheckUtil
     end
       
     def get_rhoconnect_source_data(user, docname)
-      docs = rhoconnect_api.list_source_docs(docname, user)      
-      data = rhoconnect_api.get_db_doc( docs['md'] )
+      res = rhoconnect_api.get_md(docname, user)      
+      JSON.parse(res)
     end
     
     def source_initialized?(user, source)
