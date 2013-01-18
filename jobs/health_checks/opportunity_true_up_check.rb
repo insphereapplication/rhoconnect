@@ -44,7 +44,7 @@ class OpportunityTrueUpCheck < HealthCheck
   
   def result_details
     details = failures.sort{|x,y| x[0] <=> y[0]}.reduce([]){|sum,(user,result)|
-      sum << "#{user} had #{result[:extra_rhoconnect_opps].count} extra opps in RhoSync and #{result[:extra_crm_opps].count} extra opps in CRM."
+      sum << "#{user} had #{result[:extra_rhoconnect_opps].count} extra opps in RhoConnect and #{result[:extra_crm_opps].count} extra opps in CRM."
       sum
     }.join("\n")
     super + "\n#{details}"
