@@ -452,7 +452,7 @@ namespace :server do
         'X-RhoConnect-API-TOKEN' => @token
       }
     ).body
-    puts  "clients: #{res}"
+
     JSON.parse(res)
   end
   
@@ -756,9 +756,7 @@ namespace :server do
      # get clients & params for users
        puts "user,device_id,registered_device_pin,client_id,phone_id,os_platform,os_version,app_version,last_sync,push_pin,dev_model"
        user_client_params = filtered_users.reduce({}){|sum,user_id|
-         puts "getting clients"
          user_clients = get_clients(user_id)
-         puts "getting devices"
          user_device_info = get_md(user_id, 'DeviceInfo')
          user_clients.each {|key|
          device_info = user_device_info.find{|id,info| info["client_id"] == key} 

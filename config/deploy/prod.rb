@@ -4,6 +4,6 @@ set :env, :onsite
 role :app, "nrhrhop104.uicnrh.dom", "nrhrhop105.uicnrh.dom"
 role :resque, "nrhrhop104.uicnrh.dom"
 set :server_name, "https://rhoconnect.insphereis.net"
-set :branch,      "v4.0.2_prod"
+set :branch,      "v4.0.3_prod"
 
 
