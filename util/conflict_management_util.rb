@@ -40,12 +40,7 @@ class ConflictManagementUtil
     
     client_update_timestamp = updated_opportunity[CLIENT_UPDATE_TIMESTAMP_FIELD]
     
-    if client_update_timestamp.blank?
-      updated_opportunity,rejected_fields = reject_conflict_fields(updated_opportunity)
-      InsiteLogger.info(:format_and_join => ["Update hash does not specify status update timestamp, rejected fields: ", rejected_fields])
-      return updated_opportunity
-    end
-    
+    # moving the check for opportunity existence before timestamp check
     # get redis' version of the opportunity being updated
     begin
       redis_opp = RedisUtil.get_model('Opportunity', current_user.login, opp_id)
@@ -55,6 +50,13 @@ class ConflictManagementUtil
       InsiteLogger.info "Can't check for conflict as opportunity #{opp_id} does not exist in redis; rejecting all items in update hash."
       return {}
     end
+   
+    if client_update_timestamp.blank?
+      updated_opportunity,rejected_fields = reject_conflict_fields(updated_opportunity)
+      InsiteLogger.info(:format_and_join => ["Update hash does not specify status update timestamp, rejected fields: ", rejected_fields])
+      return updated_opportunity
+    end
+    
     
     # if the opportunity has been closed already (i.e. on another mobile device or in CRM), reject all fields
     if ['Won', 'Lost'].include?(redis_opp['statecode'])
