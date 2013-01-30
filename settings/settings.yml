@@ -62,15 +62,15 @@ local_crm_proxy: http://192.168.51.128/ # Change this if you're running locally 
     :mode: stdout # logging defaults to stdout only; set mode to 'file' to turn on file logging to log:path (above)
   :opp_assign_roles: "InSphere Corporate User,InSphere Agency Manager,InSphere Sales Manager,InSphere Zone Manager,System Administrator"
   :app_info:
-    :min_required_version: 4.0.101
-    :latest_version: 4.0.101
+    :min_required_version: 4.0.122
+    :latest_version: 4.0.122
     :apple_force_upgrade_url: 'itms-services://?action=download-manifest&amp;url=http://m.model.insphereis.net/InSiteMobile/Documents/InSite_Mobile.plist'
     :apple_soft_upgrade_url: 'itms-services://?action=download-manifest&amp;url=http://m.model.insphereis.net/InSiteMobile/Documents/InSite_Mobile.plist'
     :android_force_upgrade_url: 'https://m.model.insphereis.net/insitemobile'
     :android_soft_upgrade_url: 'https://m.model.insphereis.net/insitemobile'
     :mobile_crypt_key: "HFAGIEH777837776KFKHHSJJJFHEUUGF"
     :model_limits: '{"Activity":"2500","Opportunity":"300","Contact":"1100","Policy":"2000","Note":"600"}'
-    :quick_quote_users: 'all'
+    :quick_quote_users: 'beth.little,dwayne.smith,larry.keeler,joseph.morris,patrick.vandeventer,stephen.ratzlaff'
   :resque_worker_rhoconnect_api_host: 'http://127.0.0.1/'
   :resque_worker_rhoconnect_api_password: ''
   :resque_data_validation_email_group: test@test.com # change this to your own debug value; it will be overwritten automatically in Prod
@@ -132,7 +132,7 @@ local_crm_proxy: http://192.168.51.128/ # Change this if you're running locally 
     :apple_soft_upgrade_url: 'itms-services://?action=download-manifest&amp;url=http://m.insphereis.net/InSiteMobile/Documents/InSite_Mobile.plist'
     :android_force_upgrade_url: 'https://m.insphereis.net/InSiteMobile'
     :android_soft_upgrade_url: 'https://m.insphereis.net/InSiteMobile'
-    :quick_quote_users: 'none'
+    :quick_quote_users: 'beth.little,dwayne.smith,larry.keeler,joseph.morris,patrick.vandeventer,stephen.ratzlaff'
 :onsite_model: 
   #:bundler: true
   :redis_boot: true
