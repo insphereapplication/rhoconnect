@@ -3,9 +3,6 @@ class ActivityMapper < Mapper
   LOOKUPS = [
     Lookup.new('regardingobjectid', 'parent_type', 'parent_id')
   ]
-  LOOKUPS_PARENT_CONTACT = [
-     Lookup.new('regardingobjectid', 'parent_type', 'parent_contact_id')
-   ]
   
   def map_from_source_hash(activity_array)
     activity_array.map! do |value| 
@@ -44,11 +41,12 @@ class ActivityMapper < Mapper
     #reject fields that shouldn't be sent to the proxy. these are read-only from CRM and should not be ever be included in a create/update message
     data.reject!{|key, value| REJECT_FIELDS.include?(key.to_s)}
     
-    if data['parent_contact_id'] && data['parent_type'] == 'Contact'
-      LOOKUPS_PARENT_CONTACT.each{|lookup| lookup.inject_crm_lookups!(data)}
-    else  
-      LOOKUPS.each{|lookup| lookup.inject_crm_lookups!(data)}
-    end
+    if data['parent_id'].blank? && !data['parent_type'].blank? && data['parent_type'].downcase == 'contact' && !data['parent_contact_id'].blank?
+      InsiteLogger.info "Activity Mapper -- Client should have provided a parent_id and parent_contact_id.  Copying the parent_contact_id to the parent_id"
+      data['parent_id'] = data['parent_contact_id']
+    end  
+    
+    LOOKUPS.each{|lookup| lookup.inject_crm_lookups!(data)}
     
     email_to_value = data['email_to']
     unless email_to_value.nil?
