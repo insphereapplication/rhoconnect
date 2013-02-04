@@ -70,7 +70,7 @@ local_crm_proxy: http://192.168.51.128/ # Change this if you're running locally 
     :android_soft_upgrade_url: 'https://m.model.insphereis.net/insitemobile'
     :mobile_crypt_key: "HFAGIEH777837776KFKHHSJJJFHEUUGF"
     :model_limits: '{"Activity":"2500","Opportunity":"300","Contact":"1100","Policy":"2000","Note":"600"}'
-    :quick_quote_users: 'beth.little,dwayne.smith,larry.keeler,joseph.morris,patrick.vandeventer,stephen.ratzlaff'
+    :quick_quote_users: 'beth.little,dwayne.smith,larry.keeler,joseph.morris,patrick.vandeventer,stephen.ratzlaff,a12787,a13139,a11150,a13257,a11629 ,a10227,a21250,a12448,a25900,a12875,a15009,a23920,a11162,a11139,a14548,a12814,a12995,a13247,a12547,a13189'
   :resque_worker_rhoconnect_api_host: 'http://127.0.0.1/'
   :resque_worker_rhoconnect_api_password: ''
   :resque_data_validation_email_group: test@test.com # change this to your own debug value; it will be overwritten automatically in Prod
@@ -132,7 +132,7 @@ local_crm_proxy: http://192.168.51.128/ # Change this if you're running locally 
     :apple_soft_upgrade_url: 'itms-services://?action=download-manifest&amp;url=http://m.insphereis.net/InSiteMobile/Documents/InSite_Mobile.plist'
     :android_force_upgrade_url: 'https://m.insphereis.net/InSiteMobile'
     :android_soft_upgrade_url: 'https://m.insphereis.net/InSiteMobile'
-    :quick_quote_users: 'beth.little,dwayne.smith,larry.keeler,joseph.morris,patrick.vandeventer,stephen.ratzlaff'
+    'beth.little,dwayne.smith,larry.keeler,joseph.morris,patrick.vandeventer,stephen.ratzlaff,a12787,a13139,a11150,a13257,a11629 ,a10227,a21250,a12448,a25900,a12875,a15009,a23920,a11162,a11139,a14548,a12814,a12995,a13247,a12547,a13189'
 :onsite_model: 
   #:bundler: true
   :redis_boot: true
