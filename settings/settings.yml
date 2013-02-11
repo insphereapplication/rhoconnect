@@ -63,7 +63,7 @@ local_crm_proxy: http://192.168.51.128/ # Change this if you're running locally 
   :opp_assign_roles: "InSphere Corporate User,InSphere Agency Manager,InSphere Sales Manager,InSphere Zone Manager,System Administrator"
   :app_info:
     :min_required_version: 4.0.122
-    :latest_version: 4.0.124
+    :latest_version: 4.0.125
     :apple_force_upgrade_url: 'itms-services://?action=download-manifest&amp;url=http://m.model.insphereis.net/InSiteMobile/Documents/InSite_Mobile.plist'
     :apple_soft_upgrade_url: 'itms-services://?action=download-manifest&amp;url=http://m.model.insphereis.net/InSiteMobile/Documents/InSite_Mobile.plist'
     :android_force_upgrade_url: 'https://m.model.insphereis.net/insitemobile'
