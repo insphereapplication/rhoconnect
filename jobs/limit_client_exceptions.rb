@@ -27,6 +27,7 @@ class LimitClientExceptions
           end
         end
       end
+      InsiteLogger.info "Completed resque job LimitClientExceptions..."
     end
     
     

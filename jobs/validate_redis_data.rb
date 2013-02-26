@@ -21,28 +21,29 @@ class ValidateRedisData
     def perform
       InsiteLogger.info "*"*20 + "Starting Validate_Redis_Data job"
       InsiteLogger.info "Target rhoconnect host: #{CONFIG[:resque_worker_rhoconnect_api_host]}"
-      
-      checks = [
-        DeadLockCheck.new,
-        OpportunityTrueUpCheck.new,
-        OpportunityIntegrityCheck.new,
-        PolicyIntegrityCheck.new,
-        UnhandledExceptionCheck.new,
-        DevicePinCheck.new
-      ]
-      
-      environment = CONFIG[:env]
-      start_time = Time.now
-          
-      InsiteLogger.info "*"*15 + "Sending email with summary data"
-          
-      # send an email with the results
-      file_path = File.expand_path(File.join(File.dirname(__FILE__))) + '/templates/validation_email.erb'
-      email_template = ERB.new( File.read(file_path), nil, '<>')
-      result = email_template.result(binding)
-      send_email(result)
-      
-      InsiteLogger.info "*"*20 + "Done with Validate_Redis_Data!"
+      ExceptionUtil.rescue_and_continue do
+        checks = [
+                  DeadLockCheck.new,
+                  OpportunityTrueUpCheck.new,
+                  OpportunityIntegrityCheck.new,
+                  PolicyIntegrityCheck.new,
+                  UnhandledExceptionCheck.new,
+                  DevicePinCheck.new
+                ]
+              
+                environment = CONFIG[:env]
+                start_time = Time.now
+                  
+                InsiteLogger.info "*"*15 + "Sending email with summary data"
+                  
+                # send an email with the results
+                file_path = File.expand_path(File.join(File.dirname(__FILE__))) + '/templates/validation_email.erb'
+                email_template = ERB.new( File.read(file_path), nil, '<>')
+                result = email_template.result(binding)
+                send_email(result)
+              
+                InsiteLogger.info "*"*20 + "Done with Validate_Redis_Data!"
+      end          
     end
   end
 end

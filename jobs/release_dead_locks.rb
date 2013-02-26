@@ -13,7 +13,7 @@ class ReleaseDeadLocks
       start_time = Time.now
       
       InsiteLogger.info("Initiating resque job ReleaseDeadLocks...")
-      ExceptionUtil.rescue_and_reraise do
+      ExceptionUtil.rescue_and_continue do
         dead_locks = rhoconnect_api.get_dead_locks
         InsiteLogger.info(:format_and_join => ["Found dead locks: ", dead_locks])
         

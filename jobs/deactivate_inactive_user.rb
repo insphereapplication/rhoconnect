@@ -46,6 +46,7 @@ class DeactivateInactiveUser
           end  
         end
       end
+      InsiteLogger.info "Completed resque job decactivate inactive users"
     end
     
     def is_inactive_user(device_infos)
