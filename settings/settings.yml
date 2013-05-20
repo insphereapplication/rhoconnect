@@ -70,7 +70,7 @@ local_crm_proxy: http://192.168.51.128/ # Change this if you're running locally 
     :android_soft_upgrade_url: 'https://m.model.insphereis.net/insitemobile'
     :mobile_crypt_key: "HFAGIEH777837776KFKHHSJJJFHEUUGF"
     :model_limits: '{"Activity":"2500","Opportunity":"300","Contact":"1100","Policy":"2000","Note":"600"}'
-    :quick_quote_users: 'beth.little,dwayne.smith,joseph.morris,patrick.vandeventer'
+    :quick_quote_users: 'beth.little,dwayne.smith,joseph.morris,patrick.vandeventer,a11027,a12787,a13189,a12757,a11629,a13207,a13202,a11263,a11733,a11290,a12773,a11391,a13139,a11150,a13257,a12773,a11880'
   :resque_worker_rhoconnect_api_host: 'http://127.0.0.1/'
   :resque_worker_rhoconnect_api_password: ''
   :resque_data_validation_email_group: test@test.com # change this to your own debug value; it will be overwritten automatically in Prod
