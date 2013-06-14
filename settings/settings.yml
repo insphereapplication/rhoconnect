@@ -132,7 +132,7 @@ local_crm_proxy: http://192.168.51.128/ # Change this if you're running locally 
     :apple_soft_upgrade_url: 'itms-services://?action=download-manifest&amp;url=http://m.insphereis.net/InSiteMobile/Documents/InSite_Mobile.plist'
     :android_force_upgrade_url: 'https://m.insphereis.net/InSiteMobile'
     :android_soft_upgrade_url: 'https://m.insphereis.net/InSiteMobile'
-    :quick_quote_users: 'beth.little,dwayne.smith,larry.keeler,joseph.morris,patrick.vandeventer'
+    :quick_quote_users: 'beth.little,dwayne.smith,joseph.morris,patrick.vandeventera11027,a12787,a13189,a12757,a11629,a11150,a11263,a11290,a11391,a11733,a11880,a12773,a13139,a13202,a13207,a13257,a12826,a13946,a11428,a11287,a12600,a10227,a11113,a11162,a12448,a12547,a12724,a12763,a12875,a15009,a16632,a25900'
 :onsite_model: 
   #:bundler: true
   :redis_boot: true
