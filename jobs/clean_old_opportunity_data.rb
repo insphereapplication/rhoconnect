@@ -29,6 +29,7 @@ class CleanOldOpportunityData
             activities =  rhoconnect_api.get_db_doc("source:application:#{user}:Activity:md")
             contacts = rhoconnect_api.get_db_doc("source:application:#{user}:Contact:md")
             policies = rhoconnect_api.get_db_doc("source:application:#{user}:Policy:md")
+            notes = rhoconnect_api.get_db_doc("source:application:#{user}:Notes:md")
           
             # find the expired Opportunities
             old_opportunities = get_expired_opportunities(opportunities)          
@@ -47,6 +48,11 @@ class CleanOldOpportunityData
             current_opportunities = opportunities.reject{|k,v| old_opportunity_ids.include?(k) || reassigned_opportunity_ids.include?(k) }
             current_activities = activities.reject{|k,v| old_activity_ids.include?(k)}
             
+            # get notes that are no longer related to current opportunities
+            current_opportuntity_ids = get_doc_ids(current_opportunities)
+            old_notes = get_expired_notes(notes, current_opportuntity_ids)
+            old_notes_ids = get_doc_ids(old_notes)
+            
             # find policies that are expired
             old_policies = get_expired_policies(policies)
             old_policies_ids = get_doc_ids(old_policies)
@@ -56,7 +62,7 @@ class CleanOldOpportunityData
             old_contacts = get_expired_contacts(current_opportunities, current_activities, contacts, current_policies)
             old_contact_ids = get_doc_ids(old_contacts)
 
-            InsiteLogger.info(:format_and_join => ["Deleting for user #{user}: old_opps: ",old_opportunity_ids,", reassign_opps: ",reassigned_opportunity_ids, ", contacts: ",old_contact_ids,", activities: ",old_activity_ids, ", policies: ", old_policies_ids])
+            InsiteLogger.info(:format_and_join => ["Deleting for user #{user}: old_opps: ",old_opportunity_ids,", reassign_opps: ",reassigned_opportunity_ids, ", contacts: ",old_contact_ids,", activities: ",old_activity_ids, ", policies: ", old_policies_ids, ", notes: ", old_notes_ids])
           
             # delete expired records for all models 
             rhoconnect_api.push_deletes('Activity',user,old_activity_ids) unless old_activity_ids.empty?
@@ -64,6 +70,7 @@ class CleanOldOpportunityData
             rhoconnect_api.push_deletes('Opportunity',user,reassigned_opportunity_ids) unless reassigned_opportunity_ids.empty?
             rhoconnect_api.push_deletes('Contact',user,old_contact_ids) unless old_contact_ids.empty?
             rhoconnect_api.push_deletes('Policy',user,old_policies_ids) unless old_policies_ids.empty?
+            rhoconnect_api.push_deletes('Note',user,old_notes_ids) unless old_notes_ids.empty?
           rescue Exception => e
             ExceptionUtil.print_exception(e)
             InsiteLogger.info("*"*10 + "exception occured during cleanup job for #{user}")
@@ -122,6 +129,11 @@ class CleanOldOpportunityData
       end
 
     end
+    
+    def get_expired_notes(notes, current_opportunity_ids)
+      old_notes = notes.select do |key,note|
+        note["parent_type"] == nil || notes['parent_id'] == nil || note["parent_type"].downcase != 'opportunity' || !current_opportunity_ids.include?(notes['parent_id'])
+    end    
     
     def get_expired_opportunities(opportunities, offset_days=0)
       opportunities.select do |key, opp|
