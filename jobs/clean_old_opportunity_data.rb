@@ -133,7 +133,8 @@ class CleanOldOpportunityData
     def get_expired_notes(notes, current_opportunity_ids)
       old_notes = notes.select do |key,note|
         note["parent_type"] == nil || notes['parent_id'] == nil || note["parent_type"].downcase != 'opportunity' || !current_opportunity_ids.include?(notes['parent_id'])
-    end    
+      end    
+    end
     
     def get_expired_opportunities(opportunities, offset_days=0)
       opportunities.select do |key, opp|
