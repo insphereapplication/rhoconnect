@@ -64,10 +64,10 @@ local_crm_proxy: http://192.168.51.128/ # Change this if you're running locally 
   :app_info:
     :min_required_version: 4.0.151
     :latest_version: 4.0.151
-    :apple_force_upgrade_url: 'itms-services://?action=download-manifest&amp;url=http://m.model.insphereis.net/InSiteMobile/Documents/InSite_Mobile.plist'
-    :apple_soft_upgrade_url: 'itms-services://?action=download-manifest&amp;url=http://m.model.insphereis.net/InSiteMobile/Documents/InSite_Mobile.plist'
-    :android_force_upgrade_url: 'https://m.model.insphereis.net/insitemobile'
-    :android_soft_upgrade_url: 'https://m.model.insphereis.net/insitemobile'
+    :apple_force_upgrade_url: 'itms-services://?action=download-manifest&amp;url=http://m.model.insphereis.net/HMMobile/Documents/HM_Mobile.plist'
+    :apple_soft_upgrade_url: 'itms-services://?action=download-manifest&amp;url=http://m.model.insphereis.net/HMMobile/Documents/HM_Mobile.plist'
+    :android_force_upgrade_url: 'https://m.model.insphereis.net/HMMobile'
+    :android_soft_upgrade_url: 'https://m.model.insphereis.net/HMMobile'
     :mobile_crypt_key: "HFAGIEH777837776KFKHHSJJJFHEUUGF"
     :model_limits: '{"Activity":"2500","Opportunity":"300","Contact":"1750","Policy":"3750","Note":"600"}'
     :quick_quote_users: 'all'
@@ -128,10 +128,10 @@ local_crm_proxy: http://192.168.51.128/ # Change this if you're running locally 
   :resque_worker_rhoconnect_api_password: aW9wVhyU84Sj
   :resque_data_validation_email_group: InsphereMobileSupport@inspherehq.com
   :app_info:
-    :apple_force_upgrade_url: 'itms-services://?action=download-manifest&amp;url=http://m.insphereis.net/InSiteMobile/Documents/InSite_Mobile.plist'
-    :apple_soft_upgrade_url: 'itms-services://?action=download-manifest&amp;url=http://m.insphereis.net/InSiteMobile/Documents/InSite_Mobile.plist'
-    :android_force_upgrade_url: 'https://m.insphereis.net/InSiteMobile'
-    :android_soft_upgrade_url: 'https://m.insphereis.net/InSiteMobile'
+    :apple_force_upgrade_url: 'itms-services://?action=download-manifest&amp;url=http://m.insphereis.net/HMMobile/Documents/HM_Mobile.plist'
+    :apple_soft_upgrade_url: 'itms-services://?action=download-manifest&amp;url=http://m.insphereis.net/HMMobile/Documents/HM_Mobile.plist'
+    :android_force_upgrade_url: 'https://m.insphereis.net/HMMobile'
+    :android_soft_upgrade_url: 'https://m.insphereis.net/HMMobile'
     :quick_quote_users: 'all'
 :onsite_model: 
   #:bundler: true
@@ -179,7 +179,7 @@ local_crm_proxy: http://192.168.51.128/ # Change this if you're running locally 
   #:resque_worker_rhoconnect_api_host: 'http://nrhrhod404/'
   :resque_worker_rhoconnect_api_password: iGyz5rk6JVYA
   :app_info:
-     :apple_force_upgrade_url: 'itms-services://?action=download-manifest&amp;url=http://m.dev.insphereis.net/InSiteMobile/Documents/InSite_Mobile.plist'
-     :apple_soft_upgrade_url: 'itms-services://?action=download-manifest&amp;url=http://m.dev.insphereis.net/InSiteMobile/Documents/InSite_Mobile.plist'
-     :android_force_upgrade_url: 'https://m.dev.insphereis.net/insitemobile'
-     :android_soft_upgrade_url: 'https://m.dev.insphereis.net/insitemobile'
+     :apple_force_upgrade_url: 'itms-services://?action=download-manifest&amp;url=http://m.dev.insphereis.net/HMMobile/Documents/HM_Mobile.plist'
+     :apple_soft_upgrade_url: 'itms-services://?action=download-manifest&amp;url=http://m.dev.insphereis.net/HMMobile/Documents/HM_Mobile.plist'
+     :android_force_upgrade_url: 'https://m.dev.insphereis.net/HMMobile'
+     :android_soft_upgrade_url: 'https://m.dev.insphereis.net/HMMobile'
