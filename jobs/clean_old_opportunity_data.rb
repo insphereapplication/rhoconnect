@@ -29,7 +29,7 @@ class CleanOldOpportunityData
             activities =  rhoconnect_api.get_db_doc("source:application:#{user}:Activity:md")
             contacts = rhoconnect_api.get_db_doc("source:application:#{user}:Contact:md")
             policies = rhoconnect_api.get_db_doc("source:application:#{user}:Policy:md")
-            notes = rhoconnect_api.get_db_doc("source:application:#{user}:Notes:md")
+            notes = rhoconnect_api.get_db_doc("source:application:#{user}:Note:md")
           
             # find the expired Opportunities
             old_opportunities = get_expired_opportunities(opportunities)          
@@ -133,8 +133,8 @@ class CleanOldOpportunityData
     def get_expired_notes(notes, current_opportunity_ids)
       InsiteLogger.info( "Current Opportunity is: #{current_opportunity_ids}")
       old_notes = notes.select do |key,note|
-        InsiteLogger.info( "Note parent id is:  #{notes['parent_id']}")
-        note["parent_type"] == nil || notes['parent_id'] == nil || note["parent_type"].downcase != 'opportunity' || !current_opportunity_ids.include?(notes['parent_id'])
+        InsiteLogger.info( "Note parent id is:  #{note['parent_id']}")
+        note["parent_type"] == nil || note['parent_id'] == nil || note["parent_type"].downcase != 'opportunity' || !current_opportunity_ids.include?(note['parent_id'])
       end    
     end
     
