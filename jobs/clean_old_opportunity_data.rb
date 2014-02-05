@@ -131,7 +131,9 @@ class CleanOldOpportunityData
     end
     
     def get_expired_notes(notes, current_opportunity_ids)
+      InsiteLogger.info( "Current Opportunity is: #{current_opportunity_ids}")
       old_notes = notes.select do |key,note|
+        InsiteLogger.info( "Note parent id is:  #{notes['parent_id']}")
         note["parent_type"] == nil || notes['parent_id'] == nil || note["parent_type"].downcase != 'opportunity' || !current_opportunity_ids.include?(notes['parent_id'])
       end    
     end
