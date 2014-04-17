@@ -80,6 +80,20 @@ namespace :server do
     end
   end
   
+  desc "Deletes the user device defined by <user_id>, device_id"
+  task :delete_device, [:user_id, :device_id] => [:set_token] do |t, args|
+     puts "Do you really want to device #{args.device_id} delete #{args.user_id} from #{$server}?? (y/n)"
+      if STDIN.gets.chomp == 'y' then
+        puts "very well..."
+        RestClient.delete(
+        "#{$server}/rc/v1/users/args.user_id/clients/args_device_id",
+        { 
+        'X-RhoConnect-API-TOKEN' => @token
+        }
+        )
+    end
+  end
+  
   desc "Get server license info"
   task :license => [:set_token] do |t, args|
     license_info = RestClient.get(
@@ -445,6 +459,15 @@ namespace :server do
     JSON.parse(res)
   end
   
+  def delete_device(user_id, device_id) 
+    res = RestClient.delete(
+      "#{$server}rc/v1/users/#{user_id}/clients/#{device_id}",
+      { 
+        'X-RhoConnect-API-TOKEN' => @token
+      }
+    ).body
+  end
+  
   def get_clients(user_id)
 
     res = RestClient.get("#{$server}rc/v1/users/#{user_id}/clients", 
@@ -772,6 +795,36 @@ namespace :server do
 
    end
    
+   
+   desc "Use this to delete old android c2dm device pins so that new GCM pins are created correctly"
+    task :delete_old_android_devices, [:user_pattern] => [:set_token] do |t, args|
+      abort "!!! User regex pattern must be specified (i.e. 'server:check_device_pins[\"a[0-9]\"]' to gather device stats for all users that match the agent code pattern)" unless args[:user_pattern]
+      #get all users from RhoSync, filter based on pattern given
+      filtered_users = get_users.reject{|user| user[Regexp.new(args.user_pattern)].nil?}
+
+
+      # get clients & params for users
+        puts "Find user devices"
+        user_client_params = filtered_users.reduce({}){|sum,user_id|
+          user_clients = get_clients(user_id)
+          user_device_info = get_md(user_id, 'DeviceInfo')
+          user_clients.each {|key|
+          #puts "value: #{key}"
+          device_params = get_client_params(key)
+          #puts "device params #{device_params}"
+          device_type = get_client_param_value(device_params, 'device_type')
+          puts "User #{user_id} device type: #{device_type}"
+          device_push_type = get_client_param_value(device_params, 'device_push_type')
+          puts "question device push type:#{device_push_type}a"
+          if device_type == 'ANDROID' && (device_push_type == nil || device_push_type == '')
+              puts "Deleting device #{key} for user #{user_id}"
+              delete_device(user_id, key)
+              puts "!!!!Deleted!!!"
+          end
+        }
+      }
+
+    end
   
   
   task :client_exception_stats, [:user_pattern] => [:set_token] do |t,args|
