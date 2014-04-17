@@ -166,14 +166,14 @@ class RhoconnectSession
     # first post the create
     puts "#{Process.pid} Creating new #{model} for user #{@login}..."
     temp = post({:source_name => model, :create => create_hash})
-    puts "temp #{temp}"
+    #puts "temp #{temp}"
     #puts "Getting #{model} links hash..."
     # next get the links hash from a query call -- the links has the new guid from the last create action
     res = get({'source_name' => model})
     
     # get the token for acking
     last_result = JSON.parse(res)
-    ap last_result
+    #ap last_result
     ack_token = last_result[1]['token']
     
     puts "ack_token #{ack_token}"
@@ -184,12 +184,12 @@ class RhoconnectSession
     raise "No ack token given after #{model} create for #{login}" unless ack_token
     #raise "No links given after #{model} create for #{login}" unless last_result[5]['links']
     
-    puts "Here #{last_result}"
-       puts "links: #{last_result[5]['links'].values.first['l']}"
-       model_id = last_result[5]['links'].values.first['l']
+    #puts "Here #{last_result}"
+       #puts "links: #{last_result[5]['links'].values.first['l']}"
+       model_id = last_result[5]['links'].values.first['l'] if last_result[5]['links']
        puts "model id #{model_id}"
-    puts "Links:"
-       puts "links #{last_result[5]['links']}"
+    #puts "Links:"
+    #   puts "links #{last_result[5]['links']}"
     
     #puts "New #{model} id: #{model_id}"
 

@@ -411,20 +411,43 @@ namespace :client do
     
     # extra 'a10006','a10008','a10009','a10024','a10025',
     test_agents =[     
-'a11412','a10029','a10212','a10215','a10256','a11012','a11014','a11015','a11018','a11027',
-'a11085','a11185','a11231','a11234','a11242','a11322','a11513','a11650','a11759','a11828',
-'a12419','a12485','a12613','a12869','a12895','a12896','a12899','a13394',
-'a12906','a12912','a13052','a13058','a13385','a13387','a13391','a13393',
-'a13396','a13402','a13404','a13407','a13412','a13414','a13428','a13430','a13433','a13434',
-'a13435','a13438','a13440','a13448','a13450','a13452','a13461','a13464','a13470','a13477',
-'a13480','a13496','a14447','a14448','a14454','a14456','a14457','a14460','a14463','a14465',
-'a14467','a14471','a14475','a14482','a14483','a14484','a14485','a14489','a14492','a14493',
-'a14494','a14496','a14498','a14500','a14501','a14502','a14504','a14574','a14576','a14578',
-'a14579','a14582','a14584','a14588','a14589','a14592','a14593','a14596','a14602','a14603',
-'a14605','a14606','a14607','a14611','a14612','a14614','a14616','a14618','a14620','a14622',
-'a14623','a14627','a14632','a14906','a15124','a15224','a15364','a16071','a16072','a16290'
-      
-    ]
+'a11412',
+ 'a10533',
+'a14331',
+'a13534',
+'a28861',
+'a35875',
+'a11100',
+'a11638',
+'a30172',
+'a35227',
+'a35024',
+'a27915',
+'a35416',
+'a35564',
+'a11759',
+'a30065',
+'a35324',
+'a30168',
+'a35269',
+'a27229',
+'a35834',
+'a35086']
+
+  # 'a10029','a10212','a10215','a10256','a11012','a11014','a11015','a11018','a11027',
+  # 'a11085','a11185','a11231','a11234','a11242','a11322','a11513','a11650','a11759','a11828',
+  # 'a12419','a12485','a12613','a12869','a12895','a12896','a12899','a13394',
+  # 'a12906','a12912','a13052','a13058','a13385','a13387','a13391','a13393',
+  # 'a13396','a13402','a13404','a13407','a13412','a13414','a13428','a13430','a13433','a13434',
+  # 'a13435','a13438','a13440','a13448','a13450','a13452','a13461','a13464','a13470','a13477',
+  # 'a13480','a13496','a14447','a14448','a14454','a14456','a14457','a14460','a14463','a14465',
+  # 'a14467','a14471','a14475','a14482','a14483','a14484','a14485','a14489','a14492','a14493',
+  # 'a14494','a14496','a14498','a14500','a14501','a14502','a14504','a14574','a14576','a14578',
+  # 'a14579','a14582','a14584','a14588','a14589','a14592','a14593','a14596','a14602','a14603',
+  # 'a14605','a14606','a14607','a14611','a14612','a14614','a14616','a14618','a14620','a14622',
+  # 'a14623','a14627','a14632','a14906','a15124','a15224','a15364','a16071','a16072','a16290'
+  #     
+  #     ]
     
     test_users = test_agents.uniq.reduce([]){|sum,test_agent| sum << {:username => test_agent, :password => 'p@55abcd'}; sum}
     #test_users = test_agents.uniq.reduce([]){|sum,test_agent| sum << {:username => test_agent, :password => '!D0dgeram'}; sum}
@@ -478,7 +501,7 @@ namespace :client do
      
       }
 
-         combine_results.show
+         #combine_results.show
          puts "User with errors:  #{user_error_list}"
 
     else
@@ -502,12 +525,24 @@ namespace :client do
              contact_id = session.create('Contact', contact)
              puts "!!!!!!Process #{Process.pid} contact id is: #{contact_id}"
              opportunity_id = session.create('Opportunity', TestData.get_fake_opportunity_data(contact_id))
+             puts "!!!!!!Process #{Process.pid} Opportunity id is: #{opportunity_id}"
              #opportunity_id2 = session.create('Opportunity', TestData.get_fake_won_opportunity_data(contact_id,"Won","Sale"))
              #opportunity_id3 = session.create('Opportunity', TestData.get_fake_opportunity_data(contact_id))
-             #session.create('Activity', TestData.create_appointment(opportunity_id3,contact_id,"Scheduled","Busy"))
-             policy = TestData.get_fake_policy_data(contact_id,contact,"Active")
-             ap policy
-             policy_id = session.create('Policy', policy)
+             
+             #uncomment
+             #session.create('Activity', TestData.create_appointment(opportunity_id,contact_id,"Scheduled","Busy"))
+             
+             #puts "*********Process #{Process.pid}.  Created appointment for opportunity: #{opportunity_id}"
+             
+             #Comment next two lines out
+             session.update('Opportunity', TestData.update_opportunity_left_message(opportunity_id))
+              puts "*********Process #{Process.pid}.  Creating Phonecall for opportunity: #{opportunity_id}"
+             session.create('Activity', TestData.create_left_message_phone_call_data(opportunity_id,contact_id))
+             
+             puts "*********Process #{Process.pid}.  Created Phonecall for opportunity: #{opportunity_id}"
+             #policy = TestData.get_fake_policy_data(contact_id,contact,"Active")
+             #ap policy
+             #policy_id = session.create('Policy', policy)
              
              if store_contact_id  || store_opportunity_id
                session.persist_local_contact(contact_id)
@@ -519,16 +554,16 @@ namespace :client do
           end
           
           # Update an opportunity to left message
-          if update_data_mod > 0 &&  rand(syncs_per_user) % update_data_mod == 0
-            if contact_id == '' || opportunity_id == ''
-               contact_id = session.loadguid("contact")
-               opportunity_id = session.loadguid("opportunity")
-            end
-            puts "******Process #{Process.pid}update contact id is: #{contact_id}"
-            #puts "update oppportunity id is: #{opportunity_id}"
-            session.update('Opportunity', TestData.update_opportunity_left_message(opportunity_id))
-            session.create('Activity', TestData.create_left_message_phone_call_data(opportunity_id,contact_id,"Scheduled","Busy"))
-          end
+          # if update_data_mod > 0 &&  rand(syncs_per_user) % update_data_mod == 0
+          #   if contact_id == '' || opportunity_id == ''
+          #      contact_id = session.loadguid("contact")
+          #      opportunity_id = session.loadguid("opportunity")
+          #   end
+          #   puts "******Process #{Process.pid}update contact id is: #{contact_id}"
+          #   #puts "update oppportunity id is: #{opportunity_id}"
+          #   session.update('Opportunity', TestData.update_opportunity_left_message(opportunity_id))
+          #   session.create('Activity', TestData.create_left_message_phone_call_data(opportunity_id,contact_id,"Scheduled","Busy"))
+          # end
           
         }
         session.end_test
@@ -541,7 +576,7 @@ namespace :client do
           :class => exception.class,
           :backtrace => exception.backtrace
         }
-        ap exception_detail
+       ap exception_detail
       end
       
     end

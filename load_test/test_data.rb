@@ -211,6 +211,7 @@ module TestData
     def create_left_message_phone_call_data(parent_id, parent_contact_id)
       data = {}
       endTime = Time.now + (2*24*60*60)
+      mock_id = UUIDTools::UUID.random_create.to_s.gsub(/\-/,'')
       data[parent_id] = 
       {                  
                   "statecode" => "Completed",
@@ -220,7 +221,7 @@ module TestData
                   "parent_contact_id" => parent_contact_id, 
                   "parent_id" => parent_id,
                   "scheduledend" => endTime.strftime("%Y-%m-%d %H:%M:%S"), 
-                  "temp_id" => "96724910339908.1",
+                  "temp_id" => mock_id,
                   "cssi_disposition" => "Left Message",
                   "createdon" => Time.now.strftime("%Y-%m-%d %H:%M:%S"),
                   "statuscode" => "Made"           
