@@ -5,7 +5,7 @@ require 'ap'
 
 set :application, "InsiteMobile"
 set :domain,      "rhosync.insphereis.net"
-set :repository,  "git@git.rhohub.com:insphere/InsiteMobile-dev-rhosync.git"
+set :repository,  "git@github.com:insphereapplication/rhoconnect.git"
 set :use_sudo,    false
 set :deploy_to,   "/var/www/#{application}"
 set :deploy_via, :copy
