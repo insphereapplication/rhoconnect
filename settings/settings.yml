@@ -69,7 +69,7 @@ local_crm_proxy: http://192.168.51.128/ # Change this if you're running locally 
     :android_force_upgrade_url: 'https://m.model.insphereis.net/HMMobile'
     :android_soft_upgrade_url: 'https://m.model.insphereis.net/HMMobile'
     :mobile_crypt_key: "HFAGIEH777837776KFKHHSJJJFHEUUGF"
-    :model_limits: '{"Activity":"2500","Opportunity":"300","Contact":"1750","Policy":"3750","Note":"600"}'
+    :model_limits: '{"Activity":"3000","Opportunity":"500","Contact":"2500","Policy":"5250","Note":"1250"}'
     :quick_quote_users: 'all'
   :resque_worker_rhoconnect_api_host: 'http://127.0.0.1/'
   :resque_worker_rhoconnect_api_password: ''
