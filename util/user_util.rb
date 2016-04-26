@@ -5,7 +5,7 @@ class UserUtil
     end
     
     def disabled_at(user_id)
-      time = Store.db.hget(disabled_users_key, user_id)
+      time = Store.get_store(0).db.hget(disabled_users_key, user_id)
       time ? Time.at(time.to_i) : nil
     end
     
@@ -19,12 +19,12 @@ class UserUtil
     
     def enable(user_id)
       set_crm_mobile_user_flag(user_id,true)
-      Store.db.hdel(disabled_users_key, user_id)
+      Store.get_store(0).db.hdel(disabled_users_key, user_id)
     end
     
     def disable(user_id)
       set_crm_mobile_user_flag(user_id,false)
-      Store.db.hset(disabled_users_key, user_id, Time.now.to_i)
+      Store.get_store(0).db.hset(disabled_users_key, user_id, Time.now.to_i)
     end
     
     def enable_if_disabled(user_id)

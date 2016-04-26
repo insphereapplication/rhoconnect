@@ -1,4 +1,4 @@
-class DeviceInfo < SourceAdapter
+class DeviceInfo < Rhoconnect::Model::Base
   def initialize(source)
     super(source)
   end

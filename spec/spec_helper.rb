@@ -27,7 +27,7 @@ describe "SpecHelper", :shared => true do
   include Rhoconnect::TestMethods
   
   before(:each) do
-    Store.db.flushdb
+    Store.flush_all
     Application.initializer(ROOT_PATH)
   end
 end

@@ -1,4 +1,4 @@
-class StaticEntity < SourceAdapter
+class StaticEntity < Rhoconnect::Model::Base
   def initialize(source)
     ExceptionUtil.rescue_and_reraise do
       @staticentity_url = "#{CONFIG[:crm_path]}staticentity"

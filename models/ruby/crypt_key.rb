@@ -1,4 +1,4 @@
-class CryptKey < SourceAdapter
+class CryptKey < Rhoconnect::Model::Base
   def initialize(source)
     super(source)
   end

@@ -1,6 +1,6 @@
 $settings_file = 'settings/settings.yml'
 $settings = YAML::load_file($settings_file)
-$target = :onsite_dev
+$target = :test
 $config = ConfigFile.get_settings_for_environment($settings, $target)
 $app_path = File.expand_path(File.dirname(__FILE__))
 $server = ($config[:syncserver] || "").sub('/application', '')
@@ -123,7 +123,7 @@ namespace :server do
   task :reset_sync_status, [:user_pattern] => [:set_token] do |t, args|
     abort "User pattern must be specified" unless args[:user_pattern]
     res = JSON.parse(RestClient.post(
-      "#{$server}api/reset_sync_status", 
+      "#{$server}/app/v1/HMRhoconnect/reset_sync_status", 
       { 
         :user_pattern => args[:user_pattern]
       }.to_json, 
@@ -151,7 +151,7 @@ namespace :server do
   task :get_user_crm_id, [:username] => [:set_token] do |t, args|
     abort "User name must be specified" unless args[:username]
     res = RestClient.post(
-       "#{$server}api/get_user_crm_id", 
+       "#{$server}/app/v1/HMRhoconnect/get_user_crm_id", 
        { 
          :username => args[:username]
        }.to_json, 
@@ -262,7 +262,7 @@ namespace :server do
     abort "User pattern must be specified" unless args[:user_pattern]
     
     res = JSON.parse(RestClient.post(
-      "#{$server}api/get_sync_status", 
+      "#{$server}/app/v1/HMRhoconnect/get_sync_status", 
       { 
         :user_pattern => args[:user_pattern]
       }.to_json, 
@@ -297,7 +297,7 @@ namespace :server do
   
   task :get_log => [:set_token] do
     res = RestClient.post(
-      "#{$server}api/get_log",
+      "#{$server}/app/v1/HMRhoconnect/get_log",
       {
         :api_token => @token
       }.to_json,
@@ -310,7 +310,7 @@ namespace :server do
   desc "pushes objects and invokes the notify method associated with the sources" 
   task :push_objects_notify, [:user_id] => [:set_token] do |t, args|
     res = RestClient.post(
-      "#{$server}api/push_objects_notify", 
+      "#{$server}/app/v1/HMRhoconnect/push_objects_notify", 
       { 
         :user_id => args.user_id || 'dave', 
         :source_id => "Contact", 
@@ -328,7 +328,7 @@ namespace :server do
     abort "user_id, source_id and object_id must be specified" unless args[:user_id] and args[:source_id] and args[:object_id]
     rest_rescue do
       res = RestClient.post(
-        "#{$server}api/push_deletes_custom",
+        "#{$server}/app/v1/HMRhoconnect/push_deletes_custom",
         {
           :user_id => args[:user_id],
           :source_id => args[:source_id],
@@ -900,7 +900,7 @@ namespace :server do
   desc "Checks redis for dead/failed locks"
   task :get_dead_locks => [:set_token] do |t,args|
     res = RestClient.post(
-      "#{$server}api/get_dead_locks", 
+      "#{$server}/app/v1/HMRhoconnect/get_dead_locks", 
       { 
         :api_token => @token
       }.to_json, 
@@ -960,7 +960,7 @@ namespace :server do
              1.upto(ittr) do
                begin
                 res = RestClient.post(
-                  "#{$server}api/push_objects_notify", 
+                  "#{$server}/app/v1/HMRhoconnect/push_objects_notify", 
                   { 
                     :api_token => @token, 
                     :user_id => args.user_id || 'dave', 
@@ -1009,7 +1009,7 @@ namespace :server do
       
       5.times do
         res = RestClient.post(
-          "#{$server}api/push_mapped_objects", 
+          "#{$server}/app/v1/HMRhoconnect/push_mapped_objects", 
           { 
             :api_token => @token, 
             :user_id => args.user_id || 'dave', 

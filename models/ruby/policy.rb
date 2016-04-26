@@ -1,4 +1,4 @@
-class Policy < SourceAdapter
+class Policy < Rhoconnect::Model::Base
   def initialize(source)
     ExceptionUtil.rescue_and_reraise do
       @policy_url = "#{CONFIG[:crm_path]}policy"
@@ -22,17 +22,20 @@ class Policy < SourceAdapter
     ExceptionUtil.rescue_and_reraise do
       InsiteLogger.info "QUERY FOR POLICIES FOR #{current_user.login}"
       ExceptionUtil.context(:current_user => current_user.login)
+	  start = Time.now
       res = RestClient.post(@policy_url, {:username => @username,
                                           :password => @password},
                                           :content_type => :json)
                                           
+	  InsiteLogger.info "QUERY POLICIES PROXY CALL IN FOR #{current_user.login}: #{Time.now - start} Seconds"
       @result = Mapper.map_source_data(res, 'Policy')
       
       ExceptionUtil.context(:result => @result)
-      InsiteLogger.info @result
+	  InsiteLogger.info "QUERY POLICIES RESULTS FOR #{current_user.login} -- #{@result}"
       
       # Query for contacts as well to ensure new policies also have their associated contacts (these are not guaranteed to be pushed)
       InsiteLogger.info "QUERYING FOR CONTACTS FOR #{current_user.login} AS PART OF POLICY QUERY"
+	  start = Time.now
       contact_query_result = RestClient.post(
         "#{CONFIG[:crm_path]}contact",
         {
@@ -41,6 +44,7 @@ class Policy < SourceAdapter
         },
         :content_type => :json
       )
+	  InsiteLogger.info "QUERYING FOR CONTACTS FOR #{current_user.login} AS PART OF POLICY QUERY PROXY CALL IN FOR #{current_user.login}: #{Time.now - start} Seconds"
       # Commit the results of the contact query to redis
       contacts = Mapper.map_source_data(contact_query_result, 'Contact')
       contact_source = Source.load('Contact',{:app_id=>APP_NAME,:user_id=>current_user.login})

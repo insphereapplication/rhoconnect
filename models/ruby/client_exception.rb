@@ -1,4 +1,4 @@
-class ClientException < SourceAdapter
+class ClientException < Rhoconnect::Model::Base
   def initialize(source)
     super(source)
   end

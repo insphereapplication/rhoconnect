@@ -4,11 +4,11 @@ module DuplicateDetectionUtil
   end
   
   def create_link(temp_id, crm_id)
-    Store.db.hset(links_hash_key, temp_id, crm_id)
+    Store.get_store(0).db.hset(links_hash_key, temp_id, crm_id)
   end
   
   def get_link(temp_id)
-    Store.db.hget(links_hash_key, temp_id)
+    Store.get_store(0).db.hget(links_hash_key, temp_id)
   end
   
   def get_temp_id(create_hash)
@@ -25,7 +25,7 @@ module ReplaceTempID
     temp_id = create_hash[temp_id_name]
     if (!temp_id.blank? && !temp_id.upcase.match('[A-Z0-9]{8}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{12}'))
       InsiteLogger.info(:format_and_join => ["Replacing Tempid for : #{temp_id_name}, temp_id:  #{temp_id}."])
-      result = Store.db.hget(find_hash_key(type), temp_id)
+      result = Store.get_store(0).db.hget(find_hash_key(type), temp_id)
       InsiteLogger.info(:format_and_join => ["Temp id result lookup: ",result])
       if (result)     
         create_hash[temp_id_name] = result  

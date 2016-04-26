@@ -8,7 +8,7 @@ class UpdateHistoryUtil
     prior_update_time = last_update(record_id, field_name)
     new_update_time = Time.now
     duration = TimerUtil.time_block do
-      Store.db.hset(tracked_updates_key, tracked_update_hash_key(record_id, field_name), new_update_time.to_i)
+      Store.get_store(0).db.hset(tracked_updates_key, tracked_update_hash_key(record_id, field_name), new_update_time.to_i)
     end
     InsiteLogger.info("Touching #{field_name} for record #{record_id} for source #{@source_name} for user #{@user_id} took #{duration} seconds.")
     
@@ -16,7 +16,7 @@ class UpdateHistoryUtil
   end
 
   def last_update(record_id, field_name)
-    timestamp = Store.db.hget(tracked_updates_key, tracked_update_hash_key(record_id, field_name))
+    timestamp = Store.get_store(0).db.hget(tracked_updates_key, tracked_update_hash_key(record_id, field_name))
     timestamp.nil? ? nil : Time.at(timestamp.to_i)
   end
 

@@ -1,4 +1,4 @@
-class Opportunity < SourceAdapter
+class Opportunity < Rhoconnect::Model::Base
   
   # proxy util mixin
   include ProxyUtil
@@ -40,6 +40,7 @@ class Opportunity < SourceAdapter
   def query(params=nil)    
     ExceptionUtil.rescue_and_reraise do
       ExceptionUtil.context(:current_user => current_user.login )
+	  puts "Query???? #{Store.get_value(@initialized_key)}"
       unless Store.get_value(@initialized_key) == 'true'   
         InsiteLogger.info "QUERY FOR OPPORTUNITIES FOR #{current_user.login}"
         
@@ -49,15 +50,17 @@ class Opportunity < SourceAdapter
             :password => @password},
             :content_type => :json
         )
-        InsiteLogger.info "OPPORTUNITY QUERY PROXY CALL IN : #{Time.now - start} Seconds"
+        InsiteLogger.info "QUERY OPPORTUNITIES PROXY CALL IN FOR #{current_user.login}: #{Time.now - start} Seconds"
         @result = Mapper.map_source_data(res, 'Opportunity')
         ExceptionUtil.context(:result => @result)
+		InsiteLogger.info "QUERY OPPORTUNITY RESULTS FOR #{current_user.login} -- #{@result}"
       end 
     end
   end
  
   def sync
     ExceptionUtil.rescue_and_reraise do
+	  puts "sync ???? #{Store.get_value(@initialized_key)}"
       unless Store.get_value(@initialized_key) == 'true'  
         start = Time.now
         super

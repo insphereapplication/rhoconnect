@@ -1,4 +1,4 @@
-class ApplicationDetail < SourceAdapter
+class ApplicationDetail < Rhoconnect::Model::Base
 
   # proxy util mixin
   include ProxyUtil

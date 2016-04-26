@@ -1,4 +1,4 @@
-class AppInfo < SourceAdapter
+class AppInfo < Rhoconnect::Model::Base
   def initialize(source)
     super(source)
   end

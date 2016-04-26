@@ -6,9 +6,11 @@ class UpdateUtil
     PushHandler.handle_push(source.name, source.user_id, push_hash)
     InsiteLogger.info(:format_and_join => ["*"*10 + "Committing update to redis for model #{source.name} for user #{source.user_id}: ", push_hash])
     rejected_creates = []
-    
+	
+    params = {:objects=>push_hash}
     using_source_sync(source,reraise_lock_exception) do |source_sync|
-      rejected_creates = source_sync.push_objects(push_hash,nil,nil,false)
+      #rejected_creates = source_sync.push_objects(push_hash,nil,nil,false)
+	  rejected_creates = source_sync.push_objects(params)
     end
     
     rejected_creates
@@ -18,16 +20,24 @@ class UpdateUtil
     push_hash = build_push_hash(createupdate_hash)
     PushHandler.handle_push(source.name, source.user_id, push_hash)
     InsiteLogger.info(:format_and_join => ["*"*10 + "Committing create/update to redis for model #{source.name} for user #{source.user_id}: ", push_hash])
-    using_source_sync(source,reraise_lock_exception) do |source_sync|
-      source_sync.push_objects(push_hash,nil,nil,false)
+      timeout = params[] || 10
+        raise_on_expire = params[:raise_on_expire] || false
+        rebuild_md = params[:rebuild_md].nil? ? true : params[:rebuild_md]
+        objects = params[:objects]
+	params = {:objects=>push_hash}
+	using_source_sync(source,reraise_lock_exception) do |source_sync|
+      #source_sync.push_objects(push_hash,nil,nil,false)
+	  source_sync.push_objects(params)
     end
   end
   
   def self.push_objects(source, objects, reraise_lock_exception=false)
     PushHandler.handle_push(source.name, source.user_id, objects)
     InsiteLogger.info(:format_and_join => ["*"*10 + "Committing to redis for model #{source.name} for user #{source.user_id}: ", objects])
-    using_source_sync(source,reraise_lock_exception) do |source_sync|
-      source_sync.push_objects(objects,nil,nil,false)
+    params = {:objects=>objects}
+	using_source_sync(source,reraise_lock_exception) do |source_sync|
+      #source_sync.push_objects(objects,nil,nil,false)
+	  source_sync.push_objects(params)
     end
   end
   
@@ -39,7 +49,7 @@ class UpdateUtil
   
   def self.using_source_sync(source, reraise_lock_exception)
     begin      
-      yield(SourceSync.new(source)) if block_given?
+      yield(Rhoconnect::Model::Base.create(source)) if block_given?
     rescue StoreLockException
       # reset sync status for user
       InsiteLogger.info "Got StoreLockException for user #{source.user_id} in update util; resetting sync status."

@@ -1,7 +1,6 @@
-app_path = File.expand_path(File.join(File.dirname(__FILE__))) 
-require "#{app_path}/../util/redis_util"
+require "#{Rhoconnect.app_directory}/util/redis_util"
 
-class SearchContacts < SourceAdapter
+class SearchContacts < Rhoconnect::Model::Base
   
   def initialize(source)
     ExceptionUtil.rescue_and_reraise do

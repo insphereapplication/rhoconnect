@@ -1,17 +1,21 @@
 require 'rubygems'
-begin
-  require 'vendor/rhoconnect/lib/rhoconnect/tasks'
-  require 'vendor/rhoconnect/lib/rhoconnect'
-rescue LoadError
-  require 'rhoconnect/tasks'
-  require 'rhoconnect'
-  require 'rhoconnect/server'
-end
+require 'bundler/setup'
+require 'rhoconnect'
+require 'resque/tasks'
 
+ROOT_PATH = File.expand_path(File.dirname(__FILE__))
 
-# ROOT_PATH = File.expand_path(File.dirname(__FILE__))
+#task 'resque:setup' do
+  # The number of redis connections you want a job to have
+#  Rhoconnect.connection_pool_size = 1
+#  require 'rhoconnect/application/init'
 
-begin
+ # Resque.after_fork do
+ #   Store.reconnect
+ # end
+ #end 
+  
+  begin
   require 'resque/tasks'
   require 'resque_scheduler'
   require 'resque/scheduler'
@@ -44,3 +48,4 @@ require "#{app_path}/helpers/crypto"
 
 Dir[File.join(File.dirname(__FILE__),'tasks/lib','*.rb')].each { |file| load file }
 Dir[File.join(File.dirname(__FILE__),'tasks','*.rb')].each { |file| load file }
+

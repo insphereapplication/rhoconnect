@@ -1,4 +1,4 @@
-class Contact < SourceAdapter
+class Contact < Rhoconnect::Model::Base
 
   # proxy util mixin
   include ProxyUtil
@@ -29,16 +29,18 @@ class Contact < SourceAdapter
     ExceptionUtil.rescue_and_reraise do
       InsiteLogger.info "QUERY FOR CONTACTS FOR #{current_user.login}"
       ExceptionUtil.context(:current_user => current_user.login )
+	  start = Time.now
       res = RestClient.post(@contact_url,
         {:username => @username, 
           :password => @password},
           :content_type => :json
       )
       
+	  InsiteLogger.info "QUERY CONTACTS PROXY CALL IN FOR #{current_user.login}: #{Time.now - start} Seconds"
       @result = Mapper.map_source_data(res, 'Contact')
       
       ExceptionUtil.context(:result => @result )
-      InsiteLogger.info @result
+	  InsiteLogger.info "QUERY CONTACTS RESULTS FOR #{current_user.login} -- #{@result}"
     end
   end
  

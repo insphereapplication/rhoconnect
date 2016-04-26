@@ -1,4 +1,4 @@
-class Note < SourceAdapter
+class Note < Rhoconnect::Model::Base
 
   # proxy util mixin
   include ProxyUtil

@@ -10,7 +10,7 @@ require "#{app_path}/util/update_util"
 require "#{app_path}/util/proxy_util"
 require "#{app_path}/util/sync_status_util"
 require "#{app_path}/helpers/crypto"
-require 'resque_scheduler'
+require 'resque-scheduler'
 require 'ap'
 require 'rhoconnect'
 require 'sinatra'
@@ -34,7 +34,7 @@ if CONFIG[:fork_resque] && ENV['RHO_ENV'] != 'test'
   Resque::Scheduler.run if fork.nil?
   Resque::Worker.new('clean_old_opportunity_data').work(1) if fork.nil?
 end
-   
+ 
 
 
 

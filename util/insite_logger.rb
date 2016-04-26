@@ -66,15 +66,20 @@ module InsiteLogger
       @file_logger.level = log_level
     end
   end
-  
+
   def self.log_to_file?
-    @log_to_file ||= ['file','both'].include?(CONFIG[:log][:mode]) 
+	if (CONFIG[:log])
+		@log_to_file ||= ['file','both'].include?(CONFIG[:log][:mode]) 
+	end	
     @log_to_file
   end
   
   def self.log_to_stdout?
-    @log_to_stdout ||= ['stdout','both'].include?(CONFIG[:log][:mode])
-    @log_to_stdout
+   puts "Config logger #{CONFIG[:log]}!!!"
+    if (CONFIG[:log])
+		@log_to_stdout ||= ['stdout','both'].include?(CONFIG[:log][:mode])
+	end
+	@log_to_stdout
   end
   
   def self.output_host_name
