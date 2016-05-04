@@ -1,13 +1,14 @@
 # This Gemfile is for deploying to onsite -- Updating to use rhoconnect 7/12/2012
-
+gem 'rhoconnect', '5.4.0'
 gem "faker"
 gem "awesome_print"
 gem "exceptional"
 gem "resque-scheduler"
-gem "crypt19"
+gem "crypt19-rb"
 gem "rack-ssl-enforcer"
 gem "connection_pool"
 gem "rhoconnect"
 gem "thin"
 gem 'rack-fiber_pool'
 gem 'async-rack'
+
