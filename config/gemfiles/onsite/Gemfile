@@ -1,5 +1,4 @@
-# This Gemfile is for deploying to onsite -- Updating to use rhoconnect 7/12/2012
-gem 'rhoconnect', '5.4.0'
+# This Gemfile is for deploying to onsite -- Updating to use rhoconnect rhoconnect 5.4 upgrade 
 gem "faker"
 gem "awesome_print"
 gem "exceptional"
