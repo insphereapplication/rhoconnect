@@ -32,6 +32,7 @@
 
 
 :test:
+  :debug: 'yes'
   :crm_proxy: dev_crm_proxy
   :redis: localhost:6379
   :licensefile: settings/license.key
@@ -46,6 +47,7 @@
   :log:
     :mode: stdout
 :development:
+  :debug: 'yes'
   :crm_proxy: dev_crm_proxy
   :iphonecertfile: settings/apple_push_cert_sandbox.pem
   :redis: localhost:6379
@@ -62,7 +64,7 @@
 
 :env: test
 #Set debug to 'yes' when running locally to turn off async
-:debug: 'yes'
+
 model_crm_proxy: https://mobileproxy.model.insphereis.net/
 dev_crm_proxy: https://mobileproxy.dev.insphereis.net/
 #dev_crm_proxy: https://mobileproxy.model.insphereis.net/
@@ -101,6 +103,7 @@ local_crm_proxy: http://192.168.51.128/
   :resque_data_validation_email_group: test@test.com
   :conflict_management_threshold: 900
 :onsite:
+  :debug: 'no'
   :redis_boot: true
   :crm_proxy: prod_crm_proxy
   :iphonecertfile: settings/apple_push_cert.pem
@@ -128,6 +131,7 @@ local_crm_proxy: http://192.168.51.128/
     :android_soft_upgrade_url: https://m.insphereis.net/HMMobile
     :quick_quote_users: all
 :onsite_model:
+  :debug: 'no'
   :redis_boot: true
   :crm_proxy: model_crm_proxy
   :iphonecertfile: settings/apple_push_cert_sandbox.pem
@@ -148,6 +152,7 @@ local_crm_proxy: http://192.168.51.128/
     :level: 1
   :resque_worker_rhoconnect_api_password: U5PgMPngu27j
 :onsite_dev:
+  :debug: 'no'
   :redis_boot: true
   :crm_proxy: dev_crm_proxy
   :iphonecertfile: settings/apple_push_cert_sandbox.pem
