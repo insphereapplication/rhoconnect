@@ -3,9 +3,8 @@
 #Bundler.require
 root_path = File.expand_path("#{File.dirname(__FILE__)}/..")
 require 'resque/tasks'
-require 'resque_scheduler'
-require 'resque_scheduler/server'
 require 'resque/scheduler'
+require 'resque/scheduler/tasks'
 require 'resque/errors'
 require "#{root_path}/jobs/resque_config"
 require "#{root_path}/jobs/limit_client_exceptions"

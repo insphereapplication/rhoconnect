@@ -1,7 +1,7 @@
 root_path = File.expand_path("#{File.dirname(__FILE__)}/..")
 require "#{root_path}/util/config_file"
-require 'resque_scheduler'
-require 'resque_scheduler/server'
+require 'resque/tasks'
+require 'resque/scheduler/tasks'
 require 'yaml'
 require 'erb'
 

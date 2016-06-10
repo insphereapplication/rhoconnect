@@ -15,6 +15,8 @@ require 'rhoconnect/web-console/server'
 
 # By default, turn on the resque web console
 require 'resque/server'
+require 'resque-scheduler'
+require 'resque/scheduler/server'
 require 'sinatra'
 require 'logger'
 require 'ap'
