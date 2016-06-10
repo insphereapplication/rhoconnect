@@ -1,5 +1,6 @@
 root_path = File.expand_path("#{File.dirname(__FILE__)}/..")
-require "#{root_path}/util/config_file"
+require "#{root_path}/util/config_file"#
+require 'rake'
 require 'resque/tasks'
 require 'resque/scheduler/tasks'
 require 'yaml'
