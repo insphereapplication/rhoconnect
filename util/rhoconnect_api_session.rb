@@ -49,7 +49,7 @@ class RhoconnectApiSession
     if type.nil?
       # Appears empty return type change in rhoconnect upgrade.  converting to empty json to resolve issue
       if doc_data.blank?
-        JSON.parse('""')
+        JSON.parse('{}')
       else
         JSON.parse(doc_data)
       end
