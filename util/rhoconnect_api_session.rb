@@ -159,7 +159,7 @@ class RhoconnectApiSession
 
   def get_dead_locks
     res = RestClient.post(
-      "#{@server}api/get_dead_locks", 
+      "#{@server}api/v1/HMRhoconnect/get_dead_locks", 
       { 
         :api_token => @token
       }.to_json, 
@@ -172,7 +172,7 @@ class RhoconnectApiSession
   
   def release_lock(lock)
     res = RestClient.post(
-      "#{@server}api/release_lock", 
+      "#{@server}api/v1/HMRhoconnect/release_lock", 
       { 
         :api_token => @token,
         :lock => lock
