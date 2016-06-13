@@ -132,7 +132,7 @@ class RhoconnectApiSession
   end
   
   def get_sync_status(user_pattern)
-    raw_sync_status = RestClient.post("#{@server}api/get_sync_status", 
+    raw_sync_status = RestClient.post("#{@server}api/v1/HMRhoconnect/get_sync_status", 
       { :api_token => @token, 
         :user_pattern => user_pattern }.to_json, 
       :content_type => :json
@@ -206,7 +206,7 @@ class RhoconnectApiSession
   
   def reset_sync_status(username)
     JSON.parse(RestClient.post(
-      "#{@server}api/reset_sync_status", 
+      "#{@server}api/v1/HMRhoconnect/reset_sync_status", 
       { 
         :api_token => @token, 
         :user_pattern => username
@@ -217,7 +217,7 @@ class RhoconnectApiSession
   
   def get_user_status(username)
     JSON.parse(RestClient.post(
-      "#{@server}api/get_user_status", 
+      "#{@server}api/v1/HMRhoconnect/get_user_status", 
       { 
         :api_token => @token, 
         :user_id => username
@@ -228,7 +228,7 @@ class RhoconnectApiSession
   
   def set_user_status(username,status)
     RestClient.post(
-      "#{@server}api/set_user_status", 
+      "#{@server}api/v1/HMRhoconnect/set_user_status", 
       {
         :api_token => @token, 
         :user_id => username,
@@ -240,7 +240,7 @@ class RhoconnectApiSession
   
   def get_user_crm_id(username)
     res = RestClient.post(
-       "#{@server}api/get_user_crm_id", 
+       "#{@server}api/v1/HMRhoconnect/get_user_crm_id", 
        { 
          :api_token => @token, 
          :username => username
