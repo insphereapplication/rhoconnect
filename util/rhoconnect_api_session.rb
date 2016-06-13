@@ -132,7 +132,7 @@ class RhoconnectApiSession
   end
   
   def get_sync_status(user_pattern)
-    raw_sync_status = RestClient.post("#{@server}api/v1/HMRhoconnect/get_sync_status", 
+    raw_sync_status = RestClient.post("#{@server}/app/v1/HMRhoconnect/get_sync_status", 
       { :api_token => @token, 
         :user_pattern => user_pattern }.to_json, 
       :content_type => :json
@@ -159,7 +159,7 @@ class RhoconnectApiSession
 
   def get_dead_locks
     res = RestClient.post(
-      "#{@server}api/v1/HMRhoconnect/get_dead_locks", 
+      "#{@server}/app/v1/HMRhoconnect/get_dead_locks", 
       { 
         :api_token => @token
       }.to_json, 
@@ -172,7 +172,7 @@ class RhoconnectApiSession
   
   def release_lock(lock)
     res = RestClient.post(
-      "#{@server}api/v1/HMRhoconnect/release_lock", 
+      "#{@server}/app/v1/HMRhoconnect/release_lock", 
       { 
         :api_token => @token,
         :lock => lock
@@ -206,7 +206,7 @@ class RhoconnectApiSession
   
   def reset_sync_status(username)
     JSON.parse(RestClient.post(
-      "#{@server}api/v1/HMRhoconnect/reset_sync_status", 
+      "#{@server}/app/v1/HMRhoconnect/reset_sync_status", 
       { 
         :api_token => @token, 
         :user_pattern => username
@@ -217,7 +217,7 @@ class RhoconnectApiSession
   
   def get_user_status(username)
     JSON.parse(RestClient.post(
-      "#{@server}api/v1/HMRhoconnect/get_user_status", 
+      "#{@server}/app/v1/HMRhoconnect/get_user_status", 
       { 
         :api_token => @token, 
         :user_id => username
@@ -228,7 +228,7 @@ class RhoconnectApiSession
   
   def set_user_status(username,status)
     RestClient.post(
-      "#{@server}api/v1/HMRhoconnect/set_user_status", 
+      "#{@server}/app/v1/HMRhoconnect/set_user_status", 
       {
         :api_token => @token, 
         :user_id => username,
@@ -240,7 +240,7 @@ class RhoconnectApiSession
   
   def get_user_crm_id(username)
     res = RestClient.post(
-       "#{@server}api/v1/HMRhoconnect/get_user_crm_id", 
+       "#{@server}/app/v1/HMRhoconnect/get_user_crm_id", 
        { 
          :api_token => @token, 
          :username => username

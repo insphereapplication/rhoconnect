@@ -10,9 +10,9 @@ module RedisUtil
   class << self
     
     def connect(host, port)
-      Rhoconnect::Store.db.client.disconnect if defined?(Rhoconnect::Store.db.client)
+      Rhoconnect::Store.get_store(0).db.client.disconnect if defined?(Rhoconnect::Store.get_store(0).db.client)
       puts "Connecting to redis at #{host}:#{port}"
-      Rhoconnect::Store.db = Redis.new(:thread_safe => true, :host => host, :port => port)
+      Rhoconnect::Store.get_store(0).db = Redis.new(:thread_safe => true, :host => host, :port => port)
     end
     
     def clear_md(model, user)
