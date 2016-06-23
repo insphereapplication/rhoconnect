@@ -135,10 +135,10 @@ class HMRhoconnectController < Rhoconnect::Controller::Base
 			  objects = Mapper.map_source_data(params[:objects], params[:source_id])
 			  UpdateUtil.push_objects(source, objects, true)
 			ensure
-			  # Ensure that the user gets a push notification even if push_objects fails
-			  InsiteLogger.info "push_objects_notify called, notifying observer for #{params[:source_id]}"
-			  klass = Object.const_get(params[:source_id].capitalize)
-			  klass.notify_api_pushed(params[:user_id]) if klass.respond_to?(:notify_api_pushed)
+        # Ensure that the user gets a push notification even if push_objects fails
+        InsiteLogger.info "push_objects_notify called, notifying observer for #{params[:source_id]}"
+        klass = Object.const_get(params[:source_id].capitalize)
+        klass.push_notification(params[:user_id], objects) if klass.respond_to?(:push_notification)
 			end
 			""
 		end

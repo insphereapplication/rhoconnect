@@ -4,16 +4,36 @@ class Opportunity < Rhoconnect::Model::Base
   include ProxyUtil
   include ReplaceTempID
   
-  on_api_push do |user_id|
-    ExceptionUtil.rescue_and_reraise do
-       ExceptionUtil.context(:user_id => user_id )
-       PingJob.perform(
-         'user_id' => user_id,
-         'message' => 'You have new Opportunities',
-         'sound' => 'hello.mp3'
-       )
-     end
-  end
+  
+  def self.push_notification(user_id, objects)
+      ExceptionUtil.rescue_and_reraise do
+         ExceptionUtil.context(:user_id => user_id )
+         begin
+          lob = objects.fetch(objects.keys[0])['cssi_lineofbusiness']      
+          contact_id = objects.fetch(objects.keys[0])['contact_id']
+          contact = RedisUtil.get_model('Contact', user_id, contact_id)
+         rescue RedisUtil::RecordNotFound
+          InsiteLogger.info "Can't find contact for Opportunity."
+          return {}
+         end
+         push_message = 'You have a new Opportunities'
+         if !lob.blank?
+           push_message = "You have a new #{lob} Opportunity"
+           if lob == "Small Biz" && !contact.blank? && !contact['cssi_employer'].blank?
+             push_message = "#{push_message} for #{contact['cssi_employer']}"
+           elsif !contact.blank? && !contact['firstname'].blank?  && !contact['lastname'].blank?
+             push_message = "#{push_message} for #{contact['firstname']} #{contact['lastname']}"
+           end
+         end
+         InsiteLogger.info "about to call PingJOB:  #{push_message}"
+         PingJob.perform(
+           'user_id' => user_id,
+           'message' => push_message,
+           'sound' => 'hello.mp3'
+         )
+       end
+    end
+  
   
   def initialize(source)
     ExceptionUtil.rescue_and_reraise do
