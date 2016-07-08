@@ -89,8 +89,8 @@ local_crm_proxy: http://192.168.51.128/
   :opp_assign_roles: InSphere Corporate User,InSphere Agency Manager,InSphere Sales
     Manager,InSphere Zone Manager,System Administrator
   :app_info:
-    :min_required_version: 5.4.40
-    :latest_version: 5.4.40
+    :min_required_version: 5.4.42
+    :latest_version: 5.4.42
     :apple_force_upgrade_url: itms-services://?action=download-manifest&amp;url=https%3A%2F%2Fm.model.insphereis.net%2FHMMobile%2FDocuments%2FHM_Mobile.plist
     :apple_soft_upgrade_url: itms-services://?action=download-manifest&amp;url=https%3A%2F%2Fm.model.insphereis.net%2FHMMobile%2FDocuments%2FHM_Mobile.plist
     :android_force_upgrade_url: https://m.model.insphereis.net/HMMobile
