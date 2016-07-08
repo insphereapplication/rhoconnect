@@ -23,6 +23,8 @@ end
 module ReplaceTempID
   def replace_with_guid(create_hash,temp_id_name,type)
     temp_id = create_hash[temp_id_name]
+    #After upgrade to 5.4 the temp_id_ is incase in {} for some reason
+    temp_id = temp_id.blank? ? temp_id : temp_id.gsub("{","").gsub("}","")
     if (!temp_id.blank? && !temp_id.upcase.match('[A-Z0-9]{8}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{12}'))
       InsiteLogger.info(:format_and_join => ["Replacing Tempid for : #{temp_id_name}, temp_id:  #{temp_id}."])
       result = Store.get_store(0).db.hget(find_hash_key(type), temp_id)
