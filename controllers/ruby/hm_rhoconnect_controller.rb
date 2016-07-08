@@ -97,8 +97,8 @@ class HMRhoconnectController < Rhoconnect::Controller::Base
 			InsiteLogger.info(:format_and_join => ["PUSH DELETES #{params[:source_id]} AFTER KEY CHECK FOR #{params[:user_id]}: ",deleted_objects])
 			if !deleted_objects.empty?
 				source = Source.load(params[:source_id],{:app_id=>APP_NAME,:user_id=>params[:user_id]})
-				source_sync = SourceSync.new(source)
-				source_sync.push_deletes(deleted_objects,nil,nil,false)
+				source_sync = Rhoconnect::Model::Base.create(source)    
+				source_sync.push_deletes({:objects=>deleted_objects,:timeout=>nil,:raise_on_expire=>nil,:rebuild_md=>false})
 			end
 			'done'
 		end
