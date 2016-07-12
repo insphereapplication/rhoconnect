@@ -96,6 +96,7 @@ class Activity < Rhoconnect::Model::Base
       # Fetch the activity's type from redis so that the proxy will know which type it's interacting with
       # This has to be done because the differential update sent to the proxy will only include the activity type if it has changed, which should never be the case
       begin
+        update_hash = replace_with_guid(create_hash,"id","Activity")
         activity = RedisUtil.get_model('Activity', current_user.login, update_hash['id'])
       rescue RedisUtil::RecordNotFound
         # Activity doesn't exist in redis, stop. Activity will be deleted on client after this sync.
