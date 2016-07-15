@@ -113,7 +113,9 @@ local_crm_proxy: http://192.168.51.128/
   :iphoneserver: gateway.push.apple.com
   :iphoneport: 2195
   :syncserver: http://nrhrhop104.uicnrh.dom/application/
-  :gcm_api_key: AIzaSyBGr2yZ4RkajvEnsWfKhE0AC4JE2y23n_4
+  #:This prod 5.4 app appears to be built with the model auth key
+  #:gcm_api_key: AIzaSyBGr2yZ4RkajvEnsWfKhE0AC4JE2y23n_4
+  :gcm_api_key: AIzaSyBC_DcOes_EY_KnTFMABjhw9oH5c3x9i0k
   :rhoadmin_password: aW9wVhyU84Sj
   :ssl: false
   :fork_resque: false
