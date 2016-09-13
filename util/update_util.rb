@@ -7,7 +7,7 @@ class UpdateUtil
     InsiteLogger.info(:format_and_join => ["*"*10 + "Committing update to redis for model #{source.name} for user #{source.user_id}: ", push_hash])
     rejected_creates = []
 	
-    params = {:objects=>push_hash, :rebuild_md=>false, :timeout=>10}}
+    params = {:objects=>push_hash, :rebuild_md=>false, :timeout=>10}
     using_source_sync(source,reraise_lock_exception) do |source_sync|
       #rejected_creates = source_sync.push_objects(push_hash,nil,nil,false)
 	  rejected_creates = source_sync.push_objects(params)
@@ -30,7 +30,7 @@ class UpdateUtil
   def self.push_objects(source, objects, reraise_lock_exception=false)
     PushHandler.handle_push(source.name, source.user_id, objects)
     InsiteLogger.info(:format_and_join => ["*"*10 + "Committing to redis for model #{source.name} for user #{source.user_id}: ", objects])
-    params = {:objects=>objects, :rebuild_md=>false, :timeout=>10}}
+    params = {:objects=>objects, :rebuild_md=>false, :timeout=>10}
 	using_source_sync(source,reraise_lock_exception) do |source_sync|
       #source_sync.push_objects(objects,nil,nil,false)
 	  source_sync.push_objects(params)
