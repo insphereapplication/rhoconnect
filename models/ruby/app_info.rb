@@ -20,7 +20,6 @@ class AppInfo < Rhoconnect::Model::Base
                               'android_soft_upgrade_url' => app_info_config[:android_soft_upgrade_url],
                               'model_limits' => app_info_config[:model_limits],
                               'quick_quote_users' => app_info_config[:quick_quote_users],
-                              'sts_url' => app_info_config[:sts_url],
                               'resource_center_url' => app_info_config[:resource_center_url],
                               'insite_url' => app_info_config[:insite_url],
                               'medicare_soa_url' => app_info_config[:medicare_soa_url],
