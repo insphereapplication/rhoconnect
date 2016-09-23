@@ -97,7 +97,7 @@ local_crm_proxy: http://192.168.51.128/
     :android_soft_upgrade_url: https://m.model.insphereis.net/HMMobile
     :mobile_crypt_key: HFAGIEH777837776KFKHHSJJJFHEUUGF
     :model_limits: ! '{"Activity":"3000","Opportunity":"500","Contact":"3500","Policy":"7500","Note":"1750"}'
-  	:quick_quote_users: all
+    :quick_quote_users: all
   :resque_worker_rhoconnect_api_host: http://127.0.0.1/
   :resque_worker_rhoconnect_api_password: ''
   :resque_data_validation_email_group: test@test.com
