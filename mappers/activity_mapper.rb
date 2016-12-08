@@ -26,6 +26,12 @@ class ActivityMapper < Mapper
         value.merge!({'parent_contact_id' => recipient_value[0]['id']}) unless recipient_value.blank?
         value.reject!{|k,v| k == recipient_field_name}
       end
+
+      unless value['description'].nil?
+        crlf = /(\r\n|\n\r|\r|\n)/ 
+        value['description'] = value['description'].gsub(crlf, '<br>')
+        InsiteLogger.info "Activity Mapper -- Description: #{value['description']}"
+      end  
       
       #always filter out attributes that are only set in RhoSync (avoids problems with fixed schema)
       #these fields are not modified from rhodes and should only be injected in map_data_from_client as needed
@@ -83,7 +89,11 @@ class ActivityMapper < Mapper
         data['from'] = [{:type => 'systemuser', :id => mapper_context[:user_id]}]
       end
     end
-    
+   
+    unless data['description'].nil?
+         data['description'] = data['description'].gsub('<br>',"\r\n")
+    end
+ 
     data['cssi_fromrhosync'] = 'true'
     
     data.reject!{|k,v| ['temp_id'].include?(k)}
