@@ -91,10 +91,10 @@ local_crm_proxy: http://192.168.51.128/
   :app_info:
     :min_required_version: 5.4.93
     :latest_version: 5.4.93
-    :apple_force_upgrade_url: itms-services://?action=download-manifest&amp;url=https%3A%2F%2Fm.model.insphereis.net%2FHMMobile%2FDocuments%2FHM_Mobile.plist
-    :apple_soft_upgrade_url: itms-services://?action=download-manifest&amp;url=https%3A%2F%2Fm.model.insphereis.net%2FHMMobile%2FDocuments%2FHM_Mobile.plist
-    :android_force_upgrade_url: https://m.model.insphereis.net/HMMobile
-    :android_soft_upgrade_url: https://m.model.insphereis.net/HMMobile
+    :apple_force_upgrade_url: itms-services://?action=download-manifest&amp;url=https%3A%2F%2Fm.model.healthmarkets.com%2FMobile%2FDocuments%2FHM_Mobile.plist
+    :apple_soft_upgrade_url: itms-services://?action=download-manifest&amp;url=https%3A%2F%2Fm.model.healthmarkets.com%2FMobile%2FDocuments%2FHM_Mobile.plist
+    :android_force_upgrade_url: https://m.model.healthmarkets.com/Mobile
+    :android_soft_upgrade_url: https://m.model.healthmarkets.com/Mobile
     :mobile_crypt_key: HFAGIEH777837776KFKHHSJJJFHEUUGF
     :model_limits: ! '{"Activity":"3000","Opportunity":"500","Contact":"3500","Policy":"7500","Note":"1750"}'
     :quick_quote_users: all
@@ -127,10 +127,10 @@ local_crm_proxy: http://192.168.51.128/
   :resque_worker_rhoconnect_api_password: aW9wVhyU84Sj
   :resque_data_validation_email_group: InsphereMobileSupport@inspherehq.com
   :app_info:
-    :apple_force_upgrade_url: itms-services://?action=download-manifest&amp;url=https%3A%2F%2Fm.insphereis.net%2FHMMobile%2FDocuments%2FHM_Mobile.plist
-    :apple_soft_upgrade_url: itms-services://?action=download-manifest&amp;url=https%3A%2F%2Fm.insphereis.net%2FHMMobile%2FDocuments%2FHM_Mobile.plist
-    :android_force_upgrade_url: https://m.insphereis.net/HMMobile
-    :android_soft_upgrade_url: https://m.insphereis.net/HMMobile
+    :apple_force_upgrade_url: itms-services://?action=download-manifest&amp;url=https%3A%2F%2Fm.healthmarkets.com%2FMobile%2FDocuments%2FHM_Mobile.plist
+    :apple_soft_upgrade_url: itms-services://?action=download-manifest&amp;url=https%3A%2F%2Fm.healthmarkets.com%2FMobile%2FDocuments%2FHM_Mobile.plist
+    :android_force_upgrade_url: https://m.healthmarkets.com/Mobile
+    :android_soft_upgrade_url: https://m.healthmarkets.com/Mobile
     :quick_quote_users: all
     :resource_center_url: https://sts.insphereis.net/adfs/ls/?wa=wsignin1.0&wtrealm=urn%3asharepoint%3aarc&wctx=https%3a%2f%2frc.healthmarkets.com%2f_layouts%2f15%2fAuthenticate.aspx%3fSource%3d%252F
     :insite_url: https://hmix.healthmarkets.com/Proposal/SSO/CreateFromOpportunity
@@ -184,10 +184,10 @@ local_crm_proxy: http://192.168.51.128/
     :level: 0
   :resque_worker_rhoconnect_api_password: iGyz5rk6JVYA
   :app_info:
-    :apple_force_upgrade_url: itms-services://?action=download-manifest&amp;url=https%3A%2F%2Fm.dev.insphereis.net%2FHMMobile%2FDocuments%2FHM_Mobile.plist
-    :apple_soft_upgrade_url: itms-services://?action=download-manifest&amp;url=https%3A%2F%2Fm.dev.insphereis.net%2FHMMobile%2FDocuments%2FHM_Mobile.plist
-    :android_force_upgrade_url: https://m.dev.insphereis.net/HMMobile
-    :android_soft_upgrade_url: https://m.dev.insphereis.net/HMMobile
+    :apple_force_upgrade_url: itms-services://?action=download-manifest&amp;url=https%3A%2F%2Fm.dev.healthmarkets.com%2FMobile%2FDocuments%2FHM_Mobile.plist
+    :apple_soft_upgrade_url: itms-services://?action=download-manifest&amp;url=https%3A%2F%2Fm.dev.healthmarkets.com%2FMobile%2FDocuments%2FHM_Mobile.plist
+    :android_force_upgrade_url: https://m.dev.healthmarkets.com/Mobile
+    :android_soft_upgrade_url: https://m.dev.healthmarkets.com/Mobile
     :resource_center_url: https://sts.model.insphereis.net/adfs/ls/?wa=wsignin1.0&wtrealm=urn%3asharepoint%3aarc&wctx=https%3a%2f%2frc.model.healthmarkets.com%2f_layouts%2f15%2fAuthenticate.aspx%3fSource%3d%252F
     :insite_url: https://hmix.dev.healthmarkets.com/Proposal/SSO/CreateFromOpportunity
     :medicare_soa_url: https://sts.model.insphereis.net/adfs/ls/?wa=wsignin1.0&wtrealm=https%3a%2f%2fmodel-insphere-marketplace.accesscontrol.windows.net%2f&wreply=https%3a%2f%2fmodel-insphere-marketplace.accesscontrol.windows.net%2fv2%2fwsfederation&wctx=cHI9d3NmZWRlcmF0aW9uJnJtPWh0dHBzJTNhJTJmJTJmZXh0YXBwLm1vZGVsLmhlYWx0aG1hcmtldHMuY29tJTJmc29hJTJmJnJ5PSZjeD1ybSUzZDAlMjZpZCUzZHBhc3NpdmUlMjZydSUzZCUyNTJmc29hJTI1MmZkZWZhdWx0LmFzcHg1
