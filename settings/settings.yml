@@ -89,10 +89,10 @@ local_crm_proxy: http://192.168.51.128/
   :opp_assign_roles: InSphere Corporate User,InSphere Agency Manager,InSphere Sales
     Manager,InSphere Zone Manager,System Administrator
   :app_info:
-    :min_required_version: 5.4.119
-    :latest_version: 5.4.119
-    :apple_force_upgrade_url: itms-services://?action=download-manifest&amp;url=https%3A%2F%2Fm.model.healthmarkets.com%2FMobile%2FDocuments%2FHM_Mobile.plist
-    :apple_soft_upgrade_url: itms-services://?action=download-manifest&amp;url=https%3A%2F%2Fm.model.healthmarkets.com%2FMobile%2FDocuments%2FHM_Mobile.plist
+    :min_required_version: 6.0.0
+    :latest_version: 6.0.0
+    :apple_force_upgrade_url: itms-services://?action=download-manifest&amp;url=https%3A%2F%2Fm.model.healthmarkets.com%2FMobile-supp%2FDocuments%2FAgent_Connect.plist
+    :apple_soft_upgrade_url: itms-services://?action=download-manifest&amp;url=https%3A%2F%2Fm.model.healthmarkets.com%2FMobile-supp%2FDocuments%2FAgent_Connect.plist
     :android_force_upgrade_url: https://m.model.healthmarkets.com/Mobile
     :android_soft_upgrade_url: https://m.model.healthmarkets.com/Mobile
     :mobile_crypt_key: HFAGIEH777837776KFKHHSJJJFHEUUGF
@@ -127,8 +127,8 @@ local_crm_proxy: http://192.168.51.128/
   :resque_worker_rhoconnect_api_password: aW9wVhyU84Sj
   :resque_data_validation_email_group: InsphereMobileSupport@inspherehq.com
   :app_info:
-    :apple_force_upgrade_url: itms-services://?action=download-manifest&amp;url=https%3A%2F%2Fm.healthmarkets.com%2FMobile%2FDocuments%2FHM_Mobile.plist
-    :apple_soft_upgrade_url: itms-services://?action=download-manifest&amp;url=https%3A%2F%2Fm.healthmarkets.com%2FMobile%2FDocuments%2FHM_Mobile.plist
+    :apple_force_upgrade_url: itms-services://?action=download-manifest&amp;url=https%3A%2F%2Fm.healthmarkets.com%2FMobile%2FDocuments%2FAgent_Connect.plist
+    :apple_soft_upgrade_url: itms-services://?action=download-manifest&amp;url=https%3A%2F%2Fm.healthmarkets.com%2FMobile%2FDocuments%2FAgent_Connect.plist
     :android_force_upgrade_url: https://m.healthmarkets.com/Mobile
     :android_soft_upgrade_url: https://m.healthmarkets.com/Mobile
     :quick_quote_users: all
