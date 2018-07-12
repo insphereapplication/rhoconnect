@@ -93,8 +93,8 @@ local_crm_proxy: http://192.168.51.128/
     :latest_version: 6.0.0
     :apple_force_upgrade_url: itms-services://?action=download-manifest&amp;url=https%3A%2F%2Fm.model.healthmarkets.com%2FMobile-supp%2FDocuments%2FAgent_Connect.plist
     :apple_soft_upgrade_url: itms-services://?action=download-manifest&amp;url=https%3A%2F%2Fm.model.healthmarkets.com%2FMobile-supp%2FDocuments%2FAgent_Connect.plist
-    :android_force_upgrade_url: https://m.model.healthmarkets.com/Mobile
-    :android_soft_upgrade_url: https://m.model.healthmarkets.com/Mobile
+    :android_force_upgrade_url: https://m.model.healthmarkets.com/Mobile-supp
+    :android_soft_upgrade_url: https://m.model.healthmarkets.com/Mobile-supp
     :mobile_crypt_key: HFAGIEH777837776KFKHHSJJJFHEUUGF
     :model_limits: ! '{"Activity":"3000","Opportunity":"500","Contact":"3500","Policy":"7500","Note":"1750"}'
     :quick_quote_users: all
